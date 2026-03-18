@@ -4,3 +4,5 @@ Snake.out.dSYM/Contents/Info.plist
 Snake.out
 libglfw3.a
 Snake.out
+.vscode
+*tasks.json
