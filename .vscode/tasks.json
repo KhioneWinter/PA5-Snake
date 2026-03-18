@@ -1,30 +1,20 @@
 {
-    "version": "2.0.0",
-    "tasks": [
+	"version": "2.0.0",
+	"tasks": [
         {
             "type": "cppbuild",
-            "label": "Build Snake (macOS)",
-            "command": "g++",
+            "label": "C/C++: g++.exe build active file",
+            "command": "C:/path/to/g++.exe",
             "args": [
                 "-g",
                 "-std=c++17",
-                "-Wall",
-                "-Wextra",
                 "-I${workspaceFolder}/include",
+                "-L${workspaceFolder}/lib",
                 "${workspaceFolder}/src/main.cpp",
                 "${workspaceFolder}/src/glad.c",
+                "-lglfw3dll",
                 "-o",
-                "${workspaceFolder}/Snake.out",
-                "-L/opt/homebrew/lib",
-                "-lglfw",
-                "-framework",
-                "OpenGL",
-                "-framework",
-                "Cocoa",
-                "-framework",
-                "IOKit",
-                "-framework",
-                "CoreVideo"
+                "${workspaceFolder}/cutable.exe"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -36,7 +26,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "Builds main.cpp and glad.c on macOS using system g++"
+            "detail": "compiler: C:/C:/path/to/g++.exe"
         }
     ]
 }
