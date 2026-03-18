@@ -38,16 +38,17 @@ Students:
 ## Compilation and Running the Game!!
 
 # Compile walk through:
-```bash
-make
-```
+| mac               | windows           |
+| ----------------- | ----------------- |
+| `cmd + shift + B` | `ctr + shift + B` |
 
-Then we have 1 executable  file:
-- `JRPG`
+
+Then we have executable file:
+- `Snake.out`
 
 # Run game:
 ```bash
-./JRPG.out
+./Snake.out
 ```
 
 # Clean compiled files:
