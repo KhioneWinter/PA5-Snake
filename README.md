@@ -114,28 +114,33 @@ class Game {
 }
 
 class Map {
-    - int rows
-    - int cols
-    - list foodItems
+    - int width
+    - int height
 
     + spawnFood()
     + removeFood(food)
-    + isInsideBounds(position) bool
+    + isInside(x, y) bool
 }
 
 class Snake {
-    - list body
+    - int x %% head row
+    - int y %% head col
+    - vector_list body
+    - int length
     - int speed
     - direction currentDirection
 
     + move()
     + grow()
-    + checkSelfCollision() bool
+    + checkSelfCollision(newX, newY) bool
 }
 
 class SnakeSegment {
-    + int x
-    + int y
+    - int x
+    - int y
+
+    + getX()
+    + getY()
 }
 
 class Food {
@@ -155,15 +160,15 @@ class SpecialFood {
 
 class Score {
     + int points
-    + addPoints(amount)
+    + increase(amount)
     + reset()
 }
 
 class Leaderboard {
     + list scores
-    + addScore(score)
-    + save()
-    + load()
+    + addScore(playerId, score)
+    + int top(K)
+    + reset(playerId)
 }
 
 %% tengingar
