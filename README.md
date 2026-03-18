@@ -71,3 +71,112 @@ Hope you guys like the game! must be weird being a bad guy huh? （；´д｀）
 Tried our best at least hope it actually runs well and isisnt too dificult ᕦ(ò_óˇ)ᕤ
 
 ---------------------------------------------------
+
+
+#### TODO BREYTA
+
+
+SnakeGame/
+│
+├── main.cpp
+│
+├── Game.h / Game.cpp
+├── Snake.h / Snake.cpp
+├── SnakeSegment.h
+├── Map.h / Map.cpp
+│
+├── Food.h / Food.cpp
+│
+├── Score.h / Score.cpp
+├── Leaderboard.h / Leaderboard.cpp
+│
+├── Renderer.h / Renderer.cpp
+ ├─ drawSnake()
+ ├─ drawFood()
+ └─ drawMap()
+
+
+```mermaid
+classDiagram
+
+%% classes
+class Game {
+    - Map map
+    - Snake snake
+    - Score score
+    - bool running
+
+    + start()
+    + update()
+    + render()
+    + handleInput(direction)
+}
+
+class Map {
+    - int rows
+    - int cols
+    - list foodItems
+
+    + spawnFood()
+    + removeFood(food)
+    + isInsideBounds(position) bool
+}
+
+class Snake {
+    - list body
+    - int speed
+    - direction currentDirection
+
+    + move()
+    + grow()
+    + checkSelfCollision() bool
+}
+
+class SnakeSegment {
+    + int x
+    + int y
+}
+
+class Food {
+    <<abstract>>
+    + int x
+    + int y
+    + applyEffect(snake)
+}
+
+class NormalFood {
+    + applyEffect(snake)
+}
+
+class SpecialFood {
+    + applyEffect(snake)
+}
+
+class Score {
+    + int points
+    + addPoints(amount)
+    + reset()
+}
+
+class Leaderboard {
+    + list scores
+    + addScore(score)
+    + save()
+    + load()
+}
+
+%% tengingar
+Game --> Map : updates
+Game --> Snake : controls
+Game --> Score : tracks
+
+Snake "1" --> "1..*" SnakeSegment : body
+Map "1" --> "0..*" Food : contains
+
+Food <|-- NormalFood
+Food <|-- SpecialFood
+
+Snake --> Food : consumes
+
+Leaderboard "1" --> "0..*" Score : stores
+```
