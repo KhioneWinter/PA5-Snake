@@ -1,13 +1,17 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wextra -I./include
+CXXFLAGS = -std=c++17 -Wall -Wextra -I./include
 
-all: Snake.out
+TARGET = Snake.out
+SRC = src/main.cpp src/glad.c src/snake.cpp
 
-Snake.out: src/Snake.cpp #src/Creature.cpp src/Player.cpp src/Enemy.cpp src/GameCycle.cpp src/GameManager.cpp
-	$(CXX) $(CXXFLAGS) src/Snake.cpp 
-#src/Creature.cpp src/Player.cpp src/Enemy.cpp src/GameCycle.cpp src/GameManager.cpp -o JRPG.out
+all: $(TARGET)
+
+$(TARGET): $(SRC)
+	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) \
+		-L/opt/homebrew/lib -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+
 clean:
-	rm -f *.out
+	rm -f $(TARGET)
 
 .PHONY: all clean
 

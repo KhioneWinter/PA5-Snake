@@ -1,0 +1,78 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Snake",
+      "type": "shell",
+      "osx": {
+        "command": "g++",
+        "args": [
+          "-g",
+          "-std=c++17",
+          "-Wall",
+          "-Wextra",
+          "-I${workspaceFolder}/include",
+          "${workspaceFolder}/src/main.cpp",
+          "${workspaceFolder}/src/glad.c",
+          "-o",
+          "${workspaceFolder}/Snake.out",
+          "-L/opt/homebrew/lib",
+          "-lglfw",
+          "-framework", "OpenGL",
+          "-framework", "Cocoa",
+          "-framework", "IOKit",
+          "-framework", "CoreVideo"
+        ]
+      },
+      "linux": {
+        "command": "g++",
+        "args": [
+          "-g",
+          "-std=c++17",
+          "-Wall",
+          "-Wextra",
+          "-I${workspaceFolder}/include",
+          "${workspaceFolder}/src/main.cpp",
+          "${workspaceFolder}/src/glad.c",
+          "-o",
+          "${workspaceFolder}/Snake.out",
+          "-lglfw",
+          "-lGL",
+          "-ldl",
+          "-lpthread"
+        ]
+      },
+      "windows": {
+        "command": "g++",
+        "args": [
+          "-g",
+          "-std=c++17",
+          "-Wall",
+          "-Wextra",
+          "-I${workspaceFolder}/include",
+          "-IC:/msys64/mingw64/include",
+          "${workspaceFolder}/src/main.cpp",
+          "${workspaceFolder}/src/Snake.cpp",
+          "${workspaceFolder}/src/glad.c",
+          "-o",
+          "${workspaceFolder}/Snake.out",
+          "-LC:/msys64/mingw64/lib",
+          "-lglfw3",
+          "-lopengl32",
+          "-lgdi32",
+          "-luser32"
+        ]
+      },
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    }
+  ]
+}
