@@ -22,9 +22,9 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -I./include
 
-# Automatically detect the OS
+# auto detect the OS
 ifeq ($(OS),Windows_NT)
-    # Windows settings (Assumes MinGW and your provided lib/libglfw3dll.a)
+    # Windows settings
     TARGET = Snake.exe
     LDFLAGS = -L./lib -lglfw3dll -lopengl32 -lgdi32
 else
@@ -33,8 +33,10 @@ else
     LDFLAGS = -L/opt/homebrew/lib -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
 endif
 
-# Added Game.cpp to the source list
+
+
 SRC = src/main.cpp src/glad.c src/Snake.cpp src/Game.cpp 
+
 
 all: $(TARGET)
 
