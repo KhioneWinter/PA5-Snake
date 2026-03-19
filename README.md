@@ -42,14 +42,20 @@ Students:
 | ----------------- | ----------------- |
 | `cmd + shift + B` | `ctr + shift + B` |
 
+or use `Make`
+
 
 Then we have executable file:
-- `Snake.out`
+| mac               | windows           |
+| ----------------- | ----------------- |
+| `Snake.out`       | `Snake.exe`       |
+
 
 # Run game:
-```bash
-./Snake.out
-```
+| mac               | windows           |
+| ----------------- | ----------------- |
+| `./Snake.out`       | `./Snake.exe`       |
+
 
 # Clean compiled files:
 ```bash
