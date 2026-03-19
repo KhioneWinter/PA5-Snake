@@ -4,18 +4,22 @@
     {
       "label": "Build Snake",
       "type": "shell",
-      "osx": {
+
+      "osx": { // macOS
         "command": "g++",
         "args": [
           "-g",
           "-std=c++17",
           "-Wall",
           "-Wextra",
+
           "-I${workspaceFolder}/include",
           "${workspaceFolder}/src/main.cpp",
           "${workspaceFolder}/src/glad.c",
+          "${workspaceFolder}/src/*.cpp",
+
           "-o",
-          "${workspaceFolder}/Snake.exe",
+          "${workspaceFolder}/Snake.out",
           "-L/opt/homebrew/lib",
           "-lglfw",
           "-framework", "OpenGL",
@@ -24,6 +28,7 @@
           "-framework", "CoreVideo"
         ]
       },
+
       "linux": {
         "command": "g++",
         "args": [
@@ -31,9 +36,12 @@
           "-std=c++17",
           "-Wall",
           "-Wextra",
+
           "-I${workspaceFolder}/include",
           "${workspaceFolder}/src/main.cpp",
           "${workspaceFolder}/src/glad.c",
+          "${workspaceFolder}/src/*.cpp",
+
           "-o",
           "${workspaceFolder}/Snake.exe",
           "-lglfw",
@@ -42,6 +50,7 @@
           "-lpthread"
         ]
       },
+
       "windows": {
         "command": "g++",
         "args": [
@@ -49,13 +58,15 @@
           "-std=c++17",
           "-Wall",
           "-Wextra",
+
           "-I${workspaceFolder}/include",
           "-IC:/msys64/mingw64/include",
           "${workspaceFolder}/src/main.cpp",
-          "${workspaceFolder}/src/Snake.cpp",
           "${workspaceFolder}/src/glad.c",
+          "${workspaceFolder}/src/*.cpp",
+
           "-o",
-          "${workspaceFolder}/Snake.out",
+          "${workspaceFolder}/Snake.exe",
           "-LC:/msys64/mingw64/lib",
           "-lglfw3",
           "-lopengl32",
