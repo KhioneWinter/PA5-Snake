@@ -34,6 +34,11 @@ public:
 
     GameState currentState;
 
+    // map settings
+    int mapWidth;
+    int mapHeight;
+    bool wrapAround;
+
     // track food and movement
     int currentFoodX;
     int currentFoodY;

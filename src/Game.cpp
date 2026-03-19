@@ -28,11 +28,11 @@ const char* fragmentShaderSource = "#version 330 core\n"
 
 
     
-Game::Game() : currentState(GameState::START_SCREEN), dx(1), dy(0) {
+Game::Game() : currentState(GameState::START_SCREEN), mapWidth(20), mapHeight(20), wrapAround(false), dx(1), dy(0) {
     // initalize game objects
-    map = new Map(20, 20);      // create a 20x20 grid map
-    snake = new Snake(10, 10);  // start snake in the middle
-    score = new Score(0);       // start score at 0
+    map = nullptr;
+    snake = nullptr; 
+    score = nullptr;
 }
 
 Game::~Game() {
@@ -49,28 +49,41 @@ void Game::start() {
     std::cout << "===========================" << std::endl;
     std::cout << "       SNAKE GAME          " << std::endl;
     std::cout << "===========================" << std::endl;
+    std::cout << " SETTINGS:" << std::endl;
+    std::cout << " Press 1 : Small Map" << std::endl;
+    std::cout << " Press 2 : Medium Map (Default)" << std::endl;
+    std::cout << " Press 3 : Large Map" << std::endl;
+    std::cout << " Press B : Bounded Walls (Die on hit - Default)" << std::endl;
+    std::cout << " Press L : Loop Walls (Wrap around)" << std::endl;
+    std::cout << "---------------------------" << std::endl;
     std::cout << " Press SPACE to start!     " << std::endl;
 }
 
-
 void Game::handleInput(GLFWwindow* window) {
     if (currentState == GameState::START_SCREEN || currentState == GameState::GAME_OVER) {
+        
+        // settings bindings
+        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && mapWidth != 10) { mapWidth = 10; mapHeight = 10; std::cout << "Selected: SMALL MAP\n"; }
+        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && mapWidth != 20) { mapWidth = 20; mapHeight = 20; std::cout << "Selected: MEDIUM MAP\n"; }
+        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && mapWidth != 30) { mapWidth = 30; mapHeight = 30; std::cout << "Selected: LARGE MAP\n"; }
+        
+        if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && wrapAround == true)  { wrapAround = false; std::cout << "Selected: BOUNDED WALLS\n"; }
+        if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && wrapAround == false) { wrapAround = true; std::cout << "Selected: LOOP WALLS\n"; }
 
-        // start the game when SPACE is pressed
+        // start Game
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            delete map; delete snake; delete score; // clean up old game if restarting
             
-            // reset the game objects for a fresh start
-            delete snake;
-            delete score;
-            snake = new Snake(10, 10);
+            map = new Map(mapWidth, mapHeight);
+            snake = new Snake(mapWidth / 2, mapHeight / 2); // Start exactly in the middle!
             score = new Score(0);
             dx = 1; dy = 0;
             map->spawnFood(currentFoodX, currentFoodY);
             
             currentState = GameState::PLAYING;
-            std::cout << "Game started! Use Arrow Keys to move." << std::endl;
+            std::cout << "\nGame started! Use Arrow Keys to move." << std::endl;
         }
-    } 
+    }
     else if (currentState == GameState::PLAYING) {
         // prevent snake from moving into itself == disallowing reverse direction
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && dy != -1)    { dx = 0; dy = 1; }
@@ -89,17 +102,24 @@ void Game::update() {
     int nextY = snake->getY() + dy;
 
     // check Map Boundaries
-    if (!map->isInside(nextX, nextY)) {
-        std::cout << "Game Over! Hit a wall. Score: " << score->getScore() << std::endl;
-        std::cout << "Press SPACE to play again." << std::endl;
-        currentState = GameState::GAME_OVER; 
-        return;
+    if (wrapAround) {
+        // Wrap logic: if we go out of bounds, appear on the other side
+        if (nextX < 0) nextX = map->getWidth() - 1;
+        if (nextX >= map->getWidth()) nextX = 0;
+        if (nextY < 0) nextY = map->getHeight() - 1;
+        if (nextY >= map->getHeight()) nextY = 0;
+    } else {
+        // Solid wall logic: die if we go out of bounds
+        if (!map->isInside(nextX, nextY)) {
+            std::cout << "Game Over! Hit a wall. Score: " << score->getScore() << std::endl;
+            currentState = GameState::GAME_OVER; 
+            return;
+        }
     }
 
     // check Self-Collision
     if (snake->checkCollision(nextX, nextY)) {
         std::cout << "Game Over! You bit yourself. Score: " << score->getScore() << std::endl;
-        std::cout << "Press SPACE to play again." << std::endl;
         currentState = GameState::GAME_OVER; 
         return;
     }
@@ -111,7 +131,7 @@ void Game::update() {
     if (snake->getX() == currentFoodX && snake->getY() == currentFoodY) {
         snake->grow();
         score->increase(10);
-        map->spawnFood(currentFoodX, currentFoodY); // Spawn new food
+        map->spawnFood(currentFoodX, currentFoodY); 
         std::cout << "Score: " << score->getScore() << std::endl;
     }
 }
@@ -119,41 +139,34 @@ void Game::update() {
 
 void Game::render() {
     if (currentState == GameState::START_SCREEN) {
-
-
-        // d a simple pattern for the Start Screen
-        for(int x = 5; x < 15; x++) {
-            for(int y = 5; y < 15; y++) {
-                drawQuad(x, y, 0.0f, 0.4f, 0.8f); // Nice Blue color
+        // Draw a blue pattern for Start Screen
+        for(int x = mapWidth / 4; x < (mapWidth / 4) * 3; x++) {
+            for(int y = mapHeight / 4; y < (mapHeight / 4) * 3; y++) {
+                drawQuad(x, y, 0.0f, 0.4f, 0.8f); 
             }
         }
     } 
-
     else if (currentState == GameState::PLAYING) {
-        // Draw Map (Dark grey squares)
-        for (int x = 0; x < 20; x++) {
-            for (int y = 0; y < 20; y++) {
+        // Draw Map dynamically based on width and height
+        for (int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight; y++) {
                 drawQuad(x, y, 0.2f, 0.2f, 0.2f);
             }
         }
 
-        // Draw Food (Red square)
         drawQuad(currentFoodX, currentFoodY, 1.0f, 0.0f, 0.0f); 
 
-        // Draw Snake Body (Light green squares)
         for (const auto& segment : snake->getBody()) {
             drawQuad(segment.first, segment.second, 0.0f, 0.8f, 0.0f); 
         }
 
-        // Draw Snake Head (Bright green square)
         drawQuad(snake->getX(), snake->getY(), 0.0f, 1.0f, 0.0f); 
     } 
-    
     else if (currentState == GameState::GAME_OVER) {
-        // Draw a red screen
-        for(int x = 0; x < 20; x++) {
-            for(int y = 0; y < 20; y++) {
-                drawQuad(x, y, 0.5f, 0.0f, 0.0f); // Dark Red color
+        // Draw red Game Over screen
+        for(int x = 0; x < mapWidth; x++) {
+            for(int y = 0; y < mapHeight; y++) {
+                drawQuad(x, y, 0.5f, 0.0f, 0.0f);
             }
         }
     }
@@ -201,12 +214,13 @@ void Game::setupOpenGL() {
     glEnableVertexAttribArray(0);
 }
 
+
 void Game::drawQuad(int gridX, int gridY, float r, float g, float b) {
     glUseProgram(shaderProgram);
 
-    // Assuming a 20x20 map, each cell is 2.0/20.0 = 0.1 in OpenGL Coordinates
-    float cellWidth = 2.0f / 20.0f;
-    float cellHeight = 2.0f / 20.0f;
+    // Calculate dynamic cell sizes based on the chosen map dimensions
+    float cellWidth = 2.0f / mapWidth;
+    float cellHeight = 2.0f / mapHeight;
 
     // Calculate offsets based on grid position
     float offsetX = gridX * cellWidth;
@@ -220,4 +234,3 @@ void Game::drawQuad(int gridX, int gridY, float r, float g, float b) {
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
-
