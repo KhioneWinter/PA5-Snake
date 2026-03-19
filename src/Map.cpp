@@ -14,7 +14,7 @@ bool Map::spawnFood(int &x, int &y) {
 }
 
 bool Map::removeFood(int x, int y) {
-    // TODO  kannski
-    
+    (void)x;
+    (void)y;    
     return true;
 }
