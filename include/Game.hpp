@@ -1,12 +1,29 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 class Map;
 class Snake;
 class Score;
 
+
+// the different states the game can be in
+enum class GameState {
+    START_SCREEN,
+    PLAYING,
+    GAME_OVER
+};
+
 class Game {
+private:
+    // OpenGL rendering helpers
+    unsigned int shaderProgram;
+    unsigned int VAO, VBO;
+    void setupOpenGL();
+    void drawQuad(int x, int y, float r, float g, float b);
+
 public:
     Game();
     ~Game();
@@ -14,12 +31,19 @@ public:
     Map *map;
     Snake *snake;
     Score *score;
-    bool isRunning;
+
+    GameState currentState;
+
+    // track food and movement
+    int currentFoodX;
+    int currentFoodY;
+    int dx;
+    int dy;
 
     void start();
     void update();
     void render();
-    // TODO void handleInput(direction);
+    void handleInput(GLFWwindow* window);
 };
 
 

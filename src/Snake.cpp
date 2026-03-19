@@ -1,22 +1,28 @@
-// Makeing 2D snake game with OpenGL
-// #include <GL/gl.h>  
+#include "Snake.hpp"
 
-// - list body
-// - int speed
-// - direction currentDirection
+void Snake::move(int dx, int dy) {
+    // 1. insert the current head position into the front of the body list
+    body.insert(body.begin(), {x, y});
 
-// + move()
-// + grow()
-// + checkSelfCollision(): bool
+    // 2. update the head position to the new coordinates
+    x += dx;
+    y += dy;
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+    // 3. if the snake hasn't grown, remove the tail segment so it visually moves forward
+    if (body.size() > (size_t)length) body.pop_back();
+}
 
-#include <GL/gl.h>    // windows
+void Snake::grow() {
+    // increase snake length
+    length++;
+}
 
-
-#else
-
-#include <OpenGL/gl3.h>  // mac
-
-#endif
-
+bool Snake::checkCollision(int newX, int newY) {
+    // loop through the body segments to see if the new head position hits them
+    for (const auto& segment : body) {
+        if (segment.first == newX && segment.second == newY) {
+            return true; // collision detected
+        }
+    }
+    return false;
+}

@@ -22,6 +22,13 @@ public:
     void move(int dx, int dy); // TODO implement
     void grow(); // TODO implement
     bool checkCollision(int newX, int newY); // TODO implement
+
+    void update();
+    void render();
+
+    int getX() const { return x; }
+    int getY() const { return y; }
+    std::vector<std::pair<int, int>> getBody() const { return body; } // need for rendering
 };
 
 #endif // SNAKE_HPP
