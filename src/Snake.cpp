@@ -11,12 +11,15 @@
 
 #if defined(_WIN32) || defined(__CYGWIN__)
 
-#include <GL/gl.h>    // windows
+#include <GL/gl.h>    // Windows
 
+#elif defined(__APPLE__)
+
+#include <OpenGL/gl3.h>  // macOS
 
 #else
 
-#include <OpenGL/gl3.h>  // mac
+#include <GL/gl.h>    // Linux / other Unix
 
 #endif
 
