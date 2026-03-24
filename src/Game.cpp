@@ -83,6 +83,10 @@ void Game::handleInput(GLFWwindow* window) {
             currentState = GameState::PLAYING;
             std::cout << "\nGame started! Use Arrow Keys to move." << std::endl;
         }
+
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { 
+            glfwSetWindowShouldClose(window, GLFW_TRUE); // Closes openGL game window
+        }
     }
     else if (currentState == GameState::PLAYING) {
         // prevent snake from moving into itself == disallowing reverse direction
@@ -111,7 +115,9 @@ void Game::update() {
     } else {
         // Solid wall logic: die if we go out of bounds
         if (!map->isInside(nextX, nextY)) {
-            std::cout << "Game Over! Hit a wall. Score: " << score->getScore() << std::endl;
+            std::cout << "Game Over! Hit a wall. Score: " << score->getScore();
+            std::cout << "\n---------------------------";
+            std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
             currentState = GameState::GAME_OVER; 
             return;
         }
@@ -119,7 +125,9 @@ void Game::update() {
 
     // check Self-Collision
     if (snake->checkCollision(nextX, nextY)) {
-        std::cout << "Game Over! You bit yourself. Score: " << score->getScore() << std::endl;
+        std::cout << "Game Over! You bit yourself. Score: " << score->getScore();
+        std::cout << "\n---------------------------";
+        std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
         currentState = GameState::GAME_OVER; 
         return;
     }
@@ -145,19 +153,19 @@ void Game::render() {
                 drawQuad(x, y, 0.0f, 0.4f, 0.8f); 
             }
         }
-    } 
+    }
     else if (currentState == GameState::PLAYING) {
         // Draw Map dynamically based on width and height
         for (int x = 0; x < mapWidth; x++) {
             for (int y = 0; y < mapHeight; y++) {
                 if ((x+y) % 2 == 0) {
-                    drawQuad(x, y, 0.20f, 0.20f, 0.20f);
+                    drawQuad(x, y, 0.20f, 0.20f, 0.20f); // Differend hues of gray
                 }
                 else {
-                    drawQuad(x, y, 0.25f, 0.25f, 0.25f);
+                    drawQuad(x, y, 0.25f, 0.25f, 0.25f); // used to see grid better
                 }
                 
-            }
+            } 
         }
 
         drawQuad(currentFoodX, currentFoodY, 1.0f, 0.0f, 0.0f); 
