@@ -150,7 +150,13 @@ void Game::render() {
         // Draw Map dynamically based on width and height
         for (int x = 0; x < mapWidth; x++) {
             for (int y = 0; y < mapHeight; y++) {
-                drawQuad(x, y, 0.2f, 0.2f, 0.2f);
+                if ((x+y) % 2 == 0) {
+                    drawQuad(x, y, 0.20f, 0.20f, 0.20f);
+                }
+                else {
+                    drawQuad(x, y, 0.25f, 0.25f, 0.25f);
+                }
+                
             }
         }
 
