@@ -27,10 +27,15 @@ ifeq ($(OS),Windows_NT)
     # Windows settings
     TARGET = Snake.exe
     LDFLAGS = -L./lib -lglfw3dll -lopengl32 -lgdi32
-else
+else ifeq ($(shell uname -s),Darwin)
     # macOS settings
     TARGET = Snake.out
     LDFLAGS = -L/opt/homebrew/lib -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+
+else 
+    TARGET = Snake.out
+    LDFLAGS = -lglfw -lGL -ldl -lpthread 
+
 endif
 
 

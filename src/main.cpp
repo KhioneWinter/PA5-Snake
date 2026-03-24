@@ -7,7 +7,7 @@ using namespace std;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    (void)window;
+    (void)window;  // Suppress unused parameter warning
     glViewport(0, 0, width, height);
 }
 
