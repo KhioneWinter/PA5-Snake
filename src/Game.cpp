@@ -148,9 +148,13 @@ void Game::update() {
 void Game::render() {
     if (currentState == GameState::START_SCREEN) {
         // Draw a blue pattern for Start Screen
-        for(int x = mapWidth / 4; x < (mapWidth / 4) * 3; x++) {
-            for(int y = mapHeight / 4; y < (mapHeight / 4) * 3; y++) {
-                drawQuad(x, y, 0.0f, 0.4f, 0.8f); 
+        int setValue = 6;
+        if (mapWidth == 30 && mapHeight == 30) {
+            setValue = 5; // Fixes so the big map is bigger then the medium map
+        }
+        for(int x = mapWidth / setValue; x < (mapWidth / setValue) * 4; x++) {
+            for(int y = mapHeight / setValue; y < (mapHeight / setValue) * 4; y++) {
+                drawQuad(x, y, 0.0f, 0.4f, 0.8f); // Colors blue
             }
         }
     }
