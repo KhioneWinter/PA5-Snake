@@ -60,7 +60,16 @@ void Game::start() {
 }
 
 void Game::handleInput(GLFWwindow* window) {
-    if (currentState == GameState::START_SCREEN || currentState == GameState::GAME_OVER) {
+    if (currentState == GameState::GAME_OVER) {
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { // Allows user to restart game
+            start(); 
+        }
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { // Allows users to quit the game
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        }
+        return; // any other input
+    }
+    if (currentState == GameState::START_SCREEN) {
         
         // settings bindings
         if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && mapWidth != 10) { mapWidth = 12; mapHeight = 10; std::cout << "Selected: SMALL MAP\n"; }
