@@ -52,8 +52,6 @@ public:
     bool wrapAround;
 
     // track food and movement
-    int currentFoodX;
-    int currentFoodY;
     int dx;
     int dy;
 
