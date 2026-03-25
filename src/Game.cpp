@@ -79,7 +79,12 @@ void Game::handleInput(GLFWwindow* window) {
         // start Game
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
             delete map; delete snake; delete score; // clean up old game if restarting
-            
+            // clean up old food
+            for (Food* f : activeFoods) { delete f; }
+            activeFoods.clear();
+
+
+            // initialize new game objects
             map = new Map(mapWidth, mapHeight);
             snake = new Snake(mapWidth / 2, mapHeight / 2); // Start exactly in the middle!
             score = new Score(0);
@@ -143,7 +148,9 @@ void Game::update() {
     // Move the snake
     snake->move(dx, dy);
 
+
     // Check Food Collisions
+    bool ateFood = false; // Flag to track if we need to spawn food
     for (auto it = activeFoods.begin(); it != activeFoods.end(); ) {
         if (snake->getX() == (*it)->x && snake->getY() == (*it)->y) {
             Food* eatenFood = *it;
@@ -161,13 +168,14 @@ void Game::update() {
                 }
                 std::cout << std::endl;
 
-                spawnRandomFood(); // Spawn new regular food
+                ateFood = true; // Mark that we need to spawn food
             }
             
             delete eatenFood;
-            it = activeFoods.erase(it);
+            it = activeFoods.erase(it); // remove eaten food from the list
+            break; // snake can only eat one food at a time
         } else {
-            ++it;
+            it++;
         }
     }
     
@@ -178,6 +186,8 @@ void Game::update() {
         currentState = GameState::GAME_OVER;
         return;
     }
+
+    if (ateFood) { spawnRandomFood();  } // only spawn food if we ate something (don't want too much food on the map)
 
 }
 
