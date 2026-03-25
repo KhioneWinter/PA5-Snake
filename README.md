@@ -29,6 +29,10 @@ cmake -- build
 
 ## Compilation and Running the Game!!
 
+### Libraries required:
+- OpenGL
+- glfw (mac: `brew install glfw`) (TODO brynhildur/SARA ég vtk hvað þið þurftuð að download-a)
+
 ### Compile walk through:
 | mac               | windows           |
 | ----------------- | ----------------- |
