@@ -81,7 +81,7 @@ void Game::handleInput(GLFWwindow* window) {
             snake = new Snake(mapWidth / 2, mapHeight / 2); // Start exactly in the middle!
             score = new Score(0);
             dx = 1; dy = 0;
-            map->spawnFood(currentFoodX, currentFoodY);
+            spawnRandomFood();
             
             currentState = GameState::PLAYING;
             std::cout << "\nGame started! Use Arrow Keys to move." << std::endl;
@@ -195,14 +195,25 @@ void Game::render() {
                 
             } 
         }
-
-        drawQuad(currentFoodX, currentFoodY, 1.0f, 0.0f, 0.0f); 
-
-        for (const auto& segment : snake->getBody()) {
-            drawQuad(segment.first, segment.second, 0.0f, 0.8f, 0.0f); 
+        // Draw Food
+        // drawQuad(currentFoodX, currentFoodY, 1.0f, 0.0f, 0.0f); 
+        // draw all food
+        for (Food* f : activeFoods) {
+            drawQuad(f->x, f->y, f->r, f->g, f->b);
         }
 
-        drawQuad(snake->getX(), snake->getY(), 0.0f, 1.0f, 0.0f); 
+        // draw Snake Body
+        for (const auto& segment : snake->getBody()) {
+            drawQuad(segment.first, segment.second, snake->getR(), snake->getG(), snake->getB()); 
+        }
+
+        // for (const auto& segment : snake->getBody()) {
+        //     drawQuad(segment.first, segment.second, 0.0f, 0.8f, 0.0f); 
+        // }
+        // draw Snake Head  (lighter than body)
+        drawQuad(snake->getX(), snake->getY(), snake->getR() + 0.2f, snake->getG() + 0.2f, snake->getB() + 0.2f);
+
+        // drawQuad(snake->getX(), snake->getY(), 0.0f, 1.0f, 0.0f); 
     } 
     else if (currentState == GameState::GAME_OVER) {
         // Draw red Game Over screen
