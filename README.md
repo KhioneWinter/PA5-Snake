@@ -1,5 +1,5 @@
 # PA5-Snake
-We are going to implement Snake using OpenGL
+We are going to implement the classic Snake game using OpenGL.
 
 -----------------------------------------
 Students:
@@ -30,7 +30,7 @@ cmake -- build
 ## Compilation and Running the Game!!
 
 ### Libraries required:
-- OpenGL
+- OpenGL (at least ver 4.1)
 - glfw (mac: `brew install glfw`) (TODO brynhildur/SARA ég vtk hvað þið þurftuð að download-a)
 
 ### Compile walk through:
