@@ -252,16 +252,16 @@ void Game::render() {
         }
 
         // draw text over the background
-        renderText("SNAKE", 300.0f, 200.0f, 2.0f, 0.0f, 1.0f, 0.0f); // Big Green Text
+        renderText("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
         // controls
-        renderText("Map size:", 350.0f, 250.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow
-        renderText("Press 1 for Small", 270.0f, 280.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
-        renderText("Press 2 for Medium", 270.0f, 310.0f, 1.0f, 1.0f, 1.0f, 0.0f);
-        renderText("Press 3 for Large", 270.0f, 340.0f, 1.0f, 1.0f, 1.0f, 0.0f);
+        renderText("Map size:", 10.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow
+        renderText("Press 1 for Small", 10.0f, 55.0f, 0.8f, 1.0f, 1.0f, 0.0f); 
+        renderText("Press 2 for Medium", 10.0f, 80.0f, 0.8f, 1.0f, 1.0f, 0.0f);
+        renderText("Press 3 for Large", 10.0f, 105.0f, 0.8f, 1.0f, 1.0f, 0.0f);
 
         // instructions
-        renderText("Press SPACE to start", 250.0f, 400.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
-        renderText("Press Q to quit", 270.0f, 440.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        renderText("Press SPACE to start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
+        renderText("Press Q to quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
 
     else if (currentState == GameState::PLAYING) {
