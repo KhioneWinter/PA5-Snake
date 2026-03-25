@@ -36,6 +36,9 @@ Game::Game() : currentState(GameState::START_SCREEN), mapWidth(20), mapHeight(20
     map = nullptr;
     snake = nullptr; 
     score = nullptr;
+
+    // random seed
+    randEngine.seed(std::chrono::system_clock::now().time_since_epoch().count());
 }
 
 Game::~Game() {
@@ -104,6 +107,8 @@ void Game::handleInput(GLFWwindow* window) {
 void Game::update() {
     if (currentState != GameState::PLAYING) return;
 
+    snake->updateBoost(); // decrement boost timer if active
+
     // calculate where the snake is trying to go
     int nextX = snake->getX() + dx;
     int nextY = snake->getY() + dy;
@@ -138,21 +143,25 @@ void Game::update() {
     // Move the snake
     snake->move(dx, dy);
 
-    // Check Food Collision
+    // Check Food Collisions
     for (auto it = activeFoods.begin(); it != activeFoods.end(); ) {
         if (snake->getX() == (*it)->x && snake->getY() == (*it)->y) {
             Food* eatenFood = *it;
-            eatenFood->applyEffect(*snake);
+            eatenFood->applyEffect(*snake); 
             
             if (eatenFood->isBomb()) {
                 std::cout << "KABOOM! You ate a bomb!" << std::endl;
-            } else if (dynamic_cast<SpeedFood*>(eatenFood)) {
-                std::cout << "Zoom! Speed increased!" << std::endl;
-            } else if (dynamic_cast<ColorFood*>(eatenFood)) {
-                std::cout << "Color changed! Looking good!" << std::endl;
             } else {
-                score->increase(10);
-                spawnRandomFood(); // Spawn new food
+                int pointsGained = 10 * snake->getScoreMultiplier();
+                score->increase(pointsGained);
+                
+                std::cout << "Score: " << score->getScore();
+                if (snake->getScoreMultiplier() > 1) {
+                    std::cout << " (BOOST ACTIVE: " << snake->getScoreMultiplier() << "x!)";
+                }
+                std::cout << std::endl;
+
+                spawnRandomFood(); // Spawn new regular food
             }
             
             delete eatenFood;
@@ -161,7 +170,7 @@ void Game::update() {
             ++it;
         }
     }
-
+    
     // Check if the snake died from a bomb
     if (snake->isDead()) {
         std::cout << "\n---------------------------";
@@ -293,20 +302,28 @@ void Game::drawQuad(int gridX, int gridY, float r, float g, float b) {
 }
 
 
-void Game::spawnRandomFood() {
+void Game::spawnRandomFood(bool forcePositive) {
     int fx, fy;
     map->spawnFood(fx, fy); // get location on map for new food
     
-    int chance = std::rand() % 100;
+    int chance = randEngine() % 100; // custome random engine
     
-    if (chance < 10) {
-        activeFoods.push_back(new BombFood(fx, fy)); // 10% chance for a Bomb
-    } 
+
+    if (!forcePositive && chance < 15) {
+        activeFoods.push_back(new BombFood(fx, fy)); 
+        
+        // RULE: There MUST always be a positive food on the board
+        spawnRandomFood(true);  // immediatly spawn positive food
+    }
+
     else if (chance < 30) {
-        activeFoods.push_back(new SpeedFood(fx, fy)); // 20% chance for Speed
+        activeFoods.push_back(new SpeedFood(fx, fy)); // cyan color
     } 
-    else if (chance < 50) {
-        // 20% chance for Color Food
+    else if (chance < 45) {
+        activeFoods.push_back(new ScoreIncreaseFood(fx, fy, 1.0f, 0.4f, 0.7f)); // pink color
+    }
+    else if (chance < 60) {
+        // spawn color food with random color
         float colors[5][3] = {
             {0.0f, 0.0f, 1.0f}, // Blue
             {0.5f, 0.0f, 0.5f}, // Purple
@@ -314,10 +331,10 @@ void Game::spawnRandomFood() {
             {0.0f, 1.0f, 0.0f}, // Green
             {1.0f, 1.0f, 0.0f}  // Yellow
         };
-        int c = std::rand() % 5;
+        int c = randEngine() % 5;
         activeFoods.push_back(new ColorFood(fx, fy, colors[c][0], colors[c][1], colors[c][2]));
     } 
     else {
-        activeFoods.push_back(new NormalFood(fx, fy)); // 50% chance for Normal Food
+        activeFoods.push_back(new NormalFood(fx, fy));
     }
 }

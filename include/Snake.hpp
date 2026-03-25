@@ -10,6 +10,9 @@ private:
     int length;
     int speed;
 
+    int scoreMultiplier = 1; // default 1 point per food
+    int boostTimer = 0;      // How many ticks the boost lasts
+
     int directionX, directionY; // current movement direction
 
     // TODO i dont know -- fix
@@ -22,9 +25,9 @@ public:
     Snake(int x, int y) : x(x), y(y), length(1), speed(1) {}
     ~Snake() = default;
 
-    void move(int dx, int dy); // TODO implement
-    void grow(); // TODO implement
-    bool checkCollision(int newX, int newY); // TODO implement
+    void move(int dx, int dy);
+    void grow();
+    bool checkCollision(int newX, int newY);
 
     void update();
     void render();
@@ -37,8 +40,20 @@ public:
     void kill() { dead = true; }
     bool isDead() const { return dead; }
     
+    // booost management
     void increaseSpeed() { speed++; }
+    void applyScoreBoost(int multiplier, int duration) { scoreMultiplier = multiplier; boostTimer = duration; }
+    int getScoreMultiplier() const { return scoreMultiplier; }
+    void updateBoost() {
+        if (boostTimer > 0) {
+            boostTimer--; // count down
+            if (boostTimer == 0) {
+                scoreMultiplier = 1; // reset to normal when time runs out
+            }
+        }
+    }
     
+    // color management
     void setColor(float newR, float newG, float newB) { r = newR; g = newG; b = newB; }
     float getR() const { return r; }
     float getG() const { return g; }

@@ -27,13 +27,15 @@ public:
     void applyEffect(Snake& snake) override;
 };
 
-// Score increase food - increases score by X points for Y time (pink)
+// Score increase food - increases score multiplier for Y time
 class ScoreIncreaseFood : public Food {
 public:
-    int increaseAmount; // how much score to increase
+    int increaseAmount; // score multiplier increase
     int duration;       // how long the effect lasts in game ticks
 
-    ScoreIncreaseFood(int x, int y, float r, float g, float b) : Food(x, y, r, g, b) {}
+    ScoreIncreaseFood(int x, int y, float r, float g, float b) 
+        : Food(x, y, r, g, b), increaseAmount(3), duration(50) {} // 3x points for 50 ticks
+        
     void applyEffect(Snake& snake) override;
 };
 

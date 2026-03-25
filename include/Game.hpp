@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <vector>
+#include <random> // for random engine
 #include "Food.hpp"
 
 class Map;
@@ -48,8 +49,9 @@ public:
     int dy;
 
     // food management
+    std::subtract_with_carry_engine<uint32_t, 24, 10, 24> randEngine;
     std::vector<Food*> activeFoods;
-    void spawnRandomFood();
+    void spawnRandomFood(bool forcePositive = false); // positive meaning (GOOD FOOD)
 
     // game loop functions
     void start();

@@ -18,10 +18,11 @@ void SpeedFood::applyEffect(Snake& snake) {
     snake.increaseSpeed();
 }
 
-// Score increase food - increases score that fruit give you for Y time
+// Score increase food - increases score multiplier for Y time
 void ScoreIncreaseFood::applyEffect(Snake& snake) {
     snake.grow();
-    snake.increaseScore(this->increaseAmount);
+    // Apply a 3x multiplier that lasts for 50 frames!
+    snake.applyScoreBoost(increaseAmount, duration); 
 }
 
 // Color food - changes your body color
