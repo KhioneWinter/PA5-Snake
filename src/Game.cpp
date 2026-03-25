@@ -1,12 +1,16 @@
+#define STB_TRUETYPE_IMPLEMENTATION // for text rendering
+
 #include "Game.hpp"
 #include "Map.hpp"
 #include "Snake.hpp"
 #include "Score.hpp"
 #include "NormalFood.hpp"
 #include "SpecialFood.hpp"
+
 #include <cstdlib>
 #include <iostream>
-#include <chrono>
+#include <chrono>  // for chrono random seed
+#include <stdio.h> // for FILE reading
 
 
 // Very basic shaders to draw solid colored squares
@@ -27,6 +31,29 @@ const char* fragmentShaderSource = "#version 330 core\n"
     "   FragColor = vec4(color, 1.0f);\n"
     "}\n\0";
 
+// shaders for text rendering
+const char* textVertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec4 vertex;\n" // <vec2 pos, vec2 tex>
+    "out vec2 TexCoords;\n"
+    "uniform vec2 screenSize;\n"
+    "void main()\n"
+    "{\n"
+    "   float ndcX = (vertex.x / screenSize.x) * 2.0 - 1.0;\n"
+    "   float ndcY = 1.0 - (vertex.y / screenSize.y) * 2.0;\n" // Invert Y 
+    "   gl_Position = vec4(ndcX, ndcY, 0.0, 1.0);\n"
+    "   TexCoords = vertex.zw;\n"
+    "}\0";
+
+const char* textFragmentShaderSource = "#version 330 core\n"
+    "in vec2 TexCoords;\n"
+    "out vec4 FragColor;\n"
+    "uniform sampler2D text;\n"
+    "uniform vec3 textColor;\n"
+    "void main()\n"
+    "{\n"
+    "   vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n" 
+    "   FragColor = vec4(textColor, 1.0) * sampled;\n"
+    "}\n\0";
 
 
 
@@ -51,6 +78,7 @@ Game::~Game() {
 
 void Game::start() {
     setupOpenGL();
+    setupTextRendering();
     currentState = GameState::START_SCREEN;
 
     std::cout << "===========================" << std::endl;
@@ -222,7 +250,12 @@ void Game::render() {
                 drawQuad(x, y, 0.0f, 0.4f, 0.8f); // Colors blue
             }
         }
+
+        // draw text over the background
+        renderText("SNAKE", 300.0f, 200.0f, 2.0f, 0.0f, 1.0f, 0.0f); // Big Green Text
+        renderText("Press SPACE to start", 250.0f, 300.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
+
     else if (currentState == GameState::PLAYING) {
         // Draw Map dynamically based on width and height
         for (int x = 0; x < mapWidth; x++) {
@@ -237,25 +270,20 @@ void Game::render() {
             } 
         }
         // Draw Food
-        // drawQuad(currentFoodX, currentFoodY, 1.0f, 0.0f, 0.0f); 
-        // draw all food
         for (Food* f : activeFoods) {
             drawQuad(f->x, f->y, f->r, f->g, f->b);
         }
 
         // draw Snake Body
-        for (const auto& segment : snake->getBody()) {
-            drawQuad(segment.first, segment.second, snake->getR(), snake->getG(), snake->getB()); 
-        }
-
-        // for (const auto& segment : snake->getBody()) {
-        //     drawQuad(segment.first, segment.second, 0.0f, 0.8f, 0.0f); 
-        // }
-        // draw Snake Head  (lighter than body)
+        for (const auto& segment : snake->getBody()) { drawQuad(segment.first, segment.second, snake->getR(), snake->getG(), snake->getB());  }
+        // snake head (lighter than body)
         drawQuad(snake->getX(), snake->getY(), snake->getR() + 0.2f, snake->getG() + 0.2f, snake->getB() + 0.2f);
 
-        // drawQuad(snake->getX(), snake->getY(), 0.0f, 1.0f, 0.0f); 
+    
+        // draw Score at the top left
+        renderText("SCORE: " + std::to_string(score->getScore()), 20.0f, 40.0f, 1.0f, 1.0f, 1.0f, 1.0f);
     } 
+
     else if (currentState == GameState::GAME_OVER) {
         // Draw red Game Over screen
         for(int x = 0; x < mapWidth; x++) {
@@ -263,6 +291,11 @@ void Game::render() {
                 drawQuad(x, y, 0.5f, 0.0f, 0.0f);
             }
         }
+
+        // draw Game Over Text
+        renderText("GAME OVER", 230.0f, 250.0f, 2.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
+        renderText("Final Score: " + std::to_string(score->getScore()), 300.0f, 320.0f, 1.0f, 1.0f, 1.0f, 1.0f); // Final Score in white
+        renderText("Press SPACE to try again", 220.0f, 400.0f, 1.0f, 1.0f, 1.0f, 1.0f);
     }
 }
 
@@ -327,6 +360,101 @@ void Game::drawQuad(int gridX, int gridY, float r, float g, float b) {
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void Game::setupTextRendering() {
+    // compile Shaders
+    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &textVertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+
+    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &textFragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+
+    textShaderProgram = glCreateProgram();
+    glAttachShader(textShaderProgram, vertexShader);
+    glAttachShader(textShaderProgram, fragmentShader);
+    glLinkProgram(textShaderProgram);
+
+    glDeleteShader(vertexShader); glDeleteShader(fragmentShader);
+
+    // Load Font and Bake Texture
+    unsigned char* ttf_buffer = new unsigned char[1<<20];
+    FILE* f = fopen("Micro5-Regular.ttf", "rb");
+    if (!f) {
+        std::cout << "CRITICAL ERROR: Could not find font.ttf in your root folder!" << std::endl;
+    } else {
+        fread(ttf_buffer, 1, 1<<20, f);
+        fclose(f);
+        
+        unsigned char* temp_bitmap = new unsigned char[512*512];
+        stbtt_BakeFontBitmap(ttf_buffer, 0, 32.0, temp_bitmap, 512, 512, 32, 96, cdata);
+        
+        glGenTextures(1, &fontTexture);
+        glBindTexture(GL_TEXTURE_2D, fontTexture);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 512, 512, 0, GL_RED, GL_UNSIGNED_BYTE, temp_bitmap);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        
+        delete[] temp_bitmap;
+    }
+    delete[] ttf_buffer;
+
+    // Setup VAO/VBO
+    glGenVertexArrays(1, &textVAO);
+    glGenBuffers(1, &textVBO);
+    glBindVertexArray(textVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0); glBindVertexArray(0);
+}
+
+void Game::renderText(const std::string& text, float x, float y, float scale, float r, float g, float b) {
+    glUseProgram(textShaderProgram);
+    glUniform3f(glGetUniformLocation(textShaderProgram, "textColor"), r, g, b);
+
+    
+    // dynamically get the real screen size for Mac
+    GLint vp[4];
+    glGetIntegerv(GL_VIEWPORT, vp);
+    glUniform2f(glGetUniformLocation(textShaderProgram, "screenSize"), (float)vp[2], (float)vp[3]); 
+    
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, fontTexture);
+    glBindVertexArray(textVAO);
+    
+    // Enable blending for transparent text backgrounds
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    for (char raw_c : text) {
+        unsigned char c = (unsigned char)raw_c; // Prevents the Mac ARM warning
+        if (c >= 32 && c < 128) {
+            stbtt_aligned_quad q;
+            float dummyX = 0; float dummyY = 0;
+            
+            stbtt_GetBakedQuad(cdata, 512, 512, c - 32, &dummyX, &dummyY, &q, 1);
+            
+            float x0 = x + q.x0 * scale; float y0 = y + q.y0 * scale;
+            float x1 = x + q.x1 * scale; float y1 = y + q.y1 * scale;
+            
+            float vertices[6][4] = {
+                { x0, y0, q.s0, q.t0 }, { x1, y0, q.s1, q.t0 }, { x1, y1, q.s1, q.t1 },
+                { x1, y1, q.s1, q.t1 }, { x0, y1, q.s0, q.t1 }, { x0, y0, q.s0, q.t0 }
+            };
+            
+            x += dummyX * scale; // Move cursor right
+            
+            glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
+    }
+    glBindVertexArray(0);
+    glDisable(GL_BLEND);
 }
 
 

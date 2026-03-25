@@ -3,6 +3,9 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include "stb_truetype.h" // text rendering
+
 #include <vector>
 #include <random> // for random engine
 #include "Food.hpp"
@@ -26,6 +29,12 @@ private:
     unsigned int VAO, VBO;
     void setupOpenGL();
     void drawQuad(int x, int y, float r, float g, float b);
+
+    // text rendering helpers
+    unsigned int textShaderProgram;
+    unsigned int textVAO, textVBO;
+    unsigned int fontTexture;
+    stbtt_bakedchar cdata[96]; // holds the character coordinates
 
 public:
     Game();
@@ -52,6 +61,10 @@ public:
     std::subtract_with_carry_engine<uint32_t, 24, 10, 24> randEngine;
     std::vector<Food*> activeFoods;
     void spawnRandomFood(bool forcePositive = false); // positive meaning (GOOD FOOD)
+
+    // text rendering funcs
+    void setupTextRendering();
+    void renderText(const std::string& text, float x, float y, float scale, float r, float g, float b);
 
     // game loop functions
     void start();
