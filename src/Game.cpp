@@ -157,7 +157,7 @@ void Game::update() {
             eatenFood->applyEffect(*snake); 
             
             if (eatenFood->isBomb()) {
-                std::cout << "KABOOM! You ate a bomb!" << std::endl;
+                std::cout << "\nKABOOM! You ate a bomb!" << std::endl;
             } else {
                 int pointsGained = 10 * snake->getScoreMultiplier();
                 score->increase(pointsGained);
