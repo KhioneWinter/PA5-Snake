@@ -9,6 +9,22 @@ Students:
 - Herdís Heiða Jing Guðjohnsen
 - Sara Elísabet Jónsdóttir
 
+
+// bara var á töflunni
+#T-403-FORC - group 27
+
+Teachers:
+- Atli Fannar <atlif@ru.is>
+- Konráð Elí <konrad21@ru.is>
+- Teitur Hrólfur <teitur23@ru.is>
+
+#compile/run
+""" 
+cd build
+cmake ..
+cmake -- build
+"""
+
 ------------------------------------------
 
 **We used inheretance while implementing our game**

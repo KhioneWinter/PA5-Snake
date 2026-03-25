@@ -45,7 +45,7 @@ Game::~Game() {
 void Game::start() {
     setupOpenGL();
     currentState = GameState::START_SCREEN;
-    
+
     std::cout << "===========================" << std::endl;
     std::cout << "       SNAKE GAME          " << std::endl;
     std::cout << "===========================" << std::endl;
@@ -77,6 +77,7 @@ void Game::handleInput(GLFWwindow* window) {
             map = new Map(mapWidth, mapHeight);
             snake = new Snake(mapWidth / 2, mapHeight / 2); // Start exactly in the middle!
             score = new Score(0);
+            score -> startTime();
             dx = 1; dy = 0;
             map->spawnFood(currentFoodX, currentFoodY);
             
@@ -115,6 +116,7 @@ void Game::update() {
     } else {
         // Solid wall logic: die if we go out of bounds
         if (!map->isInside(nextX, nextY)) {
+            scoreCalculator();
             std::cout << "Game Over! Hit a wall. Score: " << score->getScore();
             std::cout << "\n---------------------------";
             std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
@@ -125,6 +127,7 @@ void Game::update() {
 
     // check Self-Collision
     if (snake->checkCollision(nextX, nextY)) {
+        scoreCalculator();
         std::cout << "Game Over! You bit yourself. Score: " << score->getScore();
         std::cout << "\n---------------------------";
         std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
@@ -251,4 +254,12 @@ void Game::drawQuad(int gridX, int gridY, float r, float g, float b) {
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+
+void Game::scoreCalculator() {
+    // Calls all necisery functions from Score file to calculate final score
+    score -> endTime();
+    score -> calculateTime();
+    score -> timeAddedToFinal();
 }
