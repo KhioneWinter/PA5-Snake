@@ -146,6 +146,10 @@ void Game::update() {
             
             if (eatenFood->isBomb()) {
                 std::cout << "KABOOM! You ate a bomb!" << std::endl;
+            } else if (dynamic_cast<SpeedFood*>(eatenFood)) {
+                std::cout << "Zoom! Speed increased!" << std::endl;
+            } else if (dynamic_cast<ColorFood*>(eatenFood)) {
+                std::cout << "Color changed! Looking good!" << std::endl;
             } else {
                 score->increase(10);
                 spawnRandomFood(); // Spawn new food

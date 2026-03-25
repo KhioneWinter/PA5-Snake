@@ -41,7 +41,8 @@ endif
 
 
 SRC = src/main.cpp src/glad.c \
-    src/Game.cpp src/Snake.cpp src/Map.cpp src/Score.cpp
+    src/Game.cpp src/Snake.cpp src/Map.cpp src/Score.cpp \
+    src/Food.cpp
 
 
 all: $(TARGET)
