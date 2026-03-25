@@ -6,10 +6,10 @@
 class Snake;
 
 
-// Bomb - kills the snake on collision (black color)
+// Bomb - kills the snake on collision (orange color)
 class BombFood : public Food {
 public:
-    BombFood(int x, int y) : Food(x, y, 0.0f, 0.0f, 0.0f) {}
+    BombFood(int x, int y) : Food(x, y, 1f, 0.5f, 0.0f) {}
     void applyEffect(Snake& snake) override;
     bool isBomb() const override { return true; }
 };
