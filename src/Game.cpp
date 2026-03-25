@@ -56,16 +56,16 @@ void Game::start() {
     std::cout << " Press B : Bounded Walls (Die on hit - Default)" << std::endl;
     std::cout << " Press L : Loop Walls (Wrap around)" << std::endl;
     std::cout << "---------------------------" << std::endl;
-    std::cout << " Press SPACE to start!     " << std::endl;
+    std::cout << " Press SPACE to start!     \n" << std::endl;
 }
 
 void Game::handleInput(GLFWwindow* window) {
     if (currentState == GameState::START_SCREEN || currentState == GameState::GAME_OVER) {
         
         // settings bindings
-        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && mapWidth != 10) { mapWidth = 10; mapHeight = 10; std::cout << "Selected: SMALL MAP\n"; }
-        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && mapWidth != 20) { mapWidth = 20; mapHeight = 20; std::cout << "Selected: MEDIUM MAP\n"; }
-        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && mapWidth != 30) { mapWidth = 30; mapHeight = 30; std::cout << "Selected: LARGE MAP\n"; }
+        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && mapWidth != 10) { mapWidth = 12; mapHeight = 10; std::cout << "Selected: SMALL MAP\n"; }
+        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && mapWidth != 20) { mapWidth = 24; mapHeight = 20; std::cout << "Selected: MEDIUM MAP\n"; }
+        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && mapWidth != 30) { mapWidth = 36; mapHeight = 30; std::cout << "Selected: LARGE MAP\n"; }
         
         if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && wrapAround == true)  { wrapAround = false; std::cout << "Selected: BOUNDED WALLS\n"; }
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && wrapAround == false) { wrapAround = true; std::cout << "Selected: LOOP WALLS\n"; }
