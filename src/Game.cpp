@@ -139,12 +139,33 @@ void Game::update() {
     snake->move(dx, dy);
 
     // Check Food Collision
-    if (snake->getX() == currentFoodX && snake->getY() == currentFoodY) {
-        snake->grow();
-        score->increase(10);
-        map->spawnFood(currentFoodX, currentFoodY); 
-        std::cout << "Score: " << score->getScore() << std::endl;
+    for (auto it = activeFoods.begin(); it != activeFoods.end(); ) {
+        if (snake->getX() == (*it)->x && snake->getY() == (*it)->y) {
+            Food* eatenFood = *it;
+            eatenFood->applyEffect(*snake);
+            
+            if (eatenFood->isBomb()) {
+                std::cout << "KABOOM! You ate a bomb!" << std::endl;
+            } else {
+                score->increase(10);
+                spawnRandomFood(); // Spawn new food
+            }
+            
+            delete eatenFood;
+            it = activeFoods.erase(it);
+        } else {
+            ++it;
+        }
     }
+
+    // Check if the snake died from a bomb
+    if (snake->isDead()) {
+        std::cout << "\n---------------------------";
+        std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
+        currentState = GameState::GAME_OVER;
+        return;
+    }
+
 }
 
 
