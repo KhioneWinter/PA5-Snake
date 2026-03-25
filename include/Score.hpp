@@ -10,6 +10,7 @@ private:
     time_t start;
     time_t end;
     float multiplyer;
+    int foodAmount = 0;
 
 public:
     Score(int s);
@@ -20,6 +21,8 @@ public:
     void increase(int amount);
     void reset();
     void timeAddedToFinal();
+    int getFoodAmount();
+    void incrementFoodAmount();
 };
 
 

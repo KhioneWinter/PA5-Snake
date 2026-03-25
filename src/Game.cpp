@@ -208,7 +208,7 @@ void Game::update() {
                     std::cout << " (BOOST ACTIVE: " << snake->getScoreMultiplier() << "x!)";
                 }
                 std::cout << std::endl;
-
+                score -> incrementFoodAmount();
                 ateFood = true; // Mark that we need to spawn food
             }
             
@@ -308,7 +308,7 @@ void Game::render() {
         // draw Game Over Text
         renderText("GAME OVER", 230.0f, 200.0f, 3.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
         renderText("Final Score: " + std::to_string(score->getScore()), 310.0f, 230.0f, 1.0f, 1.0f, 1.0f, 1.0f); // Final Score in white
-        renderText("Fruit Eaten: ", 310.0f, 260.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        renderText("Fruit Eaten: " + std::to_string(score -> getFoodAmount()), 310.0f, 260.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         renderText("Press ---- to save score", 260.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         renderText("Press SPACE to try again", 200.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f);
     }

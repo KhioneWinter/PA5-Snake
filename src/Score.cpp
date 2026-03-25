@@ -44,3 +44,11 @@ void Score::reset() {
     // Resets score for new game
     score = 0; 
 }
+
+int Score::getFoodAmount() {
+    return foodAmount;
+}
+
+void Score::incrementFoodAmount() {
+    foodAmount++;
+}
