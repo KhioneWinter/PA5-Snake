@@ -33,6 +33,11 @@ cmake -- build
 - OpenGL (at least ver 4.1)
 - glfw (mac: `brew install glfw`) (TODO brynhildur/SARA ég vtk hvað þið þurftuð að download-a)
 
+### Before compiling:
+
+1. Download GLFW package from https://www.glfw.org/download.html according to your operating system.
+2. Locate the `lib` folder inside it and copy the `libglfw3` file to the root directory of this project.
+
 ### Compile walk through:
 | mac               | windows           |
 | ----------------- | ----------------- |
