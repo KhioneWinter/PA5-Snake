@@ -36,7 +36,7 @@ cmake -- build
 ### Before compiling:
 
 1. Download GLFW package from https://www.glfw.org/download.html according to your operating system.
-2. Locate the `lib` folder inside it and copy the `libglfw3` file to the root directory of this project.
+2. Locate the `lib` folder inside it and copy the `libglfw3` file to the root directory of this project (replace the existing one if it exists).
 
 ### Compile walk through:
 | mac               | windows           |
