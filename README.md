@@ -88,19 +88,19 @@ SnakeGame/
 ├── Score.h / Score.cpp
 ├── Leaderboard.h / Leaderboard.cpp
 │
-├── glad/       (OpenGL loader)
-├── GLFW/       (GLFW header files)
-├── KHR/        (OpenGL header files)
-├── stb_truetype.h (font rendering)
+├── glad/           # OpenGL loader
+├── GLFW/           # GLFW header files
+├── KHR/            # OpenGL header files
+├── stb_truetype.h  # font rendering
 
 lib/ 
 │
-├── libglwf3.dylib (mac)
-├── libglwf3.dll.a (windows)
+├── libglwf3.dylib  # mac
+├── libglwf3.dll.a  # windows
 
 root-directory/ 
 │
-├── Micro5-Regular.ttf (font for text rendering)
+├── Micro5-Regular.ttf  # font for text rendering
 ├── README.md
 ├── Makefile
 ```
