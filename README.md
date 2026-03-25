@@ -67,8 +67,10 @@ make clean
 ---------------------------------------------------
 
 
-# Files Included in the Submission
+# Files and Class Diagram
 
+
+## File structure:
 ```bash
 SnakeGame/ 
 │
@@ -104,7 +106,7 @@ root-directory/
 ```
 
 
-
+## Class Diagram:
 ```mermaid
 classDiagram
 
