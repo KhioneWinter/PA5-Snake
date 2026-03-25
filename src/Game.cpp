@@ -161,10 +161,15 @@ void Game::render() {
     if (currentState == GameState::START_SCREEN) {
         // Draw a blue pattern for Start Screen
         int setValue = 6;
-        if (mapWidth == 30 && mapHeight == 30) {
-            setValue = 5; // Fixes so the big map is bigger then the medium map
+        float mult = 4.0;
+        if (mapWidth == 36 && mapHeight == 30) {
+            setValue = 5; // Fixes so the big map 
+            mult = 4.5;
         }
-        for(int x = mapWidth / setValue; x < (mapWidth / setValue) * 4; x++) {
+        if (mapWidth == 12 && mapHeight== 10) {
+            mult = 3.0; // Fixes so the small map 
+        }
+        for(int x = mapWidth / setValue; x < (mapWidth / setValue) * mult; x++) {
             for(int y = mapHeight / setValue; y < (mapHeight / setValue) * 4; y++) {
                 drawQuad(x, y, 0.0f, 0.4f, 0.8f); // Colors blue
             }
