@@ -33,13 +33,5 @@ public:
     void applyEffect(Snake& snake) override;
 };
 
-// Color Food - changes the snake's color (Dynamic Color)
-class ColorFood : public Food {
-public:
-    ColorFood(int x, int y, float r, float g, float b) : Food(x, y, r, g, b) {}
-    void applyEffect(Snake& snake) override;
-};
-
-
 
 #endif // SPECIAL_FOOD_HPP

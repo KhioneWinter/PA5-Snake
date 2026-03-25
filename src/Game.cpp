@@ -320,30 +320,21 @@ void Game::spawnRandomFood(bool forcePositive) {
     
 
     if (!forcePositive && chance < 15) {
+        // 15% change
         activeFoods.push_back(new BombFood(fx, fy)); 
-        
-        // RULE: There MUST always be a positive food on the board
-        spawnRandomFood(true);  // immediatly spawn positive food
+        spawnRandomFood(true);  // force a good food to spawn alongside it
     }
 
-    else if (chance < 30) {
+    else if (chance < 35) {
+        // 35-15 = 20% chance
         activeFoods.push_back(new SpeedFood(fx, fy)); // cyan color
     } 
-    else if (chance < 45) {
-        activeFoods.push_back(new ScoreIncreaseFood(fx, fy, 1.0f, 0.4f, 0.7f)); // pink color
-    }
     else if (chance < 60) {
-        // spawn color food with random color
-        float colors[5][3] = {
-            {0.0f, 0.0f, 1.0f}, // Blue
-            {0.5f, 0.0f, 0.5f}, // Purple
-            {1.0f, 0.4f, 0.7f}, // Pink
-            {1.0f, 1.0f, 0.0f}  // Yellow
-        };
-        int c = randEngine() % 5;
-        activeFoods.push_back(new ColorFood(fx, fy, colors[c][0], colors[c][1], colors[c][2]));
-    } 
+        // 60-35 = 25% chance
+        activeFoods.push_back(new ScoreIncreaseFood(fx, fy, 1.0f, 0.4f, 0.7f)); // snake turns pink when active
+    }
     else {
-        activeFoods.push_back(new NormalFood(fx, fy)); // default food red
+        activeFoods.push_back(new NormalFood(fx, fy));
     }
 }
+

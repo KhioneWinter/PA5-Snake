@@ -55,9 +55,9 @@ public:
     
     // color management
     void setColor(float newR, float newG, float newB) { r = newR; g = newG; b = newB; }
-    float getR() const { return r; }
-    float getG() const { return g; }
-    float getB() const { return b; }
+    float getR() const { return (scoreMultiplier > 1) ? 1.0f : r; }
+    float getG() const { return (scoreMultiplier > 1) ? 0.4f : g; }
+    float getB() const { return (scoreMultiplier > 1) ? 0.7f : b; }
 };
 
 #endif // SNAKE_HPP

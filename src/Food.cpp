@@ -24,9 +24,3 @@ void ScoreIncreaseFood::applyEffect(Snake& snake) {
     // Apply a 3x multiplier that lasts for 50 frames!
     snake.applyScoreBoost(increaseAmount, duration); 
 }
-
-// Color food - changes your body color
-void ColorFood::applyEffect(Snake& snake) {
-    snake.grow();
-    snake.setColor(this->r, this->g, this->b); // set snake to the fruit's color!
-}
