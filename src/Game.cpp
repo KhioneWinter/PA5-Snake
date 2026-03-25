@@ -264,6 +264,7 @@ void Game::render() {
         renderText("Press Q to quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
 
+
     else if (currentState == GameState::PLAYING) {
         // Draw Map dynamically based on width and height
         for (int x = 0; x < mapWidth; x++) {
@@ -277,18 +278,41 @@ void Game::render() {
                 
             } 
         }
-        // Draw Food
+        // ------------------ Draw Food ------------------
         for (Food* f : activeFoods) {
             drawQuad(f->x, f->y, f->r, f->g, f->b);
         }
 
-        // draw Snake Body
-        for (const auto& segment : snake->getBody()) { drawQuad(segment.first, segment.second, snake->getR(), snake->getG(), snake->getB());  }
-        // snake head (lighter than body)
-        drawQuad(snake->getX(), snake->getY(), snake->getR() + 0.2f, snake->getG() + 0.2f, snake->getB() + 0.2f);
+        // ------------------draw snake ------------
+        auto body = snake->getBody();
+        int totalSegments = body.size();
+
+        // draw snake body
+        for (int i = 0; i < totalSegments; ++i) {
+            float taper = 1.0f;
+            
+            // last 3 segments (the tail) will be skinnier
+            if (i > totalSegments - 4) taper = 1.0f - ((float)(i - (totalSegments - 4)) * 0.25f);
+
+            // adjust color and size based on how close we are to the tail
+            drawQuad(body[i].first, body[i].second, 
+                    snake->getR() * taper, 
+                    snake->getG() * taper, 
+                    snake->getB() * taper);
+        }
+
+        // draw snake head (lighter than body)
+        float headX = snake->getX();
+        float headY = snake->getY();
+        float r = snake->getR() + 0.2f;
+        float g = snake->getG() + 0.2f;
+        float b = snake->getB() + 0.2f;
+
+        drawQuad(headX, headY, r, g, b);
+        // ------------------------------------------------------------------
 
     
-        // draw Score (top left)
+        // ------------------ draw Score (top left) ------------------
         renderText("SCORE: " + std::to_string(score->getScore()), 20.0f, 40.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         
         // if boost acitve, show boost timer (bottom middle)
