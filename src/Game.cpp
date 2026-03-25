@@ -306,9 +306,11 @@ void Game::render() {
         }
 
         // draw Game Over Text
-        renderText("GAME OVER", 230.0f, 250.0f, 2.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
-        renderText("Final Score: " + std::to_string(score->getScore()), 300.0f, 320.0f, 1.0f, 1.0f, 1.0f, 1.0f); // Final Score in white
-        renderText("Press SPACE to try again", 220.0f, 400.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        renderText("GAME OVER", 230.0f, 200.0f, 3.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
+        renderText("Final Score: " + std::to_string(score->getScore()), 310.0f, 230.0f, 1.0f, 1.0f, 1.0f, 1.0f); // Final Score in white
+        renderText("Fruit Eaten: ", 310.0f, 260.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        renderText("Press ---- to save score", 260.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        renderText("Press SPACE to try again", 200.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f);
     }
 }
 
