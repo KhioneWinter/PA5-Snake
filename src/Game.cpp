@@ -253,7 +253,15 @@ void Game::render() {
 
         // draw text over the background
         renderText("SNAKE", 300.0f, 200.0f, 2.0f, 0.0f, 1.0f, 0.0f); // Big Green Text
-        renderText("Press SPACE to start", 250.0f, 300.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        // controls
+        renderText("Map size:", 350.0f, 250.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow
+        renderText("Press 1 for Small", 270.0f, 280.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
+        renderText("Press 2 for Medium", 270.0f, 310.0f, 1.0f, 1.0f, 1.0f, 0.0f);
+        renderText("Press 3 for Large", 270.0f, 340.0f, 1.0f, 1.0f, 1.0f, 0.0f);
+
+        // instructions
+        renderText("Press SPACE to start", 250.0f, 400.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        renderText("Press Q to quit", 270.0f, 440.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
 
     else if (currentState == GameState::PLAYING) {
@@ -280,8 +288,13 @@ void Game::render() {
         drawQuad(snake->getX(), snake->getY(), snake->getR() + 0.2f, snake->getG() + 0.2f, snake->getB() + 0.2f);
 
     
-        // draw Score at the top left
+        // draw Score (top left)
         renderText("SCORE: " + std::to_string(score->getScore()), 20.0f, 40.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        
+        // if boost acitve, show boost timer (bottom middle)
+        if (snake->getScoreMultiplier() > 1) {
+            renderText("SCORE BOOST ACTIVE: " + std::to_string(snake->getBoostTime()), 20.0f, 70.0f, 1.0f, 1.0f, 0.5f, 1.0f); // Pink
+        }
     } 
 
     else if (currentState == GameState::GAME_OVER) {

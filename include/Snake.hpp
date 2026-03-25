@@ -43,6 +43,7 @@ public:
     // booost management
     void increaseSpeed(int amount = 1) { speed += amount; }
     void applyScoreBoost(int multiplier, int duration) { scoreMultiplier = multiplier; boostTimer = duration; }
+    int getBoostTime() const { return boostTimer; }
     int getScoreMultiplier() const { return scoreMultiplier; }
     void updateBoost() {
         if (boostTimer > 0) {
