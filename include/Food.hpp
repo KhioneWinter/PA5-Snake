@@ -7,12 +7,15 @@ class Snake;
 class Food {
 public:
     int x, y;
+    float r, g, b; // color for rendering
 
 
-    Food(int x, int y) : x(x), y(y) {}
+    Food(int x, int y, float r, float g, float b) : x(x), y(y), r(r), g(g), b(b) {}
     ~Food() = default;
 
     virtual void applyEffect(Snake& snake) = 0;
+
+    virtual bool isBomb() const { return false; }
 };
 
 

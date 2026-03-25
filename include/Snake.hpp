@@ -14,6 +14,9 @@ private:
 
     // TODO i dont know -- fix
     std::vector<std::pair<int, int>> body;
+
+    bool dead = false;
+    float r = 0.0f, g = 0.8f, b = 0.0f; // default color : green
 public:
 
     Snake(int x, int y) : x(x), y(y), length(1), speed(1) {}
@@ -29,6 +32,17 @@ public:
     int getX() const { return x; }
     int getY() const { return y; }
     std::vector<std::pair<int, int>> getBody() const { return body; } // need for rendering
+
+
+    void kill() { dead = true; }
+    bool isDead() const { return dead; }
+    
+    void increaseSpeed() { speed++; }
+    
+    void setColor(float newR, float newG, float newB) { r = newR; g = newG; b = newB; }
+    float getR() const { return r; }
+    float getG() const { return g; }
+    float getB() const { return b; }
 };
 
 #endif // SNAKE_HPP
