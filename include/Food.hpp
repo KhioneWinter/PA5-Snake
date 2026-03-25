@@ -11,7 +11,7 @@ public:
 
 
     Food(int x, int y, float r, float g, float b) : x(x), y(y), r(r), g(g), b(b) {}
-    ~Food() = default;
+    virtual ~Food() = default;
 
     virtual void applyEffect(Snake& snake) = 0;
 
