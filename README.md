@@ -69,21 +69,21 @@ make clean
 
 # Files Included in the Submission
 
-SnakeGame/
-│
-├── main.cpp
-│
-├── Game.h / Game.cpp
-├── Snake.h / Snake.cpp
-├── SnakeSegment.h
-├── Map.h / Map.cpp
-│
-├── Food.h / Food.cpp
-├── NormalFood.h
-├── SpecialFood.h
-│
-├── Score.h / Score.cpp
-├── Leaderboard.h / Leaderboard.cpp
+<br>SnakeGame/ 
+<br>│
+<br>├── main.cpp
+<br>│
+<br>├── Game.h / Game.cpp
+<br>├── Snake.h / Snake.cpp
+<br>├── SnakeSegment.h
+<br>├── Map.h / Map.cpp
+<br>│
+<br>├── Food.h / Food.cpp
+<br>├── NormalFood.h
+<br>├── SpecialFood.h
+<br>│
+<br>├── Score.h / Score.cpp
+<br>├── Leaderboard.h / Leaderboard.cpp
 
 
 ```mermaid
