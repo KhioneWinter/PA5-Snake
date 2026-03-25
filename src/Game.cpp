@@ -328,13 +328,12 @@ void Game::spawnRandomFood(bool forcePositive) {
             {0.0f, 0.0f, 1.0f}, // Blue
             {0.5f, 0.0f, 0.5f}, // Purple
             {1.0f, 0.4f, 0.7f}, // Pink
-            {0.0f, 1.0f, 0.0f}, // Green
             {1.0f, 1.0f, 0.0f}  // Yellow
         };
         int c = randEngine() % 5;
         activeFoods.push_back(new ColorFood(fx, fy, colors[c][0], colors[c][1], colors[c][2]));
     } 
     else {
-        activeFoods.push_back(new NormalFood(fx, fy));
+        activeFoods.push_back(new NormalFood(fx, fy)); // default food red
     }
 }
