@@ -43,7 +43,7 @@ cmake -- build
 | ----------------- | ----------------- |
 | `cmd + shift + B` | `ctr + shift + B` |
 
-or use `Make`
+or use `make` command in terminal
 
 
 Then we have executable file:
@@ -55,7 +55,9 @@ Then we have executable file:
 ### Run game:
 | mac               | windows           |
 | ----------------- | ----------------- |
-| `./Snake.out`       | `./Snake.exe`       |
+| `./Snake.out`     | `./Snake.exe`     |
+
+<em>Note: the program might not detect the correct OS, therefore the executable name might still be `Snake.out` even though you are on Windows</em>
 
 
 ### Clean compiled files:
