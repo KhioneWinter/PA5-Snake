@@ -51,7 +51,7 @@ Game::~Game() {
 void Game::start() {
     setupOpenGL();
     currentState = GameState::START_SCREEN;
-    
+
     std::cout << "===========================" << std::endl;
     std::cout << "       SNAKE GAME          " << std::endl;
     std::cout << "===========================" << std::endl;
@@ -66,7 +66,16 @@ void Game::start() {
 }
 
 void Game::handleInput(GLFWwindow* window) {
-    if (currentState == GameState::START_SCREEN || currentState == GameState::GAME_OVER) {
+    if (currentState == GameState::GAME_OVER) {
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { // Allows user to restart game
+            start(); 
+        }
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { // Allows users to quit the game
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        }
+        return; // any other input
+    }
+    if (currentState == GameState::START_SCREEN) {
         
         // settings bindings
         if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && mapWidth != 10) { mapWidth = 12; mapHeight = 10; std::cout << "Selected: SMALL MAP\n"; }
@@ -88,6 +97,7 @@ void Game::handleInput(GLFWwindow* window) {
             map = new Map(mapWidth, mapHeight);
             snake = new Snake(mapWidth / 2, mapHeight / 2); // Start exactly in the middle!
             score = new Score(0);
+            score -> startTime();
             dx = 1; dy = 0;
             spawnRandomFood();
             
@@ -128,6 +138,7 @@ void Game::update() {
     } else {
         // Solid wall logic: die if we go out of bounds
         if (!map->isInside(nextX, nextY)) {
+            scoreCalculator();
             std::cout << "Game Over! Hit a wall. Score: " << score->getScore();
             std::cout << "\n---------------------------";
             std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
@@ -138,6 +149,7 @@ void Game::update() {
 
     // check Self-Collision
     if (snake->checkCollision(nextX, nextY)) {
+        scoreCalculator();
         std::cout << "Game Over! You bit yourself. Score: " << score->getScore();
         std::cout << "\n---------------------------";
         std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
@@ -196,10 +208,15 @@ void Game::render() {
     if (currentState == GameState::START_SCREEN) {
         // Draw a blue pattern for Start Screen
         int setValue = 6;
-        if (mapWidth == 30 && mapHeight == 30) {
-            setValue = 5; // Fixes so the big map is bigger then the medium map
+        float mult = 4.0;
+        if (mapWidth == 36 && mapHeight == 30) {
+            setValue = 5; // Fixes so the big map 
+            mult = 4.5;
         }
-        for(int x = mapWidth / setValue; x < (mapWidth / setValue) * 4; x++) {
+        if (mapWidth == 12 && mapHeight== 10) {
+            mult = 3.0; // Fixes so the small map 
+        }
+        for(int x = mapWidth / setValue; x < (mapWidth / setValue) * mult; x++) {
             for(int y = mapHeight / setValue; y < (mapHeight / setValue) * 4; y++) {
                 drawQuad(x, y, 0.0f, 0.4f, 0.8f); // Colors blue
             }
@@ -338,3 +355,9 @@ void Game::spawnRandomFood(bool forcePositive) {
     }
 }
 
+void Game::scoreCalculator() {
+    // Calls all necisery functions from Score file to calculate final score
+    score -> endTime();
+    score -> calculateTime();
+    score -> timeAddedToFinal();
+}

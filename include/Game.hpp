@@ -59,6 +59,7 @@ public:
     void render();
     void handleInput(GLFWwindow* window);
 
+    void scoreCalculator();
 };
 
 
