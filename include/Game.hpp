@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <vector>
+#include "Food.hpp"
 
 class Map;
 class Snake;
@@ -45,10 +47,16 @@ public:
     int dx;
     int dy;
 
+    // food management
+    std::vector<Food*> activeFoods;
+    void spawnRandomFood();
+
+    // game loop functions
     void start();
     void update();
     void render();
     void handleInput(GLFWwindow* window);
+
 };
 
 

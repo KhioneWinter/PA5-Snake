@@ -2,6 +2,9 @@
 #include "Map.hpp"
 #include "Snake.hpp"
 #include "Score.hpp"
+#include "NormalFood.hpp"
+#include "SpecialFood.hpp"
+#include <cstdlib>
 #include <iostream>
 
 
@@ -251,4 +254,34 @@ void Game::drawQuad(int gridX, int gridY, float r, float g, float b) {
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+
+void Game::spawnRandomFood() {
+    int fx, fy;
+    map->spawnFood(fx, fy); // get location on map for new food
+    
+    int chance = std::rand() % 100;
+    
+    if (chance < 10) {
+        activeFoods.push_back(new BombFood(fx, fy)); // 10% chance for a Bomb
+    } 
+    else if (chance < 30) {
+        activeFoods.push_back(new SpeedFood(fx, fy)); // 20% chance for Speed
+    } 
+    else if (chance < 50) {
+        // 20% chance for Color Food
+        float colors[5][3] = {
+            {0.0f, 0.0f, 1.0f}, // Blue
+            {0.5f, 0.0f, 0.5f}, // Purple
+            {1.0f, 0.4f, 0.7f}, // Pink
+            {0.0f, 1.0f, 0.0f}, // Green
+            {1.0f, 1.0f, 0.0f}  // Yellow
+        };
+        int c = std::rand() % 5;
+        activeFoods.push_back(new ColorFood(fx, fy, colors[c][0], colors[c][1], colors[c][2]));
+    } 
+    else {
+        activeFoods.push_back(new NormalFood(fx, fy)); // 50% chance for Normal Food
+    }
 }
