@@ -41,7 +41,7 @@ public:
     bool isDead() const { return dead; }
     
     // booost management
-    void increaseSpeed() { speed++; }
+    void increaseSpeed(int amount = 1) { speed += amount; }
     void applyScoreBoost(int multiplier, int duration) { scoreMultiplier = multiplier; boostTimer = duration; }
     int getScoreMultiplier() const { return scoreMultiplier; }
     void updateBoost() {
