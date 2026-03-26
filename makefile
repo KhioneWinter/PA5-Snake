@@ -21,7 +21,7 @@ else ifeq ($(shell uname -s),Darwin)
 else
     # Linux settings
     TARGET = Snake.out
-    LDFLAGS = -lglfw -lGL -ldl -lpthread -lm
+    LDFLAGS = -lglfw -lGL -lpthread -ldl -lm
 
 endif
 
