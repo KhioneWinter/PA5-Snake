@@ -184,9 +184,9 @@ class Snake {
     - directionY: int
 
     - dead: bool
-    - r: float
-    - g: float
-    - b: float
+    - r: float %% red color component
+    - g: float %% green color component
+    - b: float %% blue color component
 
     + move()
     + grow()
@@ -216,11 +216,11 @@ class Snake {
 
 class Food {
     <<abstract>>
-    +  x
-    + int y
-    + float r
-    + float g
-    + float b
+    + x: int %% column position
+    + y: int %% row position
+    + r: float %% red color component
+    + g: float %% green color component
+    + b: float %% blue color component
 
     + applyEffect(snake)
     + isBomb() bool
