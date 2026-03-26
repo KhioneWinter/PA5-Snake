@@ -4,6 +4,8 @@
 #include "miniaudio.h"
 #include <string>
 #include <map>
+#include <iostream>
+#include <string>
 
 class AudioManager {
 public:
@@ -14,6 +16,11 @@ public:
     void playSound(const std::string& name);
     void playMusic(const std::string& name, bool loop = true);
     void stopAll();
+
+    // paths to sounds
+    std::string loseSoundPath = "assets/lose.wav";
+    std::string eatFoodSoundPath = "assets/eat-fruit.wav";
+    std::string boostMusicPath = "assets/boost-music.wav";
 
 private:
     ma_engine engine;

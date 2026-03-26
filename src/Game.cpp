@@ -186,7 +186,8 @@ void Game::update() {
             std::cout << "Game Over! Hit a wall. Score: " << score->getScore();
             std::cout << "\n---------------------------";
             std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
-            currentState = GameState::GAME_OVER; 
+            currentState = GameState::GAME_OVER;
+            audio->playSound(audio->loseSoundPath.c_str());
             return;
         }
     }
@@ -198,7 +199,8 @@ void Game::update() {
         std::cout << "Game Over! You bit yourself. Score: " << score->getScore();
         std::cout << "\n---------------------------";
         std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
-        currentState = GameState::GAME_OVER; 
+        currentState = GameState::GAME_OVER;
+        audio->playSound(audio->loseSoundPath.c_str());
         return;
     }
 
@@ -212,7 +214,7 @@ void Game::update() {
         if (snake->getX() == (*it)->x && snake->getY() == (*it)->y) {
             Food* eatenFood = *it;
             eatenFood->applyEffect(*snake);
-            
+            audio->playSound(audio->eatFoodSoundPath.c_str());
             if (eatenFood->isBomb()) {
                 deathMessage = "KABOOM! You ate a bomb!";
                 std::cout << "\nKABOOM! You ate a bomb!" << std::endl;
@@ -242,18 +244,14 @@ void Game::update() {
         std::cout << "\n---------------------------";
         std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
         currentState = GameState::GAME_OVER;
+        audio->playSound(audio->loseSoundPath.c_str());
         return;
     }
 
     if (ateFood) { // only spawn food if we ate something (don't want too much food on the map)
-        audio->playSound("assets/crunch.wav");
+        audio->playSound(audio->eatFoodSoundPath.c_str());
         spawnRandomFood();
     }
-
-    if (currentState == GameState::GAME_OVER) {
-        audio->playSound("assets/lose.wav");
-    }
-
 }
 
 
