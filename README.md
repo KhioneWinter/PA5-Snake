@@ -39,7 +39,7 @@ cmake -- build
 2. Locate the `lib` folder inside it and copy the `libglfw3` file to the root directory of this project (replace the existing one if it exists).
 
 ### Compile walk through:
-| mac               | windows           |
+| mac               | linux / window    |
 | ----------------- | ----------------- |
 | `cmd + shift + B` | `ctr + shift + B` |
 
@@ -47,13 +47,13 @@ or use `make` command in terminal
 
 
 Then we have executable file:
-| mac               | windows           |
+| mac               | linux / window    |
 | ----------------- | ----------------- |
 | `Snake.out`       | `Snake.exe`       |
 
 
 ### Run game:
-| mac               | windows           |
+| mac               | linux / window    |
 | ----------------- | ----------------- |
 | `./Snake.out`     | `./Snake.exe`     |
 

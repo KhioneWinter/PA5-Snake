@@ -18,9 +18,10 @@ else ifeq ($(shell uname -s),Darwin)
     LDFLAGS = -L/opt/homebrew/lib -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo # for OpenGL and windowing
     LDFLAGS += -framework CoreFoundation -framework CoreAudio -framework AudioToolbox # audio
 
-else 
+else
+    # Linux settings
     TARGET = Snake.out
-    LDFLAGS = -lglfw -lGL -ldl -lpthread 
+    LDFLAGS = -lglfw -lGL -ldl -lpthread -lm
 
 endif
 
