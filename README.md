@@ -106,6 +106,10 @@ lib/
 ├── libglwf3.dylib  # mac
 ├── libglwf3.dll.a  # windows
 
+assets/ 
+│
+├── all assets (audio, etc.)
+
 root-directory/ 
 │
 ├── Micro5-Regular.ttf  # font for text rendering
