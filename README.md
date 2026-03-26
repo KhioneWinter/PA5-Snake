@@ -129,6 +129,8 @@ class MapSize {
 class MapDimensions {
     width: int
     height: int
+
+    getDimensions(size): MapDimensions
 }
 
 %% classes
@@ -145,15 +147,19 @@ class Game {
     - fontTexture: unsigned int
     - cdata: char*
 
+    - deathMessage: string
+
     + Map map
     + Snake snake
     + Score score
 
-    + GameState state
+    + GameState currentState
 
-    + mapWidth: int
-    + mapHeight: int
-    + wrapAround: bool
+    + MapSize currentMapSize;
+    + bool wrapAround;
+
+    + dy: int %% current movement direction
+    + dx: int %% current movement direction
 
     + randEngine
     + activeFoods
@@ -173,13 +179,15 @@ class Game {
 class Map {
     - int width
     - int height
+    - MapSize size
 
     + getWidth(): int
     + getHeight(): int
+    + getSize(): MapSize
 
     + isInside(x, y): bool
-    + spawnFood()
-    + removeFood(food)
+    + spawnFood(x, y): bool
+    + removeFood(x, y): bool
 }
 
 class Snake {
