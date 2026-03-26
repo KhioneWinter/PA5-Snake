@@ -8,9 +8,11 @@
 
 #include <vector>
 #include <random> // for random engine
-#include "Food.hpp"
 
-class Map;
+#include "Food.hpp"
+#include "Map.hpp"
+
+
 class Snake;
 class Score;
 
@@ -47,8 +49,7 @@ public:
     GameState currentState;
 
     // map settings
-    int mapWidth;
-    int mapHeight;
+    MapSize currentMapSize;
     bool wrapAround;
 
     // track food and movement

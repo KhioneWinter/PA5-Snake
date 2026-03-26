@@ -107,9 +107,9 @@ void Game::handleInput(GLFWwindow* window) {
     if (currentState == GameState::START_SCREEN) {
         
         // settings bindings
-        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && mapWidth != 10) { mapWidth = 12; mapHeight = 10; std::cout << "Selected: SMALL MAP\n"; }
-        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && mapWidth != 20) { mapWidth = 24; mapHeight = 20; std::cout << "Selected: MEDIUM MAP\n"; }
-        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && mapWidth != 30) { mapWidth = 36; mapHeight = 30; std::cout << "Selected: LARGE MAP\n"; }
+        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && currentMapSize != MapSize::SMALL) { currentMapSize = MapSize::SMALL; std::cout << "Selected: SMALL MAP\n"; }
+        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && currentMapSize != MapSize::MEDIUM) { currentMapSize = MapSize::MEDIUM; std::cout << "Selected: MEDIUM MAP\n"; }
+        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && currentMapSize != MapSize::LARGE) { currentMapSize = MapSize::LARGE; std::cout << "Selected: LARGE MAP\n"; }
         
         if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && wrapAround == true)  { wrapAround = false; std::cout << "Selected: BOUNDED WALLS\n"; }
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && wrapAround == false) { wrapAround = true; std::cout << "Selected: LOOP WALLS\n"; }
@@ -123,8 +123,9 @@ void Game::handleInput(GLFWwindow* window) {
 
 
             // initialize new game objects
-            map = new Map(mapWidth, mapHeight);
-            snake = new Snake(mapWidth / 2, mapHeight / 2); // Start exactly in the middle!
+            map = new Map(currentMapSize);            
+            MapDimensions dims = getDimensions(currentMapSize);
+            snake = new Snake(dims.width / 2, dims.height / 2);
             score = new Score(0);
             score -> startTime();
             dx = 1; dy = 0;
@@ -234,6 +235,10 @@ void Game::update() {
 
 
 void Game::render() {
+    MapDimensions dims = getDimensions(currentMapSize);
+    int mapWidth = dims.width;
+    int mapHeight = dims.height;
+
     if (currentState == GameState::START_SCREEN) {
         // Draw a blue pattern for Start Screen
         int setValue = 6;
@@ -257,9 +262,9 @@ void Game::render() {
         // --- MAP SIZE SETTINGS ---
         renderText("Map size:", 50.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
         
-        renderText("Press 1 for Small",  70.0f, 60.0f, 1.0f, 1.0f, (mapWidth == 12 ? 0.4f : 1.0f), (mapWidth == 12 ? 0.7f : 1.0f)); 
-        renderText("Press 2 for Medium", 70.0f, 90.0f, 1.0f, 1.0f, (mapWidth == 24 ? 0.4f : 1.0f), (mapWidth == 24 ? 0.7f : 1.0f));
-        renderText("Press 3 for Large",  70.0f, 120.0f, 1.0f, 1.0f, (mapWidth == 36 ? 0.4f : 1.0f), (mapWidth == 36 ? 0.7f : 1.0f));
+        renderText("Press 1 for Small",  70.0f, 60.0f, 1.0f, 1.0f, (currentMapSize == MapSize::SMALL ? 0.4f : 1.0f), (currentMapSize == MapSize::SMALL ? 0.7f : 1.0f));
+        renderText("Press 2 for Medium", 70.0f, 90.0f, 1.0f, 1.0f, (currentMapSize == MapSize::MEDIUM ? 0.4f : 1.0f), (currentMapSize == MapSize::MEDIUM ? 0.7f : 1.0f));
+        renderText("Press 3 for Large",  70.0f, 120.0f, 1.0f, 1.0f, (currentMapSize == MapSize::LARGE ? 0.4f : 1.0f), (currentMapSize == MapSize::LARGE ? 0.7f : 1.0f));
 
         // --- WALL MODE SETTINGS ---
         renderText("Wall Mode:", 50.0f, 160.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
@@ -390,6 +395,10 @@ void Game::setupOpenGL() {
 
 void Game::drawQuad(int gridX, int gridY, float r, float g, float b) {
     glUseProgram(shaderProgram);
+
+    MapDimensions dims = getDimensions(currentMapSize);
+    int mapWidth = dims.width;
+    int mapHeight = dims.height;
 
     // Calculate dynamic cell sizes based on the chosen map dimensions
     float cellWidth = 2.0f / mapWidth;

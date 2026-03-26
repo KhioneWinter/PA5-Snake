@@ -119,6 +119,17 @@ class GameState {
     PLAYING
     GAME_OVER
 }
+class MapSize {
+    <<enumeration>>
+    SMALL
+    MEDIUM
+    LARGE
+}
+
+class MapDimensions {
+    width: int
+    height: int
+}
 
 %% classes
 class Game {
