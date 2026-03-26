@@ -178,8 +178,8 @@ class Map {
     + getHeight(): int
 
     + isInside(x, y): bool
-    + spawnFood()
-    + removeFood(food)
+    + spawnFood(x, y): bool
+    + removeFood(x, y): bool
 }
 
 class Snake {
