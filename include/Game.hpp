@@ -61,7 +61,7 @@ public:
 
     // game loop functions
     void start();
-    void update();
+    void update(float deltaTime);
     void render();
     void handleInput(GLFWwindow* window);
     

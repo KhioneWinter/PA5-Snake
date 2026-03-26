@@ -144,10 +144,10 @@ void Game::gameOver(std::string message) {
     }
 }
 
-void Game::update() {
+void Game::update(float deltaTime) {
     if (currentState != GameState::PLAYING) return;
 
-    snake->updateBoost(); // decrement boost timer if active
+    snake->updateBoost(deltaTime); // decrement booster timer if active
 
     // calculate where the snake is trying to go
     int nextX = snake->getX() + dx;

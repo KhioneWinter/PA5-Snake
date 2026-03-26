@@ -179,7 +179,7 @@ class Game {
     + spawnRandomFood(forcePositive)
 
     + start()
-    + update()
+    + update(deltaTime)
     + render()
     + handleInput(GLFWwindow* window)
     + gameOver(message)
@@ -208,7 +208,7 @@ class Snake {
     - speed: int
 
     - scoreMultiplier: int
-    - boostTimer: int
+    - boostTimer: float
 
     - directionX: int
     - directionY: int
@@ -238,7 +238,7 @@ class Snake {
     + applyScoreBoost(multiplier, duration)
     + getBoostTimer() int
     + getScoreMultiplier() int
-    + updateBoost()
+    + updateBoost(float deltaTime)
     
     + setColor(r, g, b)
     + getR() float
