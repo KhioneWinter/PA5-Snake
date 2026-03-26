@@ -249,20 +249,23 @@ void Game::render() {
         textRenderer->render("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
 
         // --- MAP SIZE SETTINGS ---
-        textRenderer->render("Map size:", 30.0f, 40.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
+        textRenderer->render("Map size:", 20.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
         
-        textRenderer->render("Press 1: Small",  40.0f, 80.0f, 1.0f, 1.0f, (currentMapSize == MapSize::SMALL ? 0.4f : 1.0f), (currentMapSize == MapSize::SMALL ? 0.7f : 1.0f));
-        textRenderer->render("Press 2: Medium", 40.0f, 110.0f, 1.0f, 1.0f, (currentMapSize == MapSize::MEDIUM ? 0.4f : 1.0f), (currentMapSize == MapSize::MEDIUM ? 0.7f : 1.0f));
-        textRenderer->render("Press 3: Large",  40.0f, 140.0f, 1.0f, 1.0f, (currentMapSize == MapSize::LARGE ? 0.4f : 1.0f), (currentMapSize == MapSize::LARGE ? 0.7f : 1.0f));
+        textRenderer->render("Press 1: Small",  30.0f, 60.0f, 1.0f, 1.0f, (currentMapSize == MapSize::SMALL ? 0.4f : 1.0f), (currentMapSize == MapSize::SMALL ? 0.7f : 1.0f));
+        textRenderer->render("Press 2: Medium", 30.0f, 85.0f, 1.0f, 1.0f, (currentMapSize == MapSize::MEDIUM ? 0.4f : 1.0f), (currentMapSize == MapSize::MEDIUM ? 0.7f : 1.0f));
+        textRenderer->render("Press 3: Large",  30.0f, 110.0f, 1.0f, 1.0f, (currentMapSize == MapSize::LARGE ? 0.4f : 1.0f), (currentMapSize == MapSize::LARGE ? 0.7f : 1.0f));
 
         // --- WALL MODE SETTINGS ---
-        textRenderer->render("Wall Mode:", 30.0f, 180.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
-        textRenderer->render("Press B: Bounded Walls (Die on hit)", 40.0f, 210.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
-        textRenderer->render("Press L: Loop Walls (Wrap around)",   40.0f, 240.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
+        textRenderer->render("Wall Mode:", 530.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
+        textRenderer->render("Press B : Bounded Walls", 550.0f, 55.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
+        textRenderer->render("(Die on hit)", 610.0f, 75.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
+        textRenderer->render("Press L : Loop Walls",   550.0f, 100.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
+        textRenderer->render("(Wrap around)",   610.0f, 120.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
 
         // --- INSTRUCTIONS ---
-        textRenderer->render("Press SPACE to start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
-        textRenderer->render("Press Q to quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press T to see Top Scores", 240.0f, 500.0f, 1.2f, 1.0f, 1.0f, 0.0f); // Yellow
+        textRenderer->render("Press SPACE to Start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press Q to Quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
 
 
@@ -335,16 +338,16 @@ void Game::render() {
         textRenderer->render("GAME OVER", 230.0f, 180.0f, 3.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
 
         // small death msg
-        textRenderer->render(deathMessage, 300.0f, 210.0f, 0.8f, 1.0f, 1.0f, 1.0f); // White text
+        textRenderer->render(deathMessage, 300.0f, 220.0f, 0.8f, 1.0f, 1.0f, 1.0f); // White text
 
         // game stats
-        textRenderer->render("Final Score: " + std::to_string(score->getScore()), 310.0f, 310.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-        textRenderer->render("Fruit Eaten: " + std::to_string(score->getFoodAmount()), 310.0f, 340.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        textRenderer->render("Final Score: " + std::to_string(score->getScore()), 320.0f, 310.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Fruit Eaten: " + std::to_string(score->getFoodAmount()), 320.0f, 340.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
         
         // controls
-        textRenderer->render("Press ---- to save score", 260.0f, 500.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-        textRenderer->render("Press SPACE to try again", 220.0f, 550.0f, 1.3f, 1.0f, 1.0f, 1.0f); // White
-        textRenderer->render("Press Q to quit", 300.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press S to Save Score", 280.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press SPACE to Try Again", 200.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press Q to Quit", 320.0f, 550.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
 }
 
