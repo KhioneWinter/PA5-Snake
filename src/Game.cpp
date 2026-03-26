@@ -147,7 +147,6 @@ void Game::handleInput(GLFWwindow* window) {
             spawnRandomFood();
             
             currentState = GameState::PLAYING;
-            audio->playMusic(audio->backgroundMusicPath.c_str(), true);
             std::cout << "\nGame started! Use Arrow Keys to move." << std::endl;
         }
 
