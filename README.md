@@ -288,6 +288,17 @@ class Leaderboard {
     + reset(playerId)
 }
 
+class AudioManager {
+    - engines
+    - sounds
+    - initialized: bool
+
+    + init(): bool
+    + playSound(name)
+    + playMusic(name)
+    + stopAll()
+}
+
 %% tengingar
 Game --> Map : updates
 Game --> Snake : controls

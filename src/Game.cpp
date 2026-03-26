@@ -65,6 +65,8 @@ Game::Game() : currentState(GameState::START_SCREEN), currentMapSize(MapSize::SM
     snake = nullptr; 
     score = nullptr;
 
+    audio = new AudioManager();
+
     // random seed
     randEngine.seed(std::chrono::system_clock::now().time_since_epoch().count());
 }
@@ -79,8 +81,17 @@ Game::~Game() {
 void Game::start() {
     setupOpenGL();
     setupTextRendering();
-    currentState = GameState::START_SCREEN;
 
+    if (audio) {
+        if (!audio->init()) {
+            std::cout << "Failed to initialize audio!" << std::endl;
+        } else {
+            // start background music
+        }
+    }
+
+
+    currentState = GameState::START_SCREEN;
     std::cout << "===========================" << std::endl;
     std::cout << "       SNAKE GAME          " << std::endl;
     std::cout << "===========================" << std::endl;
@@ -200,7 +211,7 @@ void Game::update() {
     for (auto it = activeFoods.begin(); it != activeFoods.end(); ) {
         if (snake->getX() == (*it)->x && snake->getY() == (*it)->y) {
             Food* eatenFood = *it;
-            eatenFood->applyEffect(*snake); 
+            eatenFood->applyEffect(*snake);
             
             if (eatenFood->isBomb()) {
                 deathMessage = "KABOOM! You ate a bomb!";
@@ -234,7 +245,14 @@ void Game::update() {
         return;
     }
 
-    if (ateFood) { spawnRandomFood();  } // only spawn food if we ate something (don't want too much food on the map)
+    if (ateFood) { // only spawn food if we ate something (don't want too much food on the map)
+        audio->playSound("assets/crunch.wav");
+        spawnRandomFood();
+    }
+
+    if (currentState == GameState::GAME_OVER) {
+        audio->playSound("assets/lose.wav");
+    }
 
 }
 

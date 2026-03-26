@@ -11,6 +11,7 @@
 
 #include "Food.hpp"
 #include "Map.hpp"
+#include "AudioManager.hpp"
 
 
 class Snake;
@@ -45,6 +46,7 @@ public:
     Game();
     ~Game();
     
+    AudioManager* audio;
     Map *map;
     Snake *snake;
     Score *score;
