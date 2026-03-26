@@ -19,7 +19,7 @@ endif
 
 
 
-SRC = src/main.cpp src/glad.c \
+SRC = src/main.cpp \
     src/Game.cpp src/Snake.cpp src/Map.cpp src/Score.cpp \
     src/Food.cpp
 
@@ -27,7 +27,7 @@ SRC = src/main.cpp src/glad.c \
 all: $(TARGET)
 
 $(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS) -x c++ src/glad.c
 
 clean:
 	rm -f Snake.out Snake.exe
