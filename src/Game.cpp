@@ -286,20 +286,23 @@ void Game::render() {
         renderText("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
 
         // --- MAP SIZE SETTINGS ---
-        renderText("Map size:", 30.0f, 40.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
+        renderText("Map size:", 20.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
         
-        renderText("Press 1: Small",  40.0f, 80.0f, 1.0f, 1.0f, (currentMapSize == MapSize::SMALL ? 0.4f : 1.0f), (currentMapSize == MapSize::SMALL ? 0.7f : 1.0f));
-        renderText("Press 2: Medium", 40.0f, 110.0f, 1.0f, 1.0f, (currentMapSize == MapSize::MEDIUM ? 0.4f : 1.0f), (currentMapSize == MapSize::MEDIUM ? 0.7f : 1.0f));
-        renderText("Press 3: Large",  40.0f, 140.0f, 1.0f, 1.0f, (currentMapSize == MapSize::LARGE ? 0.4f : 1.0f), (currentMapSize == MapSize::LARGE ? 0.7f : 1.0f));
+        renderText("Press 1: Small",  30.0f, 60.0f, 1.0f, 1.0f, (currentMapSize == MapSize::SMALL ? 0.4f : 1.0f), (currentMapSize == MapSize::SMALL ? 0.7f : 1.0f));
+        renderText("Press 2: Medium", 30.0f, 85.0f, 1.0f, 1.0f, (currentMapSize == MapSize::MEDIUM ? 0.4f : 1.0f), (currentMapSize == MapSize::MEDIUM ? 0.7f : 1.0f));
+        renderText("Press 3: Large",  30.0f, 110.0f, 1.0f, 1.0f, (currentMapSize == MapSize::LARGE ? 0.4f : 1.0f), (currentMapSize == MapSize::LARGE ? 0.7f : 1.0f));
 
         // --- WALL MODE SETTINGS ---
-        renderText("Wall Mode:", 30.0f, 180.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
-        renderText("Press B : Bounded Walls (Die on hit)", 40.0f, 210.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
-        renderText("Press L : Loop Walls (Wrap around)",   40.0f, 240.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
+        renderText("Wall Mode:", 530.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
+        renderText("Press B : Bounded Walls", 550.0f, 55.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
+        renderText("(Die on hit)", 610.0f, 75.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
+        renderText("Press L : Loop Walls",   550.0f, 100.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
+        renderText("(Wrap around)",   610.0f, 120.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
 
         // --- INSTRUCTIONS ---
-        renderText("Press SPACE to start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
-        renderText("Press Q to quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        renderText("Press S to see Score Board", 250.0f, 550.0f, 1.5f, 0.255f, 0.0f, 0.0f); // Orange
+        renderText("Press SPACE to Start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
+        renderText("Press Q to Quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
 
 
