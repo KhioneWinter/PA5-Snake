@@ -59,7 +59,7 @@ const char* textFragmentShaderSource = "#version 330 core\n"
 
 
     
-Game::Game() : currentState(GameState::START_SCREEN), currentMapSize(MapSize::MEDIUM), wrapAround(false), dx(1), dy(0) {
+Game::Game() : currentState(GameState::START_SCREEN), currentMapSize(MapSize::SMALL), wrapAround(false), dx(1), dy(0) {
     // initalize game objects
     map = nullptr;
     snake = nullptr; 
