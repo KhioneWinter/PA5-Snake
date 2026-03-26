@@ -78,19 +78,22 @@ SnakeGame/
 │
 ├── main.cpp
 │
-├── Game.h / Game.cpp
-├── Snake.h / Snake.cpp
-├── SnakeSegment.h
-├── Map.h / Map.cpp
+├── Game.hpp / Game.cpp
+├── Snake.hpp / Snake.cpp
+├── Map.hpp / Map.cpp
 │
-├── Food.h / Food.cpp
-├── NormalFood.h
-├── SpecialFood.h
+├── Food.hpp / Food.cpp
+├── NormalFood.hpp
+├── SpecialFood.hpp
 │
-├── Score.h / Score.cpp
-├── Leaderboard.h / Leaderboard.cpp
+├── Score.hpp / Score.cpp
+├── Leaderboard.hpp / Leaderboard.cpp
 │
-├── AudioManager.h / AudioManager.cpp
+├── AudioManager.hpp / AudioManager.cpp
+│
+├── Renderer.hpp / Renderer.cpp
+├── TextRenderer.hpp / TextRenderer.cpp
+
 │
 ├── glad/                   # OpenGL loader
 ├── GLFW/                   # GLFW header files
@@ -136,20 +139,27 @@ class MapDimensions {
     getDimensions(size): MapDimensions
 }
 
-%% classes
-class Game {
+%% renderers
+class Renderer {
     - shaderProgram: unsigned int
     - VAO: unsigned int
     - VBO: unsigned int
-    - setupOpenGL()
-    - drawQuad(int x, int y, float r, float g, float b)
 
-    - textShaderProgram: unsigned int
-    - textVAO: unsigned int
-    - textVBO: unsigned int
-    - fontTexture: unsigned int
-    - cdata: char*
+    + drawQuad(int x, int y, float r, float g, float b, MapSize currentSize)
+}
+class TextRenderer {
+     - ShaderProgram: unsigned int
+     - VAO: unsigned int
+     - VBO: unsigned int
+     - fontTexture: unsigned int
+     - cdata: char*
 
+    init(fontPath)
+    render(const string text, float x, float y, float scale, float r, float g, float b)
+}
+
+%% classes
+class Game {
     - deathMessage: string
 
     + Map map
@@ -167,9 +177,6 @@ class Game {
     + randEngine
     + activeFoods
     + spawnRandomFood(forcePositive)
-
-    + setupTextRendering()
-    + renderText(text, x, y, scale, r, g, b)
 
     + start()
     + update()
@@ -315,7 +322,10 @@ class AudioManager {
 Game --> Map : updates
 Game --> Snake : controls
 Game --> Score : tracks
-Game --> AudioManager : plays sounds
+
+Game --> AudioManager : uses
+Game --> Renderer : uses
+Game --> TextRenderer : uses
 
 
 Map "1" --> "0..*" Food : contains
