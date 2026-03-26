@@ -158,17 +158,20 @@ void Game::update() {
     int nextX = snake->getX() + dx;
     int nextY = snake->getY() + dy;
 
+
     // check Map Boundaries
-    if (wrapAround) {
+    if (wrapAround) {         // TODO - does not work
         // Wrap logic: if we go out of bounds, appear on the other side
         if (nextX < 0) nextX = map->getWidth() - 1;
         if (nextX >= map->getWidth()) nextX = 0;
         if (nextY < 0) nextY = map->getHeight() - 1;
         if (nextY >= map->getHeight()) nextY = 0;
+
     } else {
         // Solid wall logic: die if we go out of bounds
         if (!map->isInside(nextX, nextY)) {
             scoreCalculator();
+            deathMessage = "Ouch! You hit a wall!";
             std::cout << "Game Over! Hit a wall. Score: " << score->getScore();
             std::cout << "\n---------------------------";
             std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
@@ -180,6 +183,7 @@ void Game::update() {
     // check Self-Collision
     if (snake->checkCollision(nextX, nextY)) {
         scoreCalculator();
+        deathMessage = "Stop eating yourself!";
         std::cout << "Game Over! You bit yourself. Score: " << score->getScore();
         std::cout << "\n---------------------------";
         std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
@@ -199,6 +203,7 @@ void Game::update() {
             eatenFood->applyEffect(*snake); 
             
             if (eatenFood->isBomb()) {
+                deathMessage = "KABOOM! You ate a bomb!";
                 std::cout << "\nKABOOM! You ate a bomb!" << std::endl;
             } else {
                 int pointsGained = 10 * snake->getScoreMultiplier();
@@ -341,10 +346,17 @@ void Game::render() {
             }
         }
 
-        // draw Game Over Text
-        renderText("GAME OVER", 230.0f, 200.0f, 3.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
-        renderText("Final Score: " + std::to_string(score->getScore()), 310.0f, 230.0f, 1.0f, 1.0f, 1.0f, 1.0f); // Final Score in white
-        renderText("Fruit Eaten: " + std::to_string(score -> getFoodAmount()), 310.0f, 260.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        // DRAW GAME OVER TEXT
+        renderText("GAME OVER", 230.0f, 180.0f, 3.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
+
+        // small death msg
+        renderText(deathMessage, 300.0f, 210.0f, 0.8f, 1.0f, 1.0f, 1.0f); // White text
+
+        // game stats
+        renderText("Final Score: " + std::to_string(score->getScore()), 310.0f, 310.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        renderText("Fruit Eaten: " + std::to_string(score->getFoodAmount()), 310.0f, 340.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        
+        // controls
         renderText("Press ---- to save score", 260.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         renderText("Press SPACE to try again", 200.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f);
     }
