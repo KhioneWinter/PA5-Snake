@@ -32,7 +32,7 @@ void AudioManager::playSound(const std::string& filePath) {
 void AudioManager::playMusic(const std::string& filePath, bool loop) {
 
     if (sounds.find(filePath) == sounds.end()) {
-        ma_sound_init_from_file(&engine, filePath.c_str(), MA_SOUND_FLAG_STREAM, NULL, NULL, &sounds[filePath]);
+        ma_result result = ma_sound_init_from_file(&engine, filePath.c_str(), MA_SOUND_FLAG_STREAM, NULL, NULL, &sounds[filePath]);
         if (result != MA_SUCCESS) {
             std::cout << "AUDIO ERROR: Could not load file: " << filePath << " | Error code: " << result << std::endl;
             return;
