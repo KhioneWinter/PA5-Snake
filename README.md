@@ -1,7 +1,5 @@
 # PA5-Snake
-We are going to implement Snake using OpenGL
-
-**breyta öllu skjalinu eftir Nýja verkefninu**
+We are going to implement the classic Snake game using OpenGL.
 
 -----------------------------------------
 Students:
@@ -10,7 +8,7 @@ Students:
 - Sara Elísabet Jónsdóttir
 
 
-// bara var á töflunni
+<!-- // bara var á töflunni -->
 #T-403-FORC - group 27
 
 Teachers:
@@ -18,179 +16,306 @@ Teachers:
 - Konráð Elí <konrad21@ru.is>
 - Teitur Hrólfur <teitur23@ru.is>
 
+<!-- ps- það er fyrir neðan
 #compile/run
 """ 
 cd build
 cmake ..
 cmake -- build
-"""
+""" -->
 
 ------------------------------------------
 
-**We used inheretance while implementing our game**
-- the player character and enemy are subclasses to the class Creature
-
-------------------------------------------
-
-**What we implemented in our game!** 
-- main criteria 50%
-    - Added enemie with stats to the game
-    - Have a playable main character
-    - Added a turn based battle cycle
-    - Added health, attack and defence to each character
-    - allow the user to take actions with standard in and out
-
-- Extra spice! (Idk how much % these things give but here you go)
-    - have 3 enemies (each one of our teachers)
-    - Added ascii art of not only the teachers but also us into the game
-    - Added a title screen, a story segment and endings! (with ascii)
-    - Have two different playable characters, who each have different stats (Brynhildur and Sara, the best students in the world!!!!) 
-    - Added rest stops between battles to boost stats before next battle
-    - Added special attacks to each character
-    - Desplay nessesery information, like how much the player has left in their healing
-
--------------------------------------------
 
 ## Compilation and Running the Game!!
 
-# Compile walk through:
-| mac               | windows           |
+### Libraries required:
+- OpenGL (at least ver 4.1)
+- glfw (mac: `brew install glfw`) (TODO brynhildur/SARA ég vtk hvað þið þurftuð að download-a)
+
+### Before compiling:
+
+1. Download GLFW package from https://www.glfw.org/download.html according to your operating system.
+2. Locate the `lib` folder inside it and copy the `libglfw3` file to the root directory of this project (replace the existing one if it exists).
+
+### Compile walk through:
+| mac               | linux / window    |
 | ----------------- | ----------------- |
 | `cmd + shift + B` | `ctr + shift + B` |
 
-or use `Make`
+or use `make` command in terminal
 
 
 Then we have executable file:
-| mac               | windows           |
+| mac               | linux / window    |
 | ----------------- | ----------------- |
 | `Snake.out`       | `Snake.exe`       |
 
 
-# Run game:
-| mac               | windows           |
+### Run game:
+| mac               | linux / window    |
 | ----------------- | ----------------- |
-| `./Snake.out`       | `./Snake.exe`       |
+| `./Snake.out`     | `./Snake.exe`     |
+
+<em>Note: the program might not detect the correct OS, therefore the executable name might still be `Snake.out` even though you are on Windows</em>
 
 
-# Clean compiled files:
+### Clean compiled files:
 ```bash
 make clean
 ```
 
-------------------------------------------------
-
-# All the Files Included in the Submission
-- **Header files**: `Creature.hpp`, `Enemy.hpp`, `GameCycle.hpp`, `GameManager.hpp`, `Player.hpp`
-- **Implementation files**: `Creature.cpp`, `Enemy.cpp`, `GameCycle.cpp`, `GameManager.cpp`, 
-    `JRPG.cpp`, `Player.cpp`, 
-- **Text files**: `boss0.txt`, `boss1.txt`, `boss2.txt`, `protag0.txt`, `protag1.txt`, `storySetting.txt`, `titleScreen.txt`, `enemyBeaten.txt`, `goodEnd.txt`, `badEnd.txt`
-
-- **Build system**: `Makefile`
-- **Documentation**: `README.md`
-
-
-Hope you guys like the game! must be weird being a bad guy huh? （；´д｀）ゞ
-Tried our best at least hope it actually runs well and isisnt too dificult ᕦ(ò_óˇ)ᕤ
 
 ---------------------------------------------------
 
 
-#### TODO BREYTA
+# Files and Class Diagram
 
 
-SnakeGame/
+## File structure:
+```bash
+SnakeGame/ 
 │
 ├── main.cpp
 │
-├── Game.h / Game.cpp
-├── Snake.h / Snake.cpp
-├── SnakeSegment.h
-├── Map.h / Map.cpp
+├── Game.hpp / Game.cpp
+├── Snake.hpp / Snake.cpp
+├── Map.hpp / Map.cpp
 │
-├── Food.h / Food.cpp
+├── Food.hpp / Food.cpp
+├── NormalFood.hpp
+├── SpecialFood.hpp
 │
-├── Score.h / Score.cpp
-├── Leaderboard.h / Leaderboard.cpp
+├── Score.hpp / Score.cpp
+├── Leaderboard.hpp / Leaderboard.cpp
 │
-├── Renderer.h / Renderer.cpp
- ├─ drawSnake()
- ├─ drawFood()
- └─ drawMap()
+├── AudioManager.hpp / AudioManager.cpp
+│
+├── Renderer.hpp / Renderer.cpp
+├── TextRenderer.hpp / TextRenderer.cpp
+
+│
+├── glad/                   # OpenGL loader
+├── GLFW/                   # GLFW header files
+├── KHR/                    # OpenGL header files
+├── stb_truetype.h          # font rendering library
+├── miniaudio_impl.cpp / miniaudio.h  # audio rendering library
+
+lib/ 
+│
+├── libglwf3.dylib  # mac
+├── libglwf3.dll.a  # windows
+
+root-directory/ 
+│
+├── Micro5-Regular.ttf  # font for text rendering
+├── README.md
+├── Makefile
+```
 
 
+## Class Diagram:
 ```mermaid
 classDiagram
 
+%% enums
+class GameState {
+    <<enumeration>>
+    START_SCREEN
+    PLAYING
+    GAME_OVER
+}
+class MapSize {
+    <<enumeration>>
+    SMALL
+    MEDIUM
+    LARGE
+}
+
+class MapDimensions {
+    width: int
+    height: int
+
+    getDimensions(size): MapDimensions
+}
+
+%% renderers
+class Renderer {
+    - shaderProgram: unsigned int
+    - VAO: unsigned int
+    - VBO: unsigned int
+
+    + drawQuad(int x, int y, float r, float g, float b, MapSize currentSize)
+}
+class TextRenderer {
+     - ShaderProgram: unsigned int
+     - VAO: unsigned int
+     - VBO: unsigned int
+     - fontTexture: unsigned int
+     - cdata: char*
+
+    init(fontPath)
+    render(const string text, float x, float y, float scale, float r, float g, float b)
+}
+
 %% classes
 class Game {
-    - Map map
-    - Snake snake
-    - Score score
-    - bool running
+    - deathMessage: string
+
+    + Map map
+    + Snake snake
+    + Score score
+
+    + GameState currentState
+
+    + MapSize currentMapSize;
+    + bool wrapAround;
+
+    + dy: int %% current movement direction
+    + dx: int %% current movement direction
+
+    + randEngine
+    + activeFoods
+    + spawnRandomFood(forcePositive)
 
     + start()
     + update()
     + render()
-    + handleInput(direction)
+    + handleInput(GLFWwindow* window)
+    + gameOver(message)
+
+    + scoreCalculator()
 }
 
 class Map {
     - int width
     - int height
+    - MapSize size
 
-    + spawnFood()
-    + removeFood(food)
-    + isInside(x, y) bool
+    + getWidth(): int
+    + getHeight(): int
+    + getSize(): MapSize
+
+    + isInside(x, y): bool
+    + spawnFood(x, y): bool
+    + removeFood(x, y): bool
 }
 
 class Snake {
-    - int x %% head row
-    - int y %% head col
-    - vector_list body
-    - int length
-    - int speed
-    - direction currentDirection
+    - x: int %% head row
+    - y: int %% head col
+    - length: int
+    - speed: int
+
+    - scoreMultiplier: int
+    - boostTimer: int
+
+    - directionX: int
+    - directionY: int
+
+    - body: vector<pair<int, int>>
+
+    - dead: bool
+    - r: float %% red color component
+    - g: float %% green color component
+    - b: float %% blue color component
 
     + move()
     + grow()
     + checkSelfCollision(newX, newY) bool
-}
 
-class SnakeSegment {
-    - int x
-    - int y
+    + update()
+    + render()
 
-    + getX()
-    + getY()
+    + getY() int
+    + getX() int
+    + getBody()
+
+    + kill()
+    + isDead() bool
+
+    + increaseSpeed(amount)
+    + applyScoreBoost(multiplier, duration)
+    + getBoostTimer() int
+    + getScoreMultiplier() int
+    + updateBoost()
+    
+    + setColor(r, g, b)
+    + getR() float
+    + getG() float
+    + getB() float
 }
 
 class Food {
     <<abstract>>
-    + int x
-    + int y
+    + x: int %% column position
+    + y: int %% row position
+    + r: float %% red color component
+    + g: float %% green color component
+    + b: float %% blue color component
+
     + applyEffect(snake)
+    + isBomb() bool
 }
 
 class NormalFood {
     + applyEffect(snake)
 }
 
-class SpecialFood {
+class Bomb {
+    + applyEffect(snake)
+    + isBomb() bool
+}
+
+class SpeedFood {
+    + applyEffect(snake)
+}
+
+class ScoreIncreaseFood {
+    + increaseAmount: int
+    + duration: int
     + applyEffect(snake)
 }
 
 class Score {
-    + int points
+    - score: int
+    - start: time_t
+    - end: time_t
+    - multiplier: float
+    - foodAmount: int
+
+    + startime()
+    + endtime()
+    + getScore(): int
+    + calculateTime()
     + increase(amount)
     + reset()
+    + timeAddedToFinal()
+    + getFoodAmount(): int
+    + incrementFoodAmount()
 }
 
 class Leaderboard {
-    + list scores
     + addScore(playerId, score)
-    + int top(K)
+    + top(K): int
     + reset(playerId)
+}
+
+class AudioManager {
+    - engine: ma_engine
+    - sounds: std::map<string, ma_sound>
+    - initialized: bool
+
+    + init(): bool
+    + playSound(name)
+    + playMusic(name)
+    + stopMusic(name)
+
+    + loseSoundPath: string
+    + eatFoodSoundPath: string
+    + powerupSoundPath: string
+    + selectSoundPath: string
+    + backgroundMusicPath: string
 }
 
 %% tengingar
@@ -198,11 +323,18 @@ Game --> Map : updates
 Game --> Snake : controls
 Game --> Score : tracks
 
-Snake "1" --> "1..*" SnakeSegment : body
+Game --> AudioManager : uses
+Game --> Renderer : uses
+Game --> TextRenderer : uses
+
+
 Map "1" --> "0..*" Food : contains
 
 Food <|-- NormalFood
-Food <|-- SpecialFood
+Food <|-- Bomb
+Food <|-- SpeedFood
+Food <|-- ScoreIncreaseFood
+
 
 Snake --> Food : consumes
 

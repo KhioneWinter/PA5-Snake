@@ -1,5 +1,13 @@
 #include "Map.hpp"
-#include <cstdlib> // for std::rand() # TODO ekki nota modulus
+#include <cstdlib> //
+
+
+// constructor
+Map::Map(MapSize s) : size(s) {
+    MapDimensions dims = getDimensions(size);
+    width = dims.width;
+    height = dims.height;
+}
 
 bool Map::isInside(int x, int y) {
     // return true if the coordinates are within the grid bounds

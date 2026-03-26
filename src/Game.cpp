@@ -1,5 +1,3 @@
-#define STB_TRUETYPE_IMPLEMENTATION // for text rendering
-
 #include "Game.hpp"
 #include "Map.hpp"
 #include "Snake.hpp"
@@ -13,57 +11,25 @@
 #include <stdio.h> // for FILE reading
 
 
-// Very basic shaders to draw solid colored squares
-const char* vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec2 aPos;\n"
-    "uniform vec2 offset;\n"
-    "uniform vec2 size;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(-1.0 + (aPos.x * size.x) + offset.x, -1.0 + (aPos.y * size.y) + offset.y, 0.0, 1.0);\n"
-    "}\0";
-
-const char* fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "uniform vec3 color;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(color, 1.0f);\n"
-    "}\n\0";
-
-// shaders for text rendering
-const char* textVertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec4 vertex;\n" // <vec2 pos, vec2 tex>
-    "out vec2 TexCoords;\n"
-    "uniform vec2 screenSize;\n"
-    "void main()\n"
-    "{\n"
-    "   float ndcX = (vertex.x / screenSize.x) * 2.0 - 1.0;\n"
-    "   float ndcY = 1.0 - (vertex.y / screenSize.y) * 2.0;\n" // Invert Y 
-    "   gl_Position = vec4(ndcX, ndcY, 0.0, 1.0);\n"
-    "   TexCoords = vertex.zw;\n"
-    "}\0";
-
-const char* textFragmentShaderSource = "#version 330 core\n"
-    "in vec2 TexCoords;\n"
-    "out vec4 FragColor;\n"
-    "uniform sampler2D text;\n"
-    "uniform vec3 textColor;\n"
-    "void main()\n"
-    "{\n"
-    "   vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n" 
-    "   FragColor = vec4(textColor, 1.0) * sampled;\n"
-    "}\n\0";
-
-
-
 
     
-Game::Game() : currentState(GameState::START_SCREEN), mapWidth(20), mapHeight(20), wrapAround(false), dx(1), dy(0) {
+Game::Game() : currentState(GameState::START_SCREEN), currentMapSize(MapSize::SMALL), wrapAround(false), dx(1), dy(0) {
     // initalize game objects
     map = nullptr;
     snake = nullptr; 
     score = nullptr;
+
+    // init audio
+    audio = new AudioManager();
+    if (audio) {
+        if (!audio->init()) {
+            std::cout << "Failed to initialize audio!" << std::endl;
+        }
+    }
+
+    // init renderers
+    worldRenderer = new Renderer();
+    textRenderer = new TextRenderer();
 
     // random seed
     randEngine.seed(std::chrono::system_clock::now().time_since_epoch().count());
@@ -74,13 +40,25 @@ Game::~Game() {
     delete map;
     delete snake;
     delete score;
+
+    delete audio;
+
+    delete worldRenderer;
+    delete textRenderer;
+
+    for (Food* f : activeFoods) { delete f; }
+    activeFoods.clear();
 }
 
 void Game::start() {
-    setupOpenGL();
-    setupTextRendering();
-    currentState = GameState::START_SCREEN;
+    worldRenderer->init();
+    textRenderer->init("Micro5-Regular.ttf");
 
+    // play music
+    if (audio) audio->playMusic(audio->backgroundMusicPath.c_str(), true);
+
+
+    currentState = GameState::START_SCREEN;
     std::cout << "===========================" << std::endl;
     std::cout << "       SNAKE GAME          " << std::endl;
     std::cout << "===========================" << std::endl;
@@ -110,12 +88,12 @@ void Game::handleInput(GLFWwindow* window) {
     if (currentState == GameState::START_SCREEN) {
         
         // settings bindings
-        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && mapWidth != 10) { mapWidth = 12; mapHeight = 10; std::cout << "Selected: SMALL MAP\n"; }
-        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && mapWidth != 20) { mapWidth = 24; mapHeight = 20; std::cout << "Selected: MEDIUM MAP\n"; }
-        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && mapWidth != 30) { mapWidth = 36; mapHeight = 30; std::cout << "Selected: LARGE MAP\n"; }
+        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && currentMapSize != MapSize::SMALL) { currentMapSize  = MapSize::SMALL; std::cout  << "Selected: SMALL MAP \n"; audio->playSound(audio->selectSoundPath.c_str()); }
+        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && currentMapSize != MapSize::MEDIUM) { currentMapSize = MapSize::MEDIUM; std::cout << "Selected: MEDIUM MAP\n"; audio->playSound(audio->selectSoundPath.c_str()); }
+        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && currentMapSize != MapSize::LARGE) { currentMapSize  = MapSize::LARGE; std::cout  << "Selected: LARGE MAP \n"; audio->playSound(audio->selectSoundPath.c_str()); }
         
-        if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && wrapAround == true)  { wrapAround = false; std::cout << "Selected: BOUNDED WALLS\n"; }
-        if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && wrapAround == false) { wrapAround = true; std::cout << "Selected: LOOP WALLS\n"; }
+        if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && wrapAround == true)  { wrapAround = false; std::cout << "Selected: BOUNDED WALLS\n"; audio->playSound(audio->selectSoundPath.c_str()); }
+        if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && wrapAround == false) { wrapAround = true;  std::cout << "Selected: LOOP WALLS   \n"; audio->playSound(audio->selectSoundPath.c_str()); }
 
         // start Game
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -126,8 +104,9 @@ void Game::handleInput(GLFWwindow* window) {
 
 
             // initialize new game objects
-            map = new Map(mapWidth, mapHeight);
-            snake = new Snake(mapWidth / 2, mapHeight / 2); // Start exactly in the middle!
+            map = new Map(currentMapSize);            
+            MapDimensions dims = getDimensions(currentMapSize);
+            snake = new Snake(dims.width / 2, dims.height / 2);
             score = new Score(0);
             score -> startTime();
             dx = 1; dy = 0;
@@ -160,6 +139,23 @@ void Game::handleInput(GLFWwindow* window) {
 }
 
 
+void Game::gameOver(std::string message) {
+    deathMessage = message;
+
+    scoreCalculator();
+    std::cout << "\n---------------------------" << std::endl;
+    std::cout << message << std::endl;
+    std::cout << "Game Over! Score: " << score->getScore();
+    std::cout << "\n---------------------------";
+    std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
+    currentState = GameState::GAME_OVER;
+
+    if (audio) {
+        audio->stopMusic(audio->backgroundMusicPath.c_str());
+        audio->playSound(audio->loseSoundPath.c_str());
+    }
+}
+
 void Game::update() {
     if (currentState != GameState::PLAYING) return;
 
@@ -169,32 +165,26 @@ void Game::update() {
     int nextX = snake->getX() + dx;
     int nextY = snake->getY() + dy;
 
+
     // check Map Boundaries
-    if (wrapAround) {
+    if (wrapAround) {         // TODO - does not work
         // Wrap logic: if we go out of bounds, appear on the other side
         if (nextX < 0) nextX = map->getWidth() - 1;
         if (nextX >= map->getWidth()) nextX = 0;
         if (nextY < 0) nextY = map->getHeight() - 1;
         if (nextY >= map->getHeight()) nextY = 0;
+
     } else {
         // Solid wall logic: die if we go out of bounds
         if (!map->isInside(nextX, nextY)) {
-            scoreCalculator();
-            std::cout << "Game Over! Hit a wall. Score: " << score->getScore();
-            std::cout << "\n---------------------------";
-            std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
-            currentState = GameState::GAME_OVER; 
+            gameOver("Ouch! You hit a wall!");
             return;
         }
     }
 
     // check Self-Collision
     if (snake->checkCollision(nextX, nextY)) {
-        scoreCalculator();
-        std::cout << "Game Over! You bit yourself. Score: " << score->getScore();
-        std::cout << "\n---------------------------";
-        std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
-        currentState = GameState::GAME_OVER; 
+        gameOver("Oh no! You ran into yourself!");
         return;
     }
 
@@ -207,16 +197,17 @@ void Game::update() {
     for (auto it = activeFoods.begin(); it != activeFoods.end(); ) {
         if (snake->getX() == (*it)->x && snake->getY() == (*it)->y) {
             Food* eatenFood = *it;
-            eatenFood->applyEffect(*snake); 
             
-            if (eatenFood->isBomb()) {
-                std::cout << "\nKABOOM! You ate a bomb!" << std::endl;
-            } else {
+            eatenFood->applyEffect(*snake);
+
+            if (!eatenFood->isBomb()) {
                 int pointsGained = 10 * snake->getScoreMultiplier();
                 score->increase(pointsGained);
                 
                 std::cout << "Score: " << score->getScore();
                 if (snake->getScoreMultiplier() > 1) {
+                    // snake power up
+                    audio->playSound(audio->powerupSoundPath.c_str());
                     std::cout << " (BOOST ACTIVE: " << snake->getScoreMultiplier() << "x!)";
                 }
                 std::cout << std::endl;
@@ -234,18 +225,21 @@ void Game::update() {
     
     // Check if the snake died from a bomb
     if (snake->isDead()) {
-        std::cout << "\n---------------------------";
-        std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
-        currentState = GameState::GAME_OVER;
-        return;
+        gameOver("KABOOM! You ate a bomb!");
     }
 
-    if (ateFood) { spawnRandomFood();  } // only spawn food if we ate something (don't want too much food on the map)
-
+    if (ateFood) { // only spawn food if we ate something (don't want too much food on the map)
+        audio->playSound(audio->eatFoodSoundPath.c_str());
+        spawnRandomFood();
+    }
 }
 
 
 void Game::render() {
+    MapDimensions dims = getDimensions(currentMapSize);
+    int mapWidth = dims.width;
+    int mapHeight = dims.height;
+
     if (currentState == GameState::START_SCREEN) {
         // Draw a blue pattern for Start Screen
         int setValue = 6;
@@ -259,53 +253,87 @@ void Game::render() {
         }
         for(int x = mapWidth / setValue; x < (mapWidth / setValue) * mult; x++) {
             for(int y = mapHeight / setValue; y < (mapHeight / setValue) * 4; y++) {
-                drawQuad(x, y, 0.0f, 0.4f, 0.8f); // Colors blue
+                worldRenderer->drawQuad(x, y, 0.0f, 0.4f, 0.8f, currentMapSize); // Colors blue
             }
         }
 
         // draw text over the background
-        renderText("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
-        // controls
-        renderText("Map size:", 10.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow
-        renderText("Press 1 for Small", 10.0f, 55.0f, 0.8f, 1.0f, 1.0f, 0.0f); 
-        renderText("Press 2 for Medium", 10.0f, 80.0f, 0.8f, 1.0f, 1.0f, 0.0f);
-        renderText("Press 3 for Large", 10.0f, 105.0f, 0.8f, 1.0f, 1.0f, 0.0f);
+        textRenderer->render("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
 
-        // instructions
-        renderText("Press SPACE to start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
-        renderText("Press Q to quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        // --- MAP SIZE SETTINGS ---
+        textRenderer->render("Map size:", 20.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
+        
+        textRenderer->render("Press 1: Small",  30.0f, 60.0f, 1.0f, 1.0f, (currentMapSize == MapSize::SMALL ? 0.4f : 1.0f), (currentMapSize == MapSize::SMALL ? 0.7f : 1.0f));
+        textRenderer->render("Press 2: Medium", 30.0f, 85.0f, 1.0f, 1.0f, (currentMapSize == MapSize::MEDIUM ? 0.4f : 1.0f), (currentMapSize == MapSize::MEDIUM ? 0.7f : 1.0f));
+        textRenderer->render("Press 3: Large",  30.0f, 110.0f, 1.0f, 1.0f, (currentMapSize == MapSize::LARGE ? 0.4f : 1.0f), (currentMapSize == MapSize::LARGE ? 0.7f : 1.0f));
+
+        // --- WALL MODE SETTINGS ---
+        textRenderer->render("Wall Mode:", 530.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
+        textRenderer->render("Press B : Bounded Walls", 550.0f, 55.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
+        textRenderer->render("(Die on hit)", 610.0f, 75.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
+        textRenderer->render("Press L : Loop Walls",   550.0f, 100.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
+        textRenderer->render("(Wrap around)",   610.0f, 120.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
+
+        // --- INSTRUCTIONS ---
+        textRenderer->render("Press T to see Top Scores", 240.0f, 500.0f, 1.2f, 1.0f, 1.0f, 0.0f); // Yellow
+        textRenderer->render("Press SPACE to Start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press Q to Quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
+
 
     else if (currentState == GameState::PLAYING) {
         // Draw Map dynamically based on width and height
         for (int x = 0; x < mapWidth; x++) {
             for (int y = 0; y < mapHeight; y++) {
                 if ((x+y) % 2 == 0) {
-                    drawQuad(x, y, 0.20f, 0.20f, 0.20f); // Differend hues of gray
+                    worldRenderer->drawQuad(x, y, 0.20f, 0.20f, 0.20f, currentMapSize); // Differend hues of gray
                 }
                 else {
-                    drawQuad(x, y, 0.25f, 0.25f, 0.25f); // used to see grid better
+                    worldRenderer->drawQuad(x, y, 0.25f, 0.25f, 0.25f, currentMapSize); // used to see grid better
                 }
                 
             } 
         }
-        // Draw Food
+        // ------------------ Draw Food ------------------
         for (Food* f : activeFoods) {
-            drawQuad(f->x, f->y, f->r, f->g, f->b);
+            worldRenderer->drawQuad(f->x, f->y, f->r, f->g, f->b, currentMapSize);
         }
 
-        // draw Snake Body
-        for (const auto& segment : snake->getBody()) { drawQuad(segment.first, segment.second, snake->getR(), snake->getG(), snake->getB());  }
-        // snake head (lighter than body)
-        drawQuad(snake->getX(), snake->getY(), snake->getR() + 0.2f, snake->getG() + 0.2f, snake->getB() + 0.2f);
+        // ------------------draw snake ------------
+        auto body = snake->getBody();
+        int totalSegments = body.size();
+
+        // draw snake body
+        for (int i = 0; i < totalSegments; ++i) {
+            float taper = 1.0f;
+            
+            // last 3 segments (the tail) will be skinnier
+            if (i > totalSegments - 4) taper = 1.0f - ((float)(i - (totalSegments - 4)) * 0.25f);
+
+            // adjust color and size based on how close we are to the tail
+            worldRenderer->drawQuad(body[i].first, body[i].second, 
+                    snake->getR() * taper, 
+                    snake->getG() * taper, 
+                    snake->getB() * taper, currentMapSize);
+        }
+
+        // draw snake head (lighter than body)
+        float headX = snake->getX();
+        float headY = snake->getY();
+        float r = snake->getR() + 0.2f;
+        float g = snake->getG() + 0.2f;
+        float b = snake->getB() + 0.2f;
+
+        worldRenderer->drawQuad(headX, headY, r, g, b, currentMapSize);
+        // ------------------------------------------------------------------
 
     
-        // draw Score (top left)
-        renderText("SCORE: " + std::to_string(score->getScore()), 20.0f, 40.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        // ------------------ draw Score (top left) ------------------
+        textRenderer->render("SCORE: " + std::to_string(score->getScore()), 20.0f, 40.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         
         // if boost acitve, show boost timer (bottom middle)
         if (snake->getScoreMultiplier() > 1) {
-            renderText("SCORE BOOST ACTIVE: " + std::to_string(snake->getBoostTime()), 20.0f, 70.0f, 1.0f, 1.0f, 0.5f, 1.0f); // Pink
+            textRenderer->render("SCORE BOOST ACTIVE: " + std::to_string(snake->getBoostTime()), 20.0f, 70.0f, 1.0f, 1.0f, 0.5f, 1.0f); // Pink
         }
     } 
 
@@ -313,175 +341,26 @@ void Game::render() {
         // Draw red Game Over screen
         for(int x = 0; x < mapWidth; x++) {
             for(int y = 0; y < mapHeight; y++) {
-                drawQuad(x, y, 0.5f, 0.0f, 0.0f);
+                worldRenderer->drawQuad(x, y, 0.5f, 0.0f, 0.0f, currentMapSize);
             }
         }
 
-        // draw Game Over Text
-        renderText("GAME OVER", 230.0f, 200.0f, 3.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
-        renderText("Final Score: " + std::to_string(score->getScore()), 310.0f, 230.0f, 1.0f, 1.0f, 1.0f, 1.0f); // Final Score in white
-        renderText("Fruit Eaten: " + std::to_string(score -> getFoodAmount()), 310.0f, 260.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-        renderText("Press ---- to save score", 260.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-        renderText("Press SPACE to try again", 200.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f);
-    }
-}
+        // DRAW GAME OVER TEXT
+                                        // x, y, scale, r, g, b, a
+        textRenderer->render("GAME OVER", 230.0f, 180.0f, 3.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
 
+        // small death msg
+        textRenderer->render(deathMessage, 300.0f, 220.0f, 0.8f, 1.0f, 1.0f, 1.0f); // White text
 
-void Game::setupOpenGL() {
-    // Compile Vertex Shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    // Compile Fragment Shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    // Link Shaders into a Program
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    // Define a 1x1 square
-    float vertices[] = {
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f
-    };
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-}
-
-
-void Game::drawQuad(int gridX, int gridY, float r, float g, float b) {
-    glUseProgram(shaderProgram);
-
-    // Calculate dynamic cell sizes based on the chosen map dimensions
-    float cellWidth = 2.0f / mapWidth;
-    float cellHeight = 2.0f / mapHeight;
-
-    // Calculate offsets based on grid position
-    float offsetX = gridX * cellWidth;
-    float offsetY = gridY * cellHeight;
-
-    // Pass uniforms to the shader
-    glUniform2f(glGetUniformLocation(shaderProgram, "size"), cellWidth, cellHeight);
-    glUniform2f(glGetUniformLocation(shaderProgram, "offset"), offsetX, offsetY);
-    glUniform3f(glGetUniformLocation(shaderProgram, "color"), r, g, b);
-
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-}
-
-void Game::setupTextRendering() {
-    // compile Shaders
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &textVertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &textFragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    textShaderProgram = glCreateProgram();
-    glAttachShader(textShaderProgram, vertexShader);
-    glAttachShader(textShaderProgram, fragmentShader);
-    glLinkProgram(textShaderProgram);
-
-    glDeleteShader(vertexShader); glDeleteShader(fragmentShader);
-
-    // Load Font and Bake Texture
-    unsigned char* ttf_buffer = new unsigned char[1<<20];
-    FILE* f = fopen("Micro5-Regular.ttf", "rb");
-    if (!f) {
-        std::cout << "CRITICAL ERROR: Could not find font.ttf in your root folder!" << std::endl;
-    } else {
-        fread(ttf_buffer, 1, 1<<20, f);
-        fclose(f);
+        // game stats
+        textRenderer->render("Final Score: " + std::to_string(score->getScore()), 320.0f, 310.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Fruit Eaten: " + std::to_string(score->getFoodAmount()), 320.0f, 340.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
         
-        unsigned char* temp_bitmap = new unsigned char[512*512];
-        stbtt_BakeFontBitmap(ttf_buffer, 0, 32.0, temp_bitmap, 512, 512, 32, 96, cdata);
-        
-        glGenTextures(1, &fontTexture);
-        glBindTexture(GL_TEXTURE_2D, fontTexture);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 512, 512, 0, GL_RED, GL_UNSIGNED_BYTE, temp_bitmap);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        
-        delete[] temp_bitmap;
+        // controls
+        textRenderer->render("Press S to Save Score", 280.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press SPACE to Try Again", 200.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press Q to Quit", 320.0f, 550.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
-    delete[] ttf_buffer;
-
-    // Setup VAO/VBO
-    glGenVertexArrays(1, &textVAO);
-    glGenBuffers(1, &textVBO);
-    glBindVertexArray(textVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0); glBindVertexArray(0);
-}
-
-void Game::renderText(const std::string& text, float x, float y, float scale, float r, float g, float b) {
-    glUseProgram(textShaderProgram);
-    glUniform3f(glGetUniformLocation(textShaderProgram, "textColor"), r, g, b);
-
-    
-    // dynamically get the real screen size for Mac
-    GLint vp[4];
-    glGetIntegerv(GL_VIEWPORT, vp);
-    glUniform2f(glGetUniformLocation(textShaderProgram, "screenSize"), (float)vp[2], (float)vp[3]); 
-    
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, fontTexture);
-    glBindVertexArray(textVAO);
-    
-    // Enable blending for transparent text backgrounds
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
-    for (char raw_c : text) {
-        unsigned char c = (unsigned char)raw_c; // Prevents the Mac ARM warning
-        if (c >= 32 && c < 128) {
-            stbtt_aligned_quad q;
-            float dummyX = 0; float dummyY = 0;
-            
-            stbtt_GetBakedQuad(cdata, 512, 512, c - 32, &dummyX, &dummyY, &q, 1);
-            
-            float x0 = x + q.x0 * scale; float y0 = y + q.y0 * scale;
-            float x1 = x + q.x1 * scale; float y1 = y + q.y1 * scale;
-            
-            float vertices[6][4] = {
-                { x0, y0, q.s0, q.t0 }, { x1, y0, q.s1, q.t0 }, { x1, y1, q.s1, q.t1 },
-                { x1, y1, q.s1, q.t1 }, { x0, y1, q.s0, q.t1 }, { x0, y0, q.s0, q.t0 }
-            };
-            
-            x += dummyX * scale; // Move cursor right
-            
-            glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-        }
-    }
-    glBindVertexArray(0);
-    glDisable(GL_BLEND);
 }
 
 
