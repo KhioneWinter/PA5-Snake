@@ -14,7 +14,7 @@ private:
 
 public:
     TextRenderer();
-    ~TextRenderer() = default;
+    ~TextRenderer();
     void init(const char* fontPath);
     void render(const std::string& text, float x, float y, float scale, float r, float g, float b);
 };
