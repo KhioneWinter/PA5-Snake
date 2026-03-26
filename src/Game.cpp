@@ -76,6 +76,10 @@ Game::~Game() {
     delete map;
     delete snake;
     delete score;
+    delete audio;
+
+    for (Food* f : activeFoods) { delete f; }
+    activeFoods.clear();
 }
 
 void Game::start() {
@@ -86,7 +90,7 @@ void Game::start() {
         if (!audio->init()) {
             std::cout << "Failed to initialize audio!" << std::endl;
         } else {
-            // start background music
+            audio->playMusic(audio->backgroundMusicPath.c_str(), true);
         }
     }
 
@@ -224,6 +228,8 @@ void Game::update() {
                 
                 std::cout << "Score: " << score->getScore();
                 if (snake->getScoreMultiplier() > 1) {
+                    // snake power up
+                    audio->playSound(audio->powerupSoundPath.c_str());
                     std::cout << " (BOOST ACTIVE: " << snake->getScoreMultiplier() << "x!)";
                 }
                 std::cout << std::endl;

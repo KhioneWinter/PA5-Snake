@@ -20,7 +20,10 @@ public:
     // paths to sounds
     std::string loseSoundPath = "assets/lose.wav";
     std::string eatFoodSoundPath = "assets/eat-fruit.wav";
-    std::string boostMusicPath = "assets/boost-music.wav";
+    std::string powerupSoundPath = "assets/power-up.wav";
+
+    std::string backgroundMusicPath = "assets/background-music.mp3";
+
 
 private:
     ma_engine engine;
