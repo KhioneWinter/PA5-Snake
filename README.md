@@ -296,13 +296,21 @@ class AudioManager {
     + init(): bool
     + playSound(name)
     + playMusic(name)
-    + stopAll()
+    + stopMusic(name)
+
+    + loseSoundPath: string
+    + eatFoodSoundPath: string
+    + powerupSoundPath: string
+    + selectSoundPath: string
+    + backgroundMusicPath: string
 }
 
 %% tengingar
 Game --> Map : updates
 Game --> Snake : controls
 Game --> Score : tracks
+Game --> AudioManager : plays sounds
+
 
 Map "1" --> "0..*" Food : contains
 
