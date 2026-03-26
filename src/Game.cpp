@@ -193,11 +193,19 @@ void Game::update(float deltaTime) {
                 score->increase(pointsGained);
                 
                 std::cout << "Score: " << score->getScore();
+
+                // snake powerup
                 if (snake->getScoreMultiplier() > 1) {
                     // snake power up
                     audio->playSound(audio->powerupSoundPath.c_str());
                     std::cout << " (BOOST ACTIVE: " << snake->getScoreMultiplier() << "x!)";
                 }
+
+                // snake speed increase
+                if (dynamic_cast<SpeedFood*>(eatenFood)) {
+                    std::cout << " (SPEED UP!)";
+                }
+
                 std::cout << std::endl;
                 score -> incrementFoodAmount();
                 ateFood = true; // Mark that we need to spawn food
