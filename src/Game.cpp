@@ -59,7 +59,7 @@ const char* textFragmentShaderSource = "#version 330 core\n"
 
 
     
-Game::Game() : currentState(GameState::START_SCREEN), mapWidth(20), mapHeight(20), wrapAround(false), dx(1), dy(0) {
+Game::Game() : currentState(GameState::START_SCREEN), currentMapSize(MapSize::MEDIUM), wrapAround(false), dx(1), dy(0) {
     // initalize game objects
     map = nullptr;
     snake = nullptr; 
@@ -253,13 +253,20 @@ void Game::render() {
 
         // draw text over the background
         renderText("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
-        // controls
-        renderText("Map size:", 10.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow
-        renderText("Press 1 for Small", 10.0f, 55.0f, 0.8f, 1.0f, 1.0f, 0.0f); 
-        renderText("Press 2 for Medium", 10.0f, 80.0f, 0.8f, 1.0f, 1.0f, 0.0f);
-        renderText("Press 3 for Large", 10.0f, 105.0f, 0.8f, 1.0f, 1.0f, 0.0f);
 
-        // instructions
+        // --- MAP SIZE SETTINGS ---
+        renderText("Map size:", 50.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
+        
+        renderText("Press 1 for Small",  70.0f, 60.0f, 1.0f, 1.0f, (mapWidth == 12 ? 0.4f : 1.0f), (mapWidth == 12 ? 0.7f : 1.0f)); 
+        renderText("Press 2 for Medium", 70.0f, 90.0f, 1.0f, 1.0f, (mapWidth == 24 ? 0.4f : 1.0f), (mapWidth == 24 ? 0.7f : 1.0f));
+        renderText("Press 3 for Large",  70.0f, 120.0f, 1.0f, 1.0f, (mapWidth == 36 ? 0.4f : 1.0f), (mapWidth == 36 ? 0.7f : 1.0f));
+
+        // --- WALL MODE SETTINGS ---
+        renderText("Wall Mode:", 50.0f, 160.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
+        renderText("Press B : Bounded Walls (Die on hit)", 70.0f, 190.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
+        renderText("Press L : Loop Walls (Wrap around)",   70.0f, 220.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
+
+        // --- INSTRUCTIONS ---
         renderText("Press SPACE to start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
         renderText("Press Q to quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
@@ -451,6 +458,7 @@ void Game::setupTextRendering() {
     glBindBuffer(GL_ARRAY_BUFFER, 0); glBindVertexArray(0);
 }
 
+// text, x-pos, y-pos, scale, r, g, b
 void Game::renderText(const std::string& text, float x, float y, float scale, float r, float g, float b) {
     glUseProgram(textShaderProgram);
     glUniform3f(glGetUniformLocation(textShaderProgram, "textColor"), r, g, b);
