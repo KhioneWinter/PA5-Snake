@@ -15,7 +15,6 @@ private:
 
     int directionX, directionY; // current movement direction
 
-    // TODO i dont know -- fix
     std::vector<std::pair<int, int>> body;
 
     bool dead = false;

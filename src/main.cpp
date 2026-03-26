@@ -77,7 +77,6 @@ int main()
         glfwPollEvents();    
 
         // slow down framerate
-        // TODO fix delta time movement instead of fixed sleep
         glfwWaitEventsTimeout(0.25); // wait 500ms between frames
     }
 
