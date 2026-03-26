@@ -45,6 +45,8 @@
           "-lglfw",
           "-lGL",
           "-ldl",
+          "-lm",
+          "-lasound",
           "-lpthread"
         ]
       },
