@@ -155,7 +155,7 @@ void Game::update(float deltaTime) {
 
 
     // check Map Boundaries
-    if (wrapAround) {         // TODO - does not work
+    if (wrapAround) {
         // Wrap logic: if we go out of bounds, appear on the other side
         if (nextX < 0) nextX = map->getWidth() - 1;
         if (nextX >= map->getWidth()) nextX = 0;
@@ -177,7 +177,7 @@ void Game::update(float deltaTime) {
     }
 
     // Move the snake
-    snake->move(dx, dy);
+    snake->move(nextX, nextY);
 
 
     // Check Food Collisions

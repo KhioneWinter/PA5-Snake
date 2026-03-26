@@ -15,13 +15,13 @@
 
 #endif
 
-void Snake::move(int dx, int dy) {
+void Snake::move(int newX, int newY) {
     // 1. insert the current head position into the front of the body list
     body.insert(body.begin(), {x, y});
 
     // 2. update the head position to the new coordinates
-    x += dx;
-    y += dy;
+    x = newX;
+    y = newY;
 
     // 3. if the snake hasn't grown, remove the tail segment so it visually moves forward
     if (body.size() > static_cast<size_t>(length)) body.pop_back();

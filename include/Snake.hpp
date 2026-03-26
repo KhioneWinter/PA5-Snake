@@ -25,7 +25,7 @@ public:
     Snake(int x, int y) : x(x), y(y), length(1), speed(1) {}
     ~Snake() = default;
 
-    void move(int dx, int dy);
+    void move(int newX, int newY);
     void grow();
     bool checkCollision(int newX, int newY);
 
