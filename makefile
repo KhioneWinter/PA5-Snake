@@ -25,8 +25,11 @@ endif
 
 SRC = src/main.cpp \
     src/AudioManager.cpp src/miniaudio_impl.cpp \
-    src/Game.cpp src/Snake.cpp src/Map.cpp src/Score.cpp \
-    src/Food.cpp
+    src/Renderer.cpp src/TextRenderer.cpp \
+    src/Game.cpp src/Snake.cpp src/Map.cpp \
+    src/Food.cpp src/Score.cpp
+
+
 
 
 all: $(TARGET)
