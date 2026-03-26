@@ -66,6 +66,11 @@ Game::Game() : currentState(GameState::START_SCREEN), currentMapSize(MapSize::SM
     score = nullptr;
 
     audio = new AudioManager();
+    if (audio) {
+        if (!audio->init()) {
+            std::cout << "Failed to initialize audio!" << std::endl;
+        }
+    }
 
     // random seed
     randEngine.seed(std::chrono::system_clock::now().time_since_epoch().count());
@@ -86,13 +91,8 @@ void Game::start() {
     setupOpenGL();
     setupTextRendering();
 
-    if (audio) {
-        if (!audio->init()) {
-            std::cout << "Failed to initialize audio!" << std::endl;
-        } else {
-            audio->playMusic(audio->backgroundMusicPath.c_str(), true);
-        }
-    }
+    // play music
+    if (audio) audio->playMusic(audio->backgroundMusicPath.c_str(), true);
 
 
     currentState = GameState::START_SCREEN;
@@ -224,7 +224,6 @@ void Game::update() {
             Food* eatenFood = *it;
             
             eatenFood->applyEffect(*snake);
-            audio->playSound(audio->eatFoodSoundPath.c_str());
 
             if (!eatenFood->isBomb()) {
                 int pointsGained = 10 * snake->getScoreMultiplier();
