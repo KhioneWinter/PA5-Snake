@@ -128,13 +128,20 @@ void Game::handleInput(GLFWwindow* window) {
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && dx != -1) { dx = 1; dy = 0; }
     }
     if (currentState == GameState::ADD_INITIALS) {
-        if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { 
-            addInitials(); 
+        // Connections from initials screen
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { 
+            currentState = GameState::START_SCREEN;
+        }
+        else if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
+            currentState = GameState::SCORE_BOARD;
         }
     }
 
     if (currentState == GameState::SCORE_BOARD) {
-        
+        // Connections from Leaderboard screen
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            currentState = GameState::START_SCREEN;
+        }
     }
 }
 
@@ -361,6 +368,41 @@ void Game::render() {
         textRenderer->render("Press SPACE to Try Again", 200.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
         textRenderer->render("Press Q to Quit", 320.0f, 550.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
+
+    else if (currentState == GameState::ADD_INITIALS) {
+        // Black screen
+        for(int x = 0; x < mapWidth; x++) {
+            for(int y = 0; y < mapHeight; y++) {
+                worldRenderer->drawQuad(x, y, 0.0f, 0.0f, 0.0f, currentMapSize);
+            }
+        }
+
+        // Text Desplayed
+        textRenderer->render("ADD INITIALS", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
+        textRenderer->render("3 letters only", 320.0f, 80.0f, 1.5f, 0.0f, 1.0f, 0.0f); // White
+        // adding inital virkni --------------------- Þá adda í txt skjal eða annað sambærilegt
+
+        textRenderer->render("Press T to see Top Scores", 320.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press SPACE to go to Start Screen", 320.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press Q to Quit", 320.0f, 550.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+    }
+
+    else if (currentState == GameState::SCORE_BOARD) {
+        // Black screen
+        for(int x = 0; x < mapWidth; x++) {
+            for(int y = 0; y < mapHeight; y++) {
+                worldRenderer->drawQuad(x, y, 0.0f, 0.0f, 0.0f, currentMapSize);
+            }
+        }
+
+        // Text Desplayed
+        textRenderer->render("TOP SCORES", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
+        // adding top scores virkni --------------------- Sína alla top x marga stig
+
+        textRenderer->render("Press T to see Top Scores", 320.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press SPACE to go to Start Screen", 320.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press Q to Quit", 320.0f, 550.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+    }
 }
 
 
@@ -398,21 +440,21 @@ void Game::scoreCalculator() {
 }
 
 void Game::addInitials() {
-    for(int x = mapWidth ; x > 0; x--) {
-        for(int y = mapHeight; y > mapHeight; y--) {
-            drawQuad(x, y, 0.248f, 0.222f, 0.126f); // Colors blue
-        }
-    }
+    // for(int x = mapWidth ; x > 0; x--) {
+    //     for(int y = mapHeight; y > mapHeight; y--) {
+    //         drawQuad(x, y, 0.248f, 0.222f, 0.126f); // Colors blue
+    //     }
+    // }
 
     // draw text over the background
-    renderText("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
+    textRenderer->render("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
     // controls
-    renderText("Map size:", 10.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow
-    renderText("Press 1 for Small", 10.0f, 55.0f, 0.8f, 1.0f, 1.0f, 0.0f); 
-    renderText("Press 2 for Medium", 10.0f, 80.0f, 0.8f, 1.0f, 1.0f, 0.0f);
-    renderText("Press 3 for Large", 10.0f, 105.0f, 0.8f, 1.0f, 1.0f, 0.0f);
+    textRenderer->render("Map size:", 10.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow
+    textRenderer->render("Press 1 for Small", 10.0f, 55.0f, 0.8f, 1.0f, 1.0f, 0.0f); 
+    textRenderer->render("Press 2 for Medium", 10.0f, 80.0f, 0.8f, 1.0f, 1.0f, 0.0f);
+    textRenderer->render("Press 3 for Large", 10.0f, 105.0f, 0.8f, 1.0f, 1.0f, 0.0f);
 
     // instructions
-    renderText("Press SPACE to start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
-    renderText("Press Q to quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+    textRenderer->render("Press SPACE to start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
+    textRenderer->render("Press Q to quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
 }
