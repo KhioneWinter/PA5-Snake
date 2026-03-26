@@ -22,7 +22,7 @@ else
     # Linux settings
     TARGET = Snake.out
     LDFLAGS = -lglfw -lGL -lpthread -ldl -lm
-
+    CXXFLAGS += -DMA_ENABLE_ALSA # for miniaudio on Linux
 endif
 
 
