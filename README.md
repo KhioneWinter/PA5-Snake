@@ -90,11 +90,13 @@ SnakeGame/
 ├── Score.h / Score.cpp
 ├── Leaderboard.h / Leaderboard.cpp
 │
+├── AudioManager.h / AudioManager.cpp
+│
 ├── glad/                   # OpenGL loader
 ├── GLFW/                   # GLFW header files
 ├── KHR/                    # OpenGL header files
-├── stb_truetype.h          # font rendering
-├── miniaudio_impl.cpp / miniaudio.h  # audio rendering
+├── stb_truetype.h          # font rendering library
+├── miniaudio_impl.cpp / miniaudio.h  # audio rendering library
 
 lib/ 
 │
@@ -173,6 +175,7 @@ class Game {
     + update()
     + render()
     + handleInput(GLFWwindow* window)
+    + gameOver(message)
 
     + scoreCalculator()
 }
@@ -202,6 +205,8 @@ class Snake {
 
     - directionX: int
     - directionY: int
+
+    - body: vector<pair<int, int>>
 
     - dead: bool
     - r: float %% red color component
@@ -290,8 +295,8 @@ class Leaderboard {
 }
 
 class AudioManager {
-    - engines
-    - sounds
+    - engine: ma_engine
+    - sounds: std::map<string, ma_sound>
     - initialized: bool
 
     + init(): bool
