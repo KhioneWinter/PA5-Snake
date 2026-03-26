@@ -38,6 +38,9 @@ private:
     unsigned int fontTexture;
     stbtt_bakedchar cdata[96]; // holds the character coordinates
 
+    // game data
+    std::string deathMessage = "";
+
 public:
     Game();
     ~Game();
