@@ -90,10 +90,11 @@ SnakeGame/
 ├── Score.h / Score.cpp
 ├── Leaderboard.h / Leaderboard.cpp
 │
-├── glad/           # OpenGL loader
-├── GLFW/           # GLFW header files
-├── KHR/            # OpenGL header files
-├── stb_truetype.h  # font rendering
+├── glad/                   # OpenGL loader
+├── GLFW/                   # GLFW header files
+├── KHR/                    # OpenGL header files
+├── stb_truetype.h          # font rendering
+├── miniaudio_impl.cpp / miniaudio.h  # audio rendering
 
 lib/ 
 │
