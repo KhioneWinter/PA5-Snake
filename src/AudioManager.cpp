@@ -19,6 +19,27 @@ bool AudioManager::init() {
         std::cout << "AUDIO ERROR: Could not start engine! Code: " << result << std::endl;
         return false;
     }
+
+    // List of all your sound paths
+    std::vector<std::string> paths = {
+        backgroundMusicPath,
+        eatFoodSoundPath,
+        loseSoundPath,
+        powerupSoundPath,
+        selectSoundPath
+    };
+    std::cout << "--- Audio Asset Check ---" << std::endl;
+    for (const auto& path : paths) {
+        std::ifstream f(path.c_str());
+        if (f.good()) {
+            std::cout << "[OK] Found: " << path << std::endl;
+        } else {
+            std::cout << "[ERROR] Missing: " << path << " (Check your assets folder!)" << std::endl;
+        }
+    }
+    std::cout << "-------------------------" << std::endl;
+
+
     std::cout << "Audio Engine Started Successfully." << std::endl;
     initialized = true;
     return true;
