@@ -8,6 +8,9 @@ ifeq ($(OS),Windows_NT)
 
     LDFLAGS = -L./lib -lglfw3dll -lopengl32 -lgdi32 # for OpenGL and windowing
     LDFLAGS += -lwinmm -lole32 # audio
+
+    CXXFLAGS += -DMA_ENABLE_WINMM # for miniaudio on Windows
+
 else ifeq ($(shell uname -s),Darwin)
     # macOS settings
     TARGET = Snake.out
