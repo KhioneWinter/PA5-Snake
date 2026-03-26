@@ -300,7 +300,7 @@ void Game::render() {
         renderText("(Wrap around)",   610.0f, 120.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
 
         // --- INSTRUCTIONS ---
-        renderText("Press S to see Score Board", 250.0f, 550.0f, 1.5f, 0.255f, 0.0f, 0.0f); // Orange
+        renderText("Press T to see Top Scores", 240.0f, 500.0f, 1.2f, 1.0f, 1.0f, 0.0f); // Yellow
         renderText("Press SPACE to Start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
         renderText("Press Q to Quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
@@ -374,15 +374,16 @@ void Game::render() {
         renderText("GAME OVER", 230.0f, 180.0f, 3.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
 
         // small death msg
-        renderText(deathMessage, 300.0f, 210.0f, 0.8f, 1.0f, 1.0f, 1.0f); // White text
+        renderText(deathMessage, 300.0f, 220.0f, 0.8f, 1.0f, 1.0f, 1.0f); // White text
 
         // game stats
-        renderText("Final Score: " + std::to_string(score->getScore()), 310.0f, 310.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-        renderText("Fruit Eaten: " + std::to_string(score->getFoodAmount()), 310.0f, 340.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        renderText("Final Score: " + std::to_string(score->getScore()), 320.0f, 310.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        renderText("Fruit Eaten: " + std::to_string(score->getFoodAmount()), 320.0f, 340.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
         
         // controls
-        renderText("Press ---- to save score", 260.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-        renderText("Press SPACE to try again", 200.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f);
+        renderText("Press S to Save Score", 280.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        renderText("Press SPACE to Try Again", 200.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
+        renderText("Press Q to Quit", 320.0f, 550.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
 }
 
