@@ -1,19 +1,6 @@
 #include "Snake.hpp"
 #include <cstddef>  // for size_t
 
-#if defined(_WIN32) || defined(__CYGWIN__)
-
-#include <GL/gl.h>    // Windows
-
-#elif defined(__APPLE__)
-
-#include <OpenGL/gl3.h>  // macOS
-
-#else
-
-#include <GL/gl.h>    // Linux / other Unix
-
-#endif
 
 void Snake::move(int newX, int newY) {
     // 1. insert the current head position into the front of the body list
