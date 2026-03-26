@@ -147,6 +147,9 @@ void Game::gameOver(std::string message) {
 void Game::update(float deltaTime) {
     if (currentState != GameState::PLAYING) return;
 
+    // speed up slowly over time
+    snake->increaseSpeed(1); // increase speed by 1 every tick
+
     snake->updateBoost(deltaTime); // decrement booster timer if active
 
     // calculate where the snake is trying to go
