@@ -75,7 +75,8 @@ public:
     void update();
     void render();
     void handleInput(GLFWwindow* window);
-
+    
+    void gameOver(std::string message);
     void scoreCalculator();
 };
 

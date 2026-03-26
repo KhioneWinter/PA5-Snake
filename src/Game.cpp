@@ -147,6 +147,7 @@ void Game::handleInput(GLFWwindow* window) {
             spawnRandomFood();
             
             currentState = GameState::PLAYING;
+            audio->playMusic(audio->backgroundMusicPath.c_str(), true);
             std::cout << "\nGame started! Use Arrow Keys to move." << std::endl;
         }
 
@@ -163,6 +164,23 @@ void Game::handleInput(GLFWwindow* window) {
     }
 }
 
+
+void Game::gameOver(std::string message) {
+    deathMessage = message;
+
+    scoreCalculator();
+    std::cout << "\n---------------------------" << std::endl;
+    std::cout << message << std::endl;
+    std::cout << "Game Over! Score: " << score->getScore();
+    std::cout << "\n---------------------------";
+    std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
+    currentState = GameState::GAME_OVER;
+
+    if (audio) {
+        audio->stopMusic(audio->backgroundMusicPath.c_str());
+        audio->playSound(audio->loseSoundPath.c_str());
+    }
+}
 
 void Game::update() {
     if (currentState != GameState::PLAYING) return;
@@ -185,26 +203,14 @@ void Game::update() {
     } else {
         // Solid wall logic: die if we go out of bounds
         if (!map->isInside(nextX, nextY)) {
-            scoreCalculator();
-            deathMessage = "Ouch! You hit a wall!";
-            std::cout << "Game Over! Hit a wall. Score: " << score->getScore();
-            std::cout << "\n---------------------------";
-            std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
-            currentState = GameState::GAME_OVER;
-            audio->playSound(audio->loseSoundPath.c_str());
+            gameOver("Ouch! You hit a wall!");
             return;
         }
     }
 
     // check Self-Collision
     if (snake->checkCollision(nextX, nextY)) {
-        scoreCalculator();
-        deathMessage = "Stop eating yourself!";
-        std::cout << "Game Over! You bit yourself. Score: " << score->getScore();
-        std::cout << "\n---------------------------";
-        std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
-        currentState = GameState::GAME_OVER;
-        audio->playSound(audio->loseSoundPath.c_str());
+        gameOver("Oh no! You ran into yourself!");
         return;
     }
 
@@ -217,12 +223,11 @@ void Game::update() {
     for (auto it = activeFoods.begin(); it != activeFoods.end(); ) {
         if (snake->getX() == (*it)->x && snake->getY() == (*it)->y) {
             Food* eatenFood = *it;
+            
             eatenFood->applyEffect(*snake);
             audio->playSound(audio->eatFoodSoundPath.c_str());
-            if (eatenFood->isBomb()) {
-                deathMessage = "KABOOM! You ate a bomb!";
-                std::cout << "\nKABOOM! You ate a bomb!" << std::endl;
-            } else {
+
+            if (!eatenFood->isBomb()) {
                 int pointsGained = 10 * snake->getScoreMultiplier();
                 score->increase(pointsGained);
                 
@@ -247,11 +252,7 @@ void Game::update() {
     
     // Check if the snake died from a bomb
     if (snake->isDead()) {
-        std::cout << "\n---------------------------";
-        std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
-        currentState = GameState::GAME_OVER;
-        audio->playSound(audio->loseSoundPath.c_str());
-        return;
+        gameOver("KABOOM! You ate a bomb!");
     }
 
     if (ateFood) { // only spawn food if we ate something (don't want too much food on the map)

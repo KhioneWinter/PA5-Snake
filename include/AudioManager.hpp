@@ -15,7 +15,7 @@ public:
     bool init();
     void playSound(const std::string& name);
     void playMusic(const std::string& name, bool loop = true);
-    void stopAll();
+    void stopMusic(const std::string& name);
 
     // paths to sounds
     std::string loseSoundPath = "assets/lose.wav";

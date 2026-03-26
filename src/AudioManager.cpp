@@ -37,3 +37,10 @@ void AudioManager::playMusic(const std::string& filePath, bool loop) {
     ma_sound_set_looping(&sounds[filePath], loop);
     ma_sound_start(&sounds[filePath]);
 }
+
+void AudioManager::stopMusic(const std::string& name) {
+    auto it = sounds.find(name);
+    if (it != sounds.end()) {
+        ma_sound_stop(&it->second); // stops the miniaudio sound object
+    }
+}
