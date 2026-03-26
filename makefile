@@ -6,10 +6,12 @@ ifeq ($(OS),Windows_NT)
     # Windows settings
     TARGET = Snake.exe
     LDFLAGS = -L./lib -lglfw3dll -lopengl32 -lgdi32
+    LDFLAGS += -lwinmm # audio
 else ifeq ($(shell uname -s),Darwin)
     # macOS settings
     TARGET = Snake.out
     LDFLAGS = -L/opt/homebrew/lib -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+    LDFLAGS += -framework CoreFoundation -framework CoreAudio -framework AudioToolbox # audio
 
 else 
     TARGET = Snake.out
@@ -20,6 +22,7 @@ endif
 
 
 SRC = src/main.cpp \
+    src/AudioManager.cpp src/miniaudio_impl.cpp \
     src/Game.cpp src/Snake.cpp src/Map.cpp src/Score.cpp \
     src/Food.cpp
 
