@@ -260,16 +260,16 @@ void Game::render() {
         renderText("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
 
         // --- MAP SIZE SETTINGS ---
-        renderText("Map size:", 50.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
+        renderText("Map size:", 30.0f, 40.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
         
-        renderText("Press 1 for Small",  70.0f, 60.0f, 1.0f, 1.0f, (currentMapSize == MapSize::SMALL ? 0.4f : 1.0f), (currentMapSize == MapSize::SMALL ? 0.7f : 1.0f));
-        renderText("Press 2 for Medium", 70.0f, 90.0f, 1.0f, 1.0f, (currentMapSize == MapSize::MEDIUM ? 0.4f : 1.0f), (currentMapSize == MapSize::MEDIUM ? 0.7f : 1.0f));
-        renderText("Press 3 for Large",  70.0f, 120.0f, 1.0f, 1.0f, (currentMapSize == MapSize::LARGE ? 0.4f : 1.0f), (currentMapSize == MapSize::LARGE ? 0.7f : 1.0f));
+        renderText("Press 1: Small",  40.0f, 80.0f, 1.0f, 1.0f, (currentMapSize == MapSize::SMALL ? 0.4f : 1.0f), (currentMapSize == MapSize::SMALL ? 0.7f : 1.0f));
+        renderText("Press 2: Medium", 40.0f, 110.0f, 1.0f, 1.0f, (currentMapSize == MapSize::MEDIUM ? 0.4f : 1.0f), (currentMapSize == MapSize::MEDIUM ? 0.7f : 1.0f));
+        renderText("Press 3: Large",  40.0f, 140.0f, 1.0f, 1.0f, (currentMapSize == MapSize::LARGE ? 0.4f : 1.0f), (currentMapSize == MapSize::LARGE ? 0.7f : 1.0f));
 
         // --- WALL MODE SETTINGS ---
-        renderText("Wall Mode:", 50.0f, 160.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
-        renderText("Press B : Bounded Walls (Die on hit)", 70.0f, 190.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
-        renderText("Press L : Loop Walls (Wrap around)",   70.0f, 220.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
+        renderText("Wall Mode:", 30.0f, 180.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
+        renderText("Press B : Bounded Walls (Die on hit)", 40.0f, 210.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
+        renderText("Press L : Loop Walls (Wrap around)",   40.0f, 240.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
 
         // --- INSTRUCTIONS ---
         renderText("Press SPACE to start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
@@ -472,12 +472,24 @@ void Game::renderText(const std::string& text, float x, float y, float scale, fl
     glUseProgram(textShaderProgram);
     glUniform3f(glGetUniformLocation(textShaderProgram, "textColor"), r, g, b);
 
-    
-    // dynamically get the real screen size for Mac
+
+    // get the CURRENT actual window size in pixels
     GLint vp[4];
     glGetIntegerv(GL_VIEWPORT, vp);
-    glUniform2f(glGetUniformLocation(textShaderProgram, "screenSize"), (float)vp[2], (float)vp[3]); 
-    
+    float screenWidth = (float)vp[2];
+    float screenHeight = (float)vp[3];
+    glUniform2f(glGetUniformLocation(textShaderProgram, "screenSize"), screenWidth, screenHeight);
+
+    // --- responsive UI scaling ---
+        // 800x600 screen
+    float scaleX = screenWidth / 800.0f;
+    float scaleY = screenHeight / 600.0f;
+    x *= scaleX;
+    y *= scaleY;
+    scale *= std::min(scaleX, scaleY); // multiply font scale
+
+
+    // bind texture and VAO
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, fontTexture);
     glBindVertexArray(textVAO);
