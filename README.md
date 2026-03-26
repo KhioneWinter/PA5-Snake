@@ -57,8 +57,8 @@ Then we have executable file:
 | ----------------- | ----------------- |
 | `./Snake.out`     | `./Snake.exe`     |
 
-<em>Note: the program might not detect the correct OS, therefore the executable name might still be `Snake.out` even though you are on Windows</em>
-<em>Note2: on Mac, to have the screen size fit properly, you may need to adjust the window size manually after launching the game</em>
+<br><em>Note: the program might not detect the correct OS, therefore the executable name might still be `Snake.out` even though you are on Windows.</em>
+<br><em>Note2: on Mac, to have the screen size fit properly, you may need to adjust the window size manually after launching the game</em>
 
 
 ### Clean compiled files:
