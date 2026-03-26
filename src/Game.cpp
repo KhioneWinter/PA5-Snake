@@ -64,9 +64,9 @@ void Game::start() {
     std::cout << "===========================" << std::endl;
     std::cout << " SETTINGS:" << std::endl;
     std::cout << " Press 1 : Small Map" << std::endl;
-    std::cout << " Press 2 : Medium Map (Default)" << std::endl;
+    std::cout << " Press 2 : Medium Map" << std::endl;
     std::cout << " Press 3 : Large Map" << std::endl;
-    std::cout << " Press B : Bounded Walls (Die on hit - Default)" << std::endl;
+    std::cout << " Press B : Bounded Walls (Die on hit)" << std::endl;
     std::cout << " Press L : Loop Walls (Wrap around)" << std::endl;
     std::cout << "---------------------------" << std::endl;
     std::cout << " Press SPACE to start!     \n" << std::endl;
