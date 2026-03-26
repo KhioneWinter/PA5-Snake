@@ -1,5 +1,7 @@
 #include "AudioManager.hpp"
 #include <iostream>
+#include <fstream>
+#include <vector>
 
 AudioManager::AudioManager() : initialized(false) {}
 
@@ -28,7 +30,7 @@ bool AudioManager::init() {
         powerupSoundPath,
         selectSoundPath
     };
-    std::cout << "--- Audio Asset Check ---" << std::endl;
+    std::cout << "\n--- Audio Asset Check ---" << std::endl;
     for (const auto& path : paths) {
         std::ifstream f(path.c_str());
         if (f.good()) {
@@ -37,7 +39,7 @@ bool AudioManager::init() {
             std::cout << "[ERROR] Missing: " << path << " (Check your assets folder!)" << std::endl;
         }
     }
-    std::cout << "-------------------------" << std::endl;
+    std::cout << "-------------------------\n\n" << std::endl;
 
 
     std::cout << "Audio Engine Started Successfully." << std::endl;
