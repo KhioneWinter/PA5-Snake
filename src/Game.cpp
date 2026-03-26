@@ -102,6 +102,9 @@ void Game::handleInput(GLFWwindow* window) {
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { // Allows users to quit the game
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
+        if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+            currentState = GameState::ADD_INITIALS;
+        }
         return; // any other input
     }
     if (currentState == GameState::START_SCREEN) {
@@ -144,6 +147,15 @@ void Game::handleInput(GLFWwindow* window) {
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && dy != 1)   { dx = 0; dy = -1; }
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && dx != 1)   { dx = -1; dy = 0; }
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && dx != -1) { dx = 1; dy = 0; }
+    }
+    if (currentState == GameState::ADD_INITIALS) {
+        if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { 
+            addInitials(); 
+        }
+    }
+
+    if (currentState == GameState::SCORE_BOARD) {
+        
     }
 }
 
@@ -504,4 +516,24 @@ void Game::scoreCalculator() {
     score -> endTime();
     score -> calculateTime();
     score -> timeAddedToFinal();
+}
+
+void Game::addInitials() {
+    for(int x = mapWidth ; x > 0; x--) {
+        for(int y = mapHeight; y > mapHeight; y--) {
+            drawQuad(x, y, 0.248f, 0.222f, 0.126f); // Colors blue
+        }
+    }
+
+    // draw text over the background
+    renderText("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
+    // controls
+    renderText("Map size:", 10.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow
+    renderText("Press 1 for Small", 10.0f, 55.0f, 0.8f, 1.0f, 1.0f, 0.0f); 
+    renderText("Press 2 for Medium", 10.0f, 80.0f, 0.8f, 1.0f, 1.0f, 0.0f);
+    renderText("Press 3 for Large", 10.0f, 105.0f, 0.8f, 1.0f, 1.0f, 0.0f);
+
+    // instructions
+    renderText("Press SPACE to start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
+    renderText("Press Q to quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
 }

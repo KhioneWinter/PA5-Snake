@@ -19,7 +19,9 @@ class Score;
 enum class GameState {
     START_SCREEN,
     PLAYING,
-    GAME_OVER
+    GAME_OVER,
+    ADD_INITIALS,
+    SCORE_BOARD
 };
 
 class Game {
@@ -73,6 +75,7 @@ public:
     void handleInput(GLFWwindow* window);
 
     void scoreCalculator();
+    void addInitials();
 };
 
 
