@@ -257,8 +257,8 @@ void Game::render() {
 
         // --- WALL MODE SETTINGS ---
         textRenderer->render("Wall Mode:", 30.0f, 180.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
-        textRenderer->render("Press B : Bounded Walls (Die on hit)", 40.0f, 210.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
-        textRenderer->render("Press L : Loop Walls (Wrap around)",   40.0f, 240.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
+        textRenderer->render("Press B: Bounded Walls (Die on hit)", 40.0f, 210.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
+        textRenderer->render("Press L: Loop Walls (Wrap around)",   40.0f, 240.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
 
         // --- INSTRUCTIONS ---
         textRenderer->render("Press SPACE to start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
@@ -331,6 +331,7 @@ void Game::render() {
         }
 
         // DRAW GAME OVER TEXT
+                                        // x, y, scale, r, g, b, a
         textRenderer->render("GAME OVER", 230.0f, 180.0f, 3.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
 
         // small death msg
@@ -341,8 +342,9 @@ void Game::render() {
         textRenderer->render("Fruit Eaten: " + std::to_string(score->getFoodAmount()), 310.0f, 340.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         
         // controls
-        textRenderer->render("Press ---- to save score", 260.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-        textRenderer->render("Press SPACE to try again", 200.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f);
+        textRenderer->render("Press ---- to save score", 260.0f, 500.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        textRenderer->render("Press SPACE to try again", 220.0f, 550.0f, 1.3f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press Q to quit", 300.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
 }
 
