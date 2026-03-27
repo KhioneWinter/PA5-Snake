@@ -135,9 +135,7 @@ void Game::handleInput(GLFWwindow* window) {
         if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && wrapAround == true)  { wrapAround = false; std::cout << "Selected: BOUNDED WALLS\n"; audio->playSound(audio->selectSoundPath.c_str()); }
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && wrapAround == false) { wrapAround = true;  std::cout << "Selected: LOOP WALLS   \n"; audio->playSound(audio->selectSoundPath.c_str()); }
 
-        if (glfwGetKey(window, GLFW_KEY_T)) {
-            currentState = GameState::SCORE_BOARD;
-        }
+        if (glfwGetKey(window, GLFW_KEY_T)) { currentState = GameState::SCORE_BOARD; }
 
         // --- multiplayer toggle ---
         if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
@@ -229,8 +227,8 @@ void Game::update(float deltaTime) {
     globalSpeedTimer += deltaTime;
     if (globalSpeedTimer >= 5.0f) { 
         globalSpeedTimer = 0.0f; // reset timer
-        snake->increaseSpeed(0.01f); 
-        if (isMultiplayer) snake2->increaseSpeed(0.01f);
+        snake->increaseSpeed(0.005f); 
+        if (isMultiplayer) snake2->increaseSpeed(0.005f);
     }
 
 
@@ -369,6 +367,7 @@ void Game::update(float deltaTime) {
                     pointsGained += 30;
                 }
 
+                eatingSnake->increaseSpeed(0.02f); // every food increases speed a little bit
 
                 activeScore->increase(pointsGained);
                 std::cout << "Score: " << activeScore->getScore() << std::endl;

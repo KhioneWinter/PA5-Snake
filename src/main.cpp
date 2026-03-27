@@ -61,7 +61,7 @@ int main()
         // calculate Delta Time
         auto currentFrameTime = std::chrono::steady_clock::now();
         std::chrono::duration<float> delta = currentFrameTime - lastFrameTime;
-        float deltaTime = delta.count(); // Time in seconds (e.g., 0.25)
+        float deltaTime = delta.count(); // Time in seconds
         lastFrameTime = currentFrameTime;
 
         // get input
@@ -77,9 +77,6 @@ int main()
 
         glfwSwapBuffers(window);
         glfwPollEvents();    
-
-        // slow down framerate
-        glfwWaitEventsTimeout(0.25); // wait 500ms between frames
     }
 
     glfwTerminate();
