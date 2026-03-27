@@ -34,14 +34,14 @@ cmake -- build
 - A graphics driver that supports OpenGL 4.1+ (usually already installed)
 <br><em>Note: macOS supports up to OpenGL 4.1 maximum.</em>
 
-for mac:
+<span>for mac:</span>
 - glfw (for graphics rendering)
 ```bash
 brew install glfw
 ```
 
 
-for windows/linux:
+<span>for windows/linux:</span>
 - audio library (miniaudio)
 ```bash
 sudo apt install pulseaudio pulseaudio-utils alsa-utils
