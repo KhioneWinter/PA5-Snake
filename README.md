@@ -213,6 +213,8 @@ class Game {
 
     + dy: int %% next movement direction
     + dx: int %% next movement direction
+    + p1MoveTimer: float
+    + globalSpeedTimer: float
 
     + randEngine
     + activeFoods
@@ -227,11 +229,12 @@ class Game {
     + scoreCalculator()
 
     %% multiplayer attributes
-    isMultiplayer: bool
-    Snake snake2
-    Score score2
-    dx2: int  %% next movement direction
-    dy2: int  %% next movement direction
+    + isMultiplayer: bool
+    + Snake snake2
+    + Score score2
+    + dx2: int  %% next movement direction
+    + dy2: int  %% next movement direction
+    + p2MoveTimer: float
 }
 
 class Map {
@@ -252,7 +255,7 @@ class Snake {
     - x: int %% head row
     - y: int %% head col
     - length: int
-    - speed: int
+    - speed: float
 
     - scoreMultiplier: int
     - boostTimer: float
@@ -267,16 +270,17 @@ class Snake {
     - g: float %% green color component
     - b: float %% blue color component
 
+    + update()
+    + render()
+
     + move()
     + grow()
     + checkSelfCollision(newX, newY) bool
 
-    + update()
-    + render()
-
     + getY() int
     + getX() int
     + getBody()
+    + getSpeed() float
 
     + kill()
     + isDead() bool

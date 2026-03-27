@@ -67,6 +67,8 @@ public:
     // track movement (next direction)
     int dx;
     int dy;
+    float p1MoveTimer = 0.0f;
+    float globalSpeedTimer = 0.0f; // speed up snake every 10 sec
 
     // food management
     std::subtract_with_carry_engine<uint32_t, 24, 10, 24> randEngine;
@@ -93,6 +95,7 @@ public:
     Snake* snake2;
     Score* score2;
     int dx2, dy2; // next direction
+    float p2MoveTimer = 0.0f;
 };
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

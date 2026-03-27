@@ -196,7 +196,10 @@ void Game::gameOver(std::string message) {
 }
 
 void Game::update(float deltaTime) {
-    // --- COUNTDOWN LOGIC ---
+    if (currentState != GameState::PLAYING && currentState != GameState::COUNTDOWN) return;
+
+
+    // --------- COUNTDOWN LOGIC (before game starts) ---------
     if (currentState == GameState::COUNTDOWN) {
         countdownTimer -= deltaTime;
         int currentSecond = (int)countdownTimer;
@@ -215,105 +218,115 @@ void Game::update(float deltaTime) {
     }
 
 
-    if (currentState != GameState::PLAYING) return;
-
-    // --- speed up slowly over time ---
-    snake->increaseSpeed(1);
-    if (isMultiplayer) snake2->increaseSpeed(1); 
+    // --------- MAIN GAME LOGIC (game has started) ---------
 
     // --- decrement booster timer if active ---
     snake->updateBoost(deltaTime);
     if (isMultiplayer) snake2->updateBoost(deltaTime);
 
-    // --- Player 1 Movement ---
-    // calculate where the snake is trying to go
-    int nextX = snake->getX() + dx;
-    int nextY = snake->getY() + dy;
 
-    // -- Player 2 Movement ---
-    int nextX2 = 0, nextY2 = 0;
-    if (isMultiplayer) {
+    // --- speed up slowly over time (every 5 seconds) ---
+    globalSpeedTimer += deltaTime;
+    if (globalSpeedTimer >= 5.0f) { 
+        globalSpeedTimer = 0.0f; // reset timer
+        snake->increaseSpeed(0.01f); 
+        if (isMultiplayer) snake2->increaseSpeed(0.01f);
+    }
+
+
+
+    // ------------------------------------------
+    //    MOVEMENT LOGIC and COLLISION CHECKS
+    // ------------------------------------------
+
+    // --- add time to movement timers ---
+    p1MoveTimer += deltaTime;
+    if (isMultiplayer) p2MoveTimer += deltaTime;
+
+    // --- check WHO is moving this frame ---
+    bool p1Moved = (p1MoveTimer >= snake->getSpeed());
+    bool p2Moved = (isMultiplayer && p2MoveTimer >= snake2->getSpeed());
+    if (!p1Moved && !p2Moved) return; // if no one moved
+
+    // reset timers for whoever moved
+    if (p1Moved) p1MoveTimer = 0.0f;
+    if (p2Moved) p2MoveTimer = 0.0f;
+
+
+    // --- Calculate Next Positions ---
+    int nextX = p1Moved ? snake->getX() + dx : snake->getX();
+    int nextY = p1Moved ? snake->getY() + dy : snake->getY();
+
+    int nextX2 = (isMultiplayer) ? snake2->getX() : 0;
+    int nextY2 = (isMultiplayer) ? snake2->getY() : 0;
+    if (p2Moved) {
         nextX2 = snake2->getX() + dx2;
         nextY2 = snake2->getY() + dy2;
-
-        // --- Rule 1: Head-to-Head Collision ---
-        if (nextX == nextX2 && nextY == nextY2) {
-            if (score->getScore() > score2->getScore()) {
-                gameOver("Player 1 Wins! Head to Head with higher score.");
-            } else if (score2->getScore() > score->getScore()) {
-                gameOver("Player 2 Wins! Head to Head with higher score.");
-            } else {
-                gameOver("Head to Head! It's a Tie!");
-            }
-            return;
-        }
-
-        // --- Rule 2: P1 Head hits P2 Body ---
-        if (snake2->checkCollision(nextX, nextY)) {
-            gameOver(getMultiplayerWinnerMessage(score, score2));
-            return;
-        }
-
-        // --- Rule 3: P2 Head hits P1 Body ---
-        if (snake->checkCollision(nextX2, nextY2)) {
-            gameOver(getMultiplayerWinnerMessage(score, score2));
-            return;
-        }
     }
 
-    // check Map Boundaries
-    if (wrapAround) {
-        // Wrap logic: if we go out of bounds, appear on the other side
-        if (nextX < 0) nextX = map->getWidth() - 1;
-        if (nextX >= map->getWidth()) nextX = 0;
-        if (nextY < 0) nextY = map->getHeight() - 1;
-        if (nextY >= map->getHeight()) nextY = 0;
 
-        if (isMultiplayer) {
-            if (nextX2 < 0) nextX2 = map->getWidth() - 1;
-            if (nextX2 >= map->getWidth()) nextX2 = 0;
-            if (nextY2 < 0) nextY2 = map->getHeight() - 1;
-            if (nextY2 >= map->getHeight()) nextY2 = 0;
-        }
-
-    } else {
-        // Solid wall logic: die if we go out of bounds
-        if (!map->isInside(nextX, nextY)) {
-            if (isMultiplayer) {
-                gameOver(getMultiplayerWinnerMessage(score, score2));
-            } else {
-                gameOver("Ouch! You hit a wall!");
-            }
-            return;
-        }
-
-        if (isMultiplayer) {
-            if (!map->isInside(nextX2, nextY2)) {
-                gameOver(getMultiplayerWinnerMessage(score, score2));
-                return;
-            }
-        }
-    }
-
-    // check Self-Collision
-    if (snake->checkCollision(nextX, nextY)) {
-        if (isMultiplayer) {
-            gameOver(getMultiplayerWinnerMessage(score, score2));
-        } else {
-            gameOver("Oh no! You ran into yourself!");
-        }
+    // --- Rule 1: Head-to-Head Collision ---
+        // BOTH snakes moved into the exact same tile on the exact same frame
+    if (isMultiplayer && p1Moved && p2Moved && nextX == nextX2 && nextY == nextY2) {
+        if (score->getScore() > score2->getScore()) gameOver("Player 1 Wins! Head to Head with higher score.");
+        else if (score2->getScore() > score->getScore()) gameOver("Player 2 Wins! Head to Head with higher score.");
+        else gameOver("Head to Head! It's a Tie!");
         return;
     }
+
+    // --- Rule 2: Hitting the other snake's body ---
     if (isMultiplayer) {
+        if (p1Moved && snake2->checkCollision(nextX, nextY)) {
+            gameOver(getMultiplayerWinnerMessage(score, score2));
+            return;
+        }
+        if (p2Moved && snake->checkCollision(nextX2, nextY2)) {
+            gameOver(getMultiplayerWinnerMessage(score, score2));
+            return;
+        }
+    }
+
+
+    // --- Map Boundaries & Self Collision ---
+    if (p1Moved) {
+        // Wall logic
+        if (wrapAround) {
+            if (nextX < 0) nextX = map->getWidth() - 1;
+            else if (nextX >= map->getWidth()) nextX = 0;
+            if (nextY < 0) nextY = map->getHeight() - 1;
+            else if (nextY >= map->getHeight()) nextY = 0;
+        } else if (!map->isInside(nextX, nextY)) {
+            gameOver(isMultiplayer ? getMultiplayerWinnerMessage(score, score2) : "Ouch! You hit a wall!");
+            return;
+        }
+        // Self collision
+        if (snake->checkCollision(nextX, nextY)) {
+            gameOver(isMultiplayer ? getMultiplayerWinnerMessage(score, score2) : "Oh no! You ran into yourself!");
+            return;
+        }
+        // move P1
+        snake->move(nextX, nextY);
+    }
+
+    if (p2Moved) {
+        // Wall logic
+        if (wrapAround) {
+            if (nextX2 < 0) nextX2 = map->getWidth() - 1;
+            else if (nextX2 >= map->getWidth()) nextX2 = 0;
+            if (nextY2 < 0) nextY2 = map->getHeight() - 1;
+            else if (nextY2 >= map->getHeight()) nextY2 = 0;
+        } else if (!map->isInside(nextX2, nextY2)) {
+            gameOver(getMultiplayerWinnerMessage(score, score2));
+            return;
+        }
+        // Self collision
         if (snake2->checkCollision(nextX2, nextY2)) {
             gameOver(getMultiplayerWinnerMessage(score, score2));
             return;
         }
+        // move P2
+        snake2->move(nextX2, nextY2);
     }
-
-    // Move the snake
-    snake->move(nextX, nextY);
-    if (isMultiplayer) snake2->move(nextX2, nextY2);
 
 
     // Check Food Collisions
@@ -343,8 +356,6 @@ void Game::update(float deltaTime) {
                 int pointsGained = 10 * eatingSnake->getScoreMultiplier();
                 activeScore->increase(pointsGained);
                 
-                std::cout << "Score: " << activeScore->getScore();
-
                 // snake powerup
                 if (eatingSnake->getScoreMultiplier() > 1) {
                     // snake power up
@@ -354,10 +365,14 @@ void Game::update(float deltaTime) {
 
                 // snake speed increase
                 if (dynamic_cast<SpeedFood*>(eatenFood)) {
-                    std::cout << " (SPEED UP!)";
+                    std::cout << " (SPEED UP! +30 bonus points!)";
+                    pointsGained += 30;
                 }
 
-                std::cout << std::endl;
+
+                activeScore->increase(pointsGained);
+                std::cout << "Score: " << activeScore->getScore() << std::endl;
+
                 activeScore -> incrementFoodAmount();
                 ateFood = true; // Mark that we need to spawn food
             }

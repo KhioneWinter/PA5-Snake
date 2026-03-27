@@ -15,7 +15,7 @@ void BombFood::applyEffect(Snake& snake) {
 // Speed Food - increases your speed multiplier
 void SpeedFood::applyEffect(Snake& snake) {
     snake.grow();
-    snake.increaseSpeed(200);
+    snake.increaseSpeed(0.05f); // 20% speed boost
 }
 
 // Score increase food - increases score multiplier for Y time
