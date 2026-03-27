@@ -394,6 +394,26 @@ void Game::render() {
     }
 
 
+    else if (currentState == GameState::COUNTDOWN) {
+        // Draw Map dynamically
+        for (int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight; y++) {
+                if ((x+y) % 2 == 0) {
+                    worldRenderer->drawQuad(x, y, 0.20f, 0.20f, 0.20f, currentMapSize); 
+                } else {
+                    worldRenderer->drawQuad(x, y, 0.25f, 0.25f, 0.25f, currentMapSize); 
+                }
+            } 
+        }
+
+        // Draw the big countdown number
+        int displayNum = (int)countdownTimer;
+        if (displayNum > 0) {
+            // Big yellow number
+            textRenderer->render(std::to_string(displayNum), 380.0f, 300.0f, 5.0f, 1.0f, 1.0f, 0.0f);
+        }
+    }
+
     else if (currentState == GameState::PLAYING) {
         // Draw Map dynamically based on width and height
         for (int x = 0; x < mapWidth; x++) {
