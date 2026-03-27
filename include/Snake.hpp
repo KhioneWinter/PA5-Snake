@@ -46,7 +46,7 @@ public:
     void increaseSpeed(float amount = 0.01f) {
         if (amount < 0) return; if (speed < 0.05f) speed = 0.05f;
         speed -= amount;
-        if (speed < 0.05f) speed = 0.05f; // cap max speed
+        if (speed < 0.04f) speed = 0.04f; // cap max speed
     }
     void applyScoreBoost(int multiplier, int duration) { scoreMultiplier = multiplier; boostTimer = duration; }
     int getBoostTime() const { return boostTimer; }
