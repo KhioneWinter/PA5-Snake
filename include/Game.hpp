@@ -65,8 +65,10 @@ public:
     bool wrapAround;
 
     // track movement (next direction)
-    int dx;
-    int dy;
+    int dx; // next direction
+    int dy; // next direction
+    int lastDx = 1; // tracking so snake doesn't reverse into itself
+    int lastDy = 0; // tracking so snake doesn't reverse into itself
     float p1MoveTimer = 0.0f;
     float globalSpeedTimer = 0.0f; // speed up snake every 10 sec
 
@@ -100,6 +102,8 @@ public:
     Snake* snake2;
     Score* score2;
     int dx2, dy2; // next direction
+    int lastDx2 = -1;
+    int lastDy2 = 0;
     float p2MoveTimer = 0.0f;
 };
 

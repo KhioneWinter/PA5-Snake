@@ -213,6 +213,8 @@ class Game {
 
     + dy: int %% next movement direction
     + dx: int %% next movement direction
+    + lastDx: int
+    + lastDy: int
     + p1MoveTimer: float
     + globalSpeedTimer: float
 
@@ -238,6 +240,8 @@ class Game {
     + Score score2
     + dx2: int  %% next movement direction
     + dy2: int  %% next movement direction
+    + lastDx2: int
+    + lastDy2: int
     + p2MoveTimer: float
 }
 

@@ -171,17 +171,17 @@ void Game::handleInput(GLFWwindow* window) {
         // prevent snake from moving into itself == disallowing reverse direction
 
         // Player 1 controls
-        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && dy != -1)    { dx = 0; dy = 1; }
-        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && dy != 1)   { dx = 0; dy = -1; }
-        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && dx != 1)   { dx = -1; dy = 0; }
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && dx != -1) { dx = 1; dy = 0; }
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && lastDy != -1)    { dx = 0; dy = 1; }
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && lastDy != 1)   { dx = 0; dy = -1; }
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && lastDx != 1)   { dx = -1; dy = 0; }
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && lastDx != -1) { dx = 1; dy = 0; }
 
         // Player 2 controls
         if (isMultiplayer) {
-            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && dy2 != -1) { dx2 = 0; dy2 = 1; }
-            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && dy2 != 1)  { dx2 = 0; dy2 = -1; }
-            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && dx2 != 1)  { dx2 = -1; dy2 = 0; }
-            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && dx2 != -1) { dx2 = 1; dy2 = 0; }
+            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && lastDy2 != -1) { dx2 = 0; dy2 = 1; }
+            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && lastDy2 != 1)  { dx2 = 0; dy2 = -1; }
+            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && lastDx2 != 1)  { dx2 = -1; dy2 = 0; }
+            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && lastDx2 != -1) { dx2 = 1; dy2 = 0; }
         }
     }
 }
@@ -318,6 +318,8 @@ void Game::update(float deltaTime) {
         }
         // move P1
         snake->move(nextX, nextY);
+        lastDx = dx;
+        lastDy = dy;
     }
 
     if (p2Moved) {
@@ -338,6 +340,8 @@ void Game::update(float deltaTime) {
         }
         // move P2
         snake2->move(nextX2, nextY2);
+        lastDx2 = dx2;
+        lastDy2 = dy2;
     }
 
 
