@@ -18,9 +18,17 @@ static std::string getMultiplayerWinnerMessage(std::string reason, const Score* 
     int s2 = score2->getScore();
 
     std::string winner;
-    if (s1 > s2) winner = "Player 1 Wins on points!";
-    else if (s2 > s1) winner = "Player 2 Wins on points!";
-    else winner = "It's a Tie in points!";
+    if (s1 > s2) {
+        int diff = s1 - s2;
+        winner = "Player 1 Wins by " + std::to_string(diff) + " points!";
+    } 
+    else if (s2 > s1) {
+        int diff = s2 - s1;
+        winner = "Player 2 Wins by " + std::to_string(diff) + " points!";
+    } 
+    else {
+        winner = "It's a Tie in points!";
+    }
     
     return reason + " " + winner;
 }
