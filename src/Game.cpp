@@ -227,8 +227,6 @@ void Game::update(float deltaTime) {
     globalSpeedTimer += deltaTime;
     if (globalSpeedTimer >= 5.0f) { 
         globalSpeedTimer = 0.0f; // reset timer
-        snake->increaseSpeed(0.005f); 
-        if (isMultiplayer) snake2->increaseSpeed(0.005f);
     }
 
 
