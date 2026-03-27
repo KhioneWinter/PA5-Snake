@@ -1,29 +1,16 @@
 # PA5-Snake
-We are going to implement the classic Snake game using OpenGL.
-
 -----------------------------------------
+T-403-FORC - group 27
+
 Students:
 - Brynhildur Þorbjörg Þórhallsdóttir 
 - Herdís Heiða Jing Guðjohnsen
 - Sara Elísabet Jónsdóttir
 
-
-<!-- // bara var á töflunni -->
-#T-403-FORC - group 27
-
 Teachers:
 - Atli Fannar <atlif@ru.is>
 - Konráð Elí <konrad21@ru.is>
 - Teitur Hrólfur <teitur23@ru.is>
-
-<!-- ps- það er fyrir neðan
-#compile/run
-""" 
-cd build
-cmake ..
-cmake -- build
-""" -->
-
 ------------------------------------------
 
 
