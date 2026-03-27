@@ -50,7 +50,7 @@ public:
     MapSize currentMapSize;
     bool wrapAround;
 
-    // track food and movement
+    // track movement (next direction)
     int dx;
     int dy;
 
@@ -67,6 +67,13 @@ public:
     
     void gameOver(std::string message);
     void scoreCalculator();
+
+
+    // multiplayr (player 2)
+    bool isMultiplayer = false;
+    Snake* snake2;
+    Score* score2;
+    int dx2, dy2; // next direction
 };
 
 

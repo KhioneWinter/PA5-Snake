@@ -19,6 +19,9 @@ Game::Game() : currentState(GameState::START_SCREEN), currentMapSize(MapSize::SM
     snake = nullptr; 
     score = nullptr;
 
+    snake2 = nullptr;
+    score2 = nullptr;
+
     // init audio
     audio = new AudioManager();
     if (audio) {
@@ -38,8 +41,12 @@ Game::Game() : currentState(GameState::START_SCREEN), currentMapSize(MapSize::SM
 Game::~Game() {
     // clean up memory
     delete map;
+
     delete snake;
     delete score;
+
+    delete snake2;
+    delete score2;
 
     delete audio;
 
@@ -83,8 +90,10 @@ void Game::handleInput(GLFWwindow* window) {
         return; // any other input
     }
     if (currentState == GameState::START_SCREEN) {
-        
-        // settings bindings
+         // --- quit game ---
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+        // --- settings bindings ---
         if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && currentMapSize != MapSize::SMALL) { currentMapSize  = MapSize::SMALL; std::cout  << "Selected: SMALL MAP \n"; audio->playSound(audio->selectSoundPath.c_str()); }
         if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS && currentMapSize != MapSize::MEDIUM) { currentMapSize = MapSize::MEDIUM; std::cout << "Selected: MEDIUM MAP\n"; audio->playSound(audio->selectSoundPath.c_str()); }
         if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS && currentMapSize != MapSize::LARGE) { currentMapSize  = MapSize::LARGE; std::cout  << "Selected: LARGE MAP \n"; audio->playSound(audio->selectSoundPath.c_str()); }
@@ -92,37 +101,72 @@ void Game::handleInput(GLFWwindow* window) {
         if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && wrapAround == true)  { wrapAround = false; std::cout << "Selected: BOUNDED WALLS\n"; audio->playSound(audio->selectSoundPath.c_str()); }
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && wrapAround == false) { wrapAround = true;  std::cout << "Selected: LOOP WALLS   \n"; audio->playSound(audio->selectSoundPath.c_str()); }
 
-        // start Game
+        // --- multiplayer toggle ---
+        if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
+            isMultiplayer = !isMultiplayer;
+            std::cout << "Multiplayer: " << (isMultiplayer ? "ON" : "OFF") << std::endl;
+            audio->playSound(audio->selectSoundPath.c_str());
+        }
+
+        // --- start Game ---
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
             delete map; delete snake; delete score; // clean up old game if restarting
             // clean up old food
             for (Food* f : activeFoods) { delete f; }
             activeFoods.clear();
 
-
-            // initialize new game objects
+            // --- init new game objects ---
             map = new Map(currentMapSize);            
             MapDimensions dims = getDimensions(currentMapSize);
-            snake = new Snake(dims.width / 2, dims.height / 2);
             score = new Score(0);
             score -> startTime();
-            dx = 1; dy = 0;
             spawnRandomFood();
-            
+
+            // --- init snake ---
+            if (!isMultiplayer) {
+                // --- single player mode ---
+                snake = new Snake(dims.width / 2, dims.height / 2); // middle of map
+                dx = 1; dy = 0;
+            }
+            else { 
+                // --- multiplayer mode ---
+                // clean up old player 2
+                delete snake2; delete score2;
+
+                snake = new Snake(dims.width / 3, dims.height / 2);
+                snake->setColor(0.0f, 0.8f, 0.0f); // Green
+                dx = 1; dy = 0;
+
+                // Spawn P2 on the right, moving left
+                snake2 = new Snake((dims.width / 3) * 2, dims.height / 2);
+                snake2->setColor(0.0f, 0.5f, 0.9f); // Blue
+                dx2 = -1; dy2 = 0;
+
+                score2 = new Score(0);
+                score2 -> startTime();
+            }
             currentState = GameState::PLAYING;
             std::cout << "\nGame started! Use Arrow Keys to move." << std::endl;
         }
 
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { 
-            glfwSetWindowShouldClose(window, GLFW_TRUE); // Closes openGL game window
-        }
+
     }
     else if (currentState == GameState::PLAYING) {
         // prevent snake from moving into itself == disallowing reverse direction
+
+        // Player 1 controls
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && dy != -1)    { dx = 0; dy = 1; }
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && dy != 1)   { dx = 0; dy = -1; }
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && dx != 1)   { dx = -1; dy = 0; }
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && dx != -1) { dx = 1; dy = 0; }
+
+        // Player 2 controls
+        if (isMultiplayer) {
+            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && dy2 != -1) { dx2 = 0; dy2 = 1; }
+            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && dy2 != 1)  { dx2 = 0; dy2 = -1; }
+            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && dx2 != 1)  { dx2 = -1; dy2 = 0; }
+            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && dx2 != -1) { dx2 = 1; dy2 = 0; }
+        }
     }
 }
 
@@ -147,15 +191,43 @@ void Game::gameOver(std::string message) {
 void Game::update(float deltaTime) {
     if (currentState != GameState::PLAYING) return;
 
-    // speed up slowly over time
-    snake->increaseSpeed(1); // increase speed by 1 every tick
+    // --- speed up slowly over time ---
+    snake->increaseSpeed(1);
+    if (isMultiplayer) snake2->increaseSpeed(1); 
 
-    snake->updateBoost(deltaTime); // decrement booster timer if active
+    // --- decrement booster timer if active ---
+    snake->updateBoost(deltaTime);
+    if (isMultiplayer) snake2->updateBoost(deltaTime);
 
+    // --- Player 1 Movement ---
     // calculate where the snake is trying to go
     int nextX = snake->getX() + dx;
     int nextY = snake->getY() + dy;
 
+    // -- Player 2 Movement ---
+    int nextX2 = 0, nextY2 = 0;
+    if (isMultiplayer) {
+        nextX2 = snake2->getX() + dx2;
+        nextY2 = snake2->getY() + dy2;
+
+        // --- Rule 1: Head-to-Head Collision ---
+        if (nextX == nextX2 && nextY == nextY2) {
+            gameOver("Head to Head! It's a Tie!");
+            return;
+        }
+
+        // --- Rule 2: P1 Head hits P2 Body ---
+        if (snake2->checkCollision(nextX, nextY)) {
+            gameOver("Player 2 Wins! Player 1 crashed.");
+            return;
+        }
+
+        // --- Rule 3: P2 Head hits P1 Body ---
+        if (snake->checkCollision(nextX2, nextY2)) {
+            gameOver("Player 1 Wins! Player 2 crashed.");
+            return;
+        }
+    }
 
     // check Map Boundaries
     if (wrapAround) {
@@ -165,43 +237,87 @@ void Game::update(float deltaTime) {
         if (nextY < 0) nextY = map->getHeight() - 1;
         if (nextY >= map->getHeight()) nextY = 0;
 
+        if (isMultiplayer) {
+            if (nextX2 < 0) nextX2 = map->getWidth() - 1;
+            if (nextX2 >= map->getWidth()) nextX2 = 0;
+            if (nextY2 < 0) nextY2 = map->getHeight() - 1;
+            if (nextY2 >= map->getHeight()) nextY2 = 0;
+        }
+
     } else {
         // Solid wall logic: die if we go out of bounds
         if (!map->isInside(nextX, nextY)) {
-            gameOver("Ouch! You hit a wall!");
+            if (isMultiplayer) {
+                gameOver("Ouch! Player 1 hit a wall!");
+            } else {
+                gameOver("Ouch! You hit a wall!");
+            }
             return;
+        }
+
+        if (isMultiplayer) {
+            if (!map->isInside(nextX2, nextY2)) {
+                gameOver("Ouch! Player 2 hit a wall!");
+                return;
+            }
         }
     }
 
     // check Self-Collision
     if (snake->checkCollision(nextX, nextY)) {
-        gameOver("Oh no! You ran into yourself!");
+        if (isMultiplayer) {
+            gameOver("Oh no! Player 1 ran into themselves!");
+        } else {
+            gameOver("Oh no! You ran into yourself!");
+        }
         return;
+    }
+    if (isMultiplayer) {
+        if (snake2->checkCollision(nextX2, nextY2)) {
+            gameOver("Oh no! Player 2 ran into themselves!");
+            return;
+        }
     }
 
     // Move the snake
     snake->move(nextX, nextY);
+    if (isMultiplayer) snake2->move(nextX2, nextY2);
 
 
     // Check Food Collisions
     bool ateFood = false; // Flag to track if we need to spawn food
     for (auto it = activeFoods.begin(); it != activeFoods.end(); ) {
+
+        // see who is eating the food
+        Snake* eatingSnake = nullptr;
+        Score* activeScore = nullptr;
+
+        // Figure out WHICH snake hit the food
         if (snake->getX() == (*it)->x && snake->getY() == (*it)->y) {
+            eatingSnake = snake;
+            activeScore = score;
+        } else if (isMultiplayer && snake2->getX() == (*it)->x && snake2->getY() == (*it)->y) {
+            eatingSnake = snake2;
+            activeScore = score2;
+        }
+
+        if (eatingSnake != nullptr) {
+            
             Food* eatenFood = *it;
             
-            eatenFood->applyEffect(*snake);
+            eatenFood->applyEffect(*eatingSnake);
 
             if (!eatenFood->isBomb()) {
-                int pointsGained = 10 * snake->getScoreMultiplier();
-                score->increase(pointsGained);
+                int pointsGained = 10 * eatingSnake->getScoreMultiplier();
+                activeScore->increase(pointsGained);
                 
-                std::cout << "Score: " << score->getScore();
+                std::cout << "Score: " << activeScore->getScore();
 
                 // snake powerup
-                if (snake->getScoreMultiplier() > 1) {
+                if (eatingSnake->getScoreMultiplier() > 1) {
                     // snake power up
                     audio->playSound(audio->powerupSoundPath.c_str());
-                    std::cout << " (BOOST ACTIVE: " << snake->getScoreMultiplier() << "x!)";
+                    std::cout << " (BOOST ACTIVE: " << eatingSnake->getScoreMultiplier() << "x!)";
                 }
 
                 // snake speed increase
@@ -210,7 +326,7 @@ void Game::update(float deltaTime) {
                 }
 
                 std::cout << std::endl;
-                score -> incrementFoodAmount();
+                activeScore -> incrementFoodAmount();
                 ateFood = true; // Mark that we need to spawn food
             }
             
@@ -224,10 +340,20 @@ void Game::update(float deltaTime) {
     
     // Check if the snake died from a bomb
     if (snake->isDead()) {
-        gameOver("KABOOM! You ate a bomb!");
+        if (isMultiplayer) {
+            gameOver("KABOOM! Player 1 ate a bomb!");
+        } else {
+            gameOver("KABOOM! You ate a bomb!");
+        }
+        return;
+    }
+    if (isMultiplayer && snake2->isDead()) {
+        gameOver("KABOOM! Player 2 ate a bomb!");
+        return;
     }
 
-    if (ateFood) { // only spawn food if we ate something (don't want too much food on the map)
+    // only spawn food if we ate something (don't want too much food on the map)
+    if (ateFood) {
         audio->playSound(audio->eatFoodSoundPath.c_str());
         spawnRandomFood();
     }
@@ -273,6 +399,11 @@ void Game::render() {
         textRenderer->render("Press L : Loop Walls",   550.0f, 100.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
         textRenderer->render("(Wrap around)",   610.0f, 120.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
 
+        // --- MULTIPLAYER SETTINGS ---
+        textRenderer->render("Multiplayer:", 20.0f, 140.0f, 1.0f, 1.0f, 1.0f, 0.0f);
+        textRenderer->render("Press M to Toggle", 30.0f, 160.0f, 1.0f, 1.0f, (isMultiplayer ? 0.4f : 1.0f), (isMultiplayer ? 0.7f : 1.0f));
+
+
         // --- INSTRUCTIONS ---
         textRenderer->render("Press T to see Top Scores", 240.0f, 500.0f, 1.2f, 1.0f, 1.0f, 0.0f); // Yellow
         textRenderer->render("Press SPACE to Start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
@@ -314,7 +445,6 @@ void Game::render() {
                     snake->getR() * taper, 
                     snake->getG() * taper, 
                     snake->getB() * taper, currentMapSize);
-        }
 
         // draw snake head (lighter than body)
         float headX = snake->getX();
@@ -324,6 +454,26 @@ void Game::render() {
         float b = snake->getB() + 0.2f;
 
         worldRenderer->drawQuad(headX, headY, r, g, b, currentMapSize);
+        }
+
+        if (isMultiplayer) {
+            auto body2 = snake2->getBody();
+            int totalSegments2 = body2.size();
+            for (int i = 0; i < totalSegments2; ++i) {
+                float taper = 1.0f;
+                if (i > totalSegments2 - 4) taper = 1.0f - ((float)(i - (totalSegments2 - 4)) * 0.25f);
+                worldRenderer->drawQuad(body2[i].first, body2[i].second, 
+                        snake2->getR() * taper, 
+                        snake2->getG() * taper, 
+                        snake2->getB() * taper, currentMapSize);
+            }
+            float headX2 = snake2->getX();
+            float headY2 = snake2->getY();
+            float r = snake2->getR() + 0.2f;
+            float g = snake2->getG() + 0.2f;
+            float b = snake2->getB() + 0.2f;
+            worldRenderer->drawQuad(headX2, headY2, r, g, b, currentMapSize);
+        }
         // ------------------------------------------------------------------
 
     
@@ -334,7 +484,7 @@ void Game::render() {
         if (snake->getScoreMultiplier() > 1) {
             textRenderer->render("SCORE BOOST ACTIVE: " + std::to_string(snake->getBoostTime()), 20.0f, 70.0f, 1.0f, 1.0f, 0.5f, 1.0f); // Pink
         }
-    } 
+    }
 
     else if (currentState == GameState::GAME_OVER) {
         // Draw red Game Over screen

@@ -210,8 +210,8 @@ class Game {
     + MapSize currentMapSize;
     + bool wrapAround;
 
-    + dy: int %% current movement direction
-    + dx: int %% current movement direction
+    + dy: int %% next movement direction
+    + dx: int %% next movement direction
 
     + randEngine
     + activeFoods
@@ -221,9 +221,16 @@ class Game {
     + update(deltaTime)
     + render()
     + handleInput(GLFWwindow* window)
-    + gameOver(message)
 
+    + gameOver(message)
     + scoreCalculator()
+
+    %% multiplayer attributes
+    isMultiplayer: bool
+    Snake snake2
+    Score score2
+    dx2: int  %% next movement direction
+    dy2: int  %% next movement direction
 }
 
 class Map {
