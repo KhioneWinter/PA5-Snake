@@ -1,6 +1,9 @@
-#include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <chrono> // for timing
+#include <iostream>
+
 #include "Game.hpp"
 
 using namespace std; 
@@ -49,16 +52,23 @@ int main()
     glfwSetKeyCallback(window, keyCallback);
 
     // Timing variables
-
+    auto lastFrameTime = std::chrono::steady_clock::now();
 
     // --- GAME LOOP ---
     while(!glfwWindowShouldClose(window))
     {
+
+        // calculate Delta Time
+        auto currentFrameTime = std::chrono::steady_clock::now();
+        std::chrono::duration<float> delta = currentFrameTime - lastFrameTime;
+        float deltaTime = delta.count(); // Time in seconds (e.g., 0.25)
+        lastFrameTime = currentFrameTime;
+
         // get input
         game.handleInput(window);
 
         // update logic
-        game.update();
+        game.update(deltaTime);
 
         // render
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black screen border
@@ -69,7 +79,6 @@ int main()
         glfwPollEvents();    
 
         // slow down framerate
-        // TODO fix delta time movement instead of fixed sleep
         glfwWaitEventsTimeout(0.25); // wait 500ms between frames
     }
 

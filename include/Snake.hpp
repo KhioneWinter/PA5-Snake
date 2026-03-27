@@ -11,11 +11,10 @@ private:
     int speed;
 
     int scoreMultiplier = 1; // default 1 point per food
-    int boostTimer = 0;      // How many ticks the boost lasts
+    float boostTimer = 0;      // How many ticks the boost lasts
 
     int directionX, directionY; // current movement direction
 
-    // TODO i dont know -- fix
     std::vector<std::pair<int, int>> body;
 
     bool dead = false;
@@ -25,7 +24,7 @@ public:
     Snake(int x, int y) : x(x), y(y), length(1), speed(1) {}
     ~Snake() = default;
 
-    void move(int dx, int dy);
+    void move(int newX, int newY);
     void grow();
     bool checkCollision(int newX, int newY);
 
@@ -45,14 +44,7 @@ public:
     void applyScoreBoost(int multiplier, int duration) { scoreMultiplier = multiplier; boostTimer = duration; }
     int getBoostTime() const { return boostTimer; }
     int getScoreMultiplier() const { return scoreMultiplier; }
-    void updateBoost() {
-        if (boostTimer > 0) {
-            boostTimer--; // count down
-            if (boostTimer == 0) {
-                scoreMultiplier = 1; // reset to normal when time runs out
-            }
-        }
-    }
+    void updateBoost(float deltaTime);
     
     // color management
     void setColor(float newR, float newG, float newB) { r = newR; g = newG; b = newB; }

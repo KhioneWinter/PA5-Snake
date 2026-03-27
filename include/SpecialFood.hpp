@@ -28,7 +28,7 @@ public:
     int duration;       // how long the effect lasts in game ticks
 
     ScoreIncreaseFood(int x, int y, float r, float g, float b) 
-        : Food(x, y, r, g, b), increaseAmount(3), duration(50) {} // 3x points for 50 ticks
+        : Food(x, y, r, g, b), increaseAmount(3), duration(10) {} // 3x score for 10 sec
         
     void applyEffect(Snake& snake) override;
 };

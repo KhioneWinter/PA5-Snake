@@ -25,6 +25,7 @@ class Score;
 // the different states the game can be in
 enum class GameState {
     START_SCREEN,
+    COUNTDOWN,
     PLAYING,
     GAME_OVER,
     ADD_INITIALS,
@@ -39,6 +40,10 @@ struct ScoreEntry {
 private:
     // game data
     std::string deathMessage = "";
+
+    // countdown state
+    float countdownTimer;
+    int lastCountdownSecond;
 
 public:
     std::string playerInitials = "";
@@ -59,7 +64,7 @@ public:
     MapSize currentMapSize;
     bool wrapAround;
 
-    // track food and movement
+    // track movement (next direction)
     int dx;
     int dy;
 
@@ -70,7 +75,7 @@ public:
 
     // game loop functions
     void start();
-    void update();
+    void update(float deltaTime);
     void render();
     void handleInput(GLFWwindow* window);
     
@@ -78,6 +83,16 @@ public:
     void scoreCalculator();
     void showCurrTopScores();
     void addInitialsToFile();
+
+    // countdown management
+    void startCountdown();
+    void startGameplay();
+
+    // multiplayr (player 2)
+    bool isMultiplayer = false;
+    Snake* snake2;
+    Score* score2;
+    int dx2, dy2; // next direction
 };
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

@@ -43,7 +43,7 @@ bool AudioManager::init() {
 
 
     std::cout << "Audio Engine Started Successfully." << std::endl;
-    ma_engine_play_sound(&engine, "assets/select.wav", NULL);
+    ma_engine_play_sound(&engine, selectSoundPath.c_str(), NULL);
     initialized = true;
     return true;
 }

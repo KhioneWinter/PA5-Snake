@@ -1,66 +1,102 @@
 # PA5-Snake
-We are going to implement the classic Snake game using OpenGL.
-
 -----------------------------------------
+T-403-FORC - group 27
+
 Students:
 - Brynhildur Þorbjörg Þórhallsdóttir 
 - Herdís Heiða Jing Guðjohnsen
 - Sara Elísabet Jónsdóttir
 
-
-<!-- // bara var á töflunni -->
-#T-403-FORC - group 27
-
 Teachers:
 - Atli Fannar <atlif@ru.is>
 - Konráð Elí <konrad21@ru.is>
 - Teitur Hrólfur <teitur23@ru.is>
+------------------------------------------
 
-<!-- ps- það er fyrir neðan
-#compile/run
-""" 
-cd build
-cmake ..
-cmake -- build
-""" -->
+# Table of Content
+
+- [Setup](#setup)
+  - [Libraries Required](#libraries-required)
+  - [For macOS](#for-macos)
+  - [For Linux/Windows](#for-linuxwindows)
+  - [Install GLFW Manually](#install-glfw-manually)
+
+- [How to Play the Game](#how-to-play-the-game)
+  - [Compiling the Game](#compiling-the-game)
+  - [Running the Game](#running-the-game)
+  - [Clean Compiled Files](#clean-compiled-files)
+
+- [Files and Class Diagram](#files-and-class-diagram)
+  - [File Structure](#file-structure)
+  - [Class Diagram](#class-diagram)
 
 ------------------------------------------
 
+# Setup
 
-## Compilation and Running the Game!!
+## Libraries required
+- OpenGL (version 4.1+)
+- A graphics driver that supports OpenGL 4.1+ (usually already installed)
 
-### Libraries required:
-- OpenGL (at least ver 4.1)
-- glfw (mac: `brew install glfw`) (TODO brynhildur/SARA ég vtk hvað þið þurftuð að download-a)
+### For macOS
+- glfw (for graphics rendering)
+```bash
+brew install glfw
+```
+<em>Note: macOS supports up to OpenGL 4.1 maximum.</em>
 
-### Before compiling:
+### For Linux
+- audio library (miniaudio)
+```bash
+sudo apt install pulseaudio pulseaudio-utils alsa-utils
+sudo apt install libasound2-dev
+```
+- libglfw3 (for graphics rendering)
+```bash
+sudo apt update
+sudo apt install libglfw3 libglfw3-dev
+```
+
+
+#### Install GLFW manually
+If you are on windows or if you prefer to install GLFW manually, you can follow these steps:
 
 1. Download GLFW package from https://www.glfw.org/download.html according to your operating system.
 2. Locate the `lib` folder inside it and copy the `libglfw3` file to the root directory of this project (replace the existing one if it exists).
 
-### Compile walk through:
-| mac               | linux / window    |
-| ----------------- | ----------------- |
-| `cmd + shift + B` | `ctr + shift + B` |
+------------------------------------------
 
-or use `make` command in terminal
+# How to play the game
 
+## Compiling the game
+
+1. Go to the root directory of the project
+```bash
+cd path/to/PA5-Snake
+```
+
+2. Compile the code using the Makefile:
+```bash
+make
+```
 
 Then we have executable file:
-| mac               | linux / window    |
+| mac /linux        | windows            |
 | ----------------- | ----------------- |
 | `Snake.out`       | `Snake.exe`       |
 
+## Running the game
 
-### Run game:
-| mac               | linux / window    |
+3. Run the executable:
+| mac /linux        | windows            |
 | ----------------- | ----------------- |
 | `./Snake.out`     | `./Snake.exe`     |
 
-<em>Note: the program might not detect the correct OS, therefore the executable name might still be `Snake.out` even though you are on Windows</em>
+
+<br><em>Note2: on Mac, to have the screen size fit properly, you may need to adjust the window size manually after launching the game</em>
 
 
-### Clean compiled files:
+## Clean compiled files
 ```bash
 make clean
 ```
@@ -72,7 +108,7 @@ make clean
 # Files and Class Diagram
 
 
-## File structure:
+## File structure
 ```bash
 SnakeGame/ 
 │
@@ -93,7 +129,6 @@ SnakeGame/
 │
 ├── Renderer.hpp / Renderer.cpp
 ├── TextRenderer.hpp / TextRenderer.cpp
-
 │
 ├── glad/                   # OpenGL loader
 ├── GLFW/                   # GLFW header files
@@ -106,6 +141,10 @@ lib/
 ├── libglwf3.dylib  # mac
 ├── libglwf3.dll.a  # windows
 
+assets/ 
+│
+├── all assets (audio, etc.)
+
 root-directory/ 
 │
 ├── Micro5-Regular.ttf  # font for text rendering
@@ -114,7 +153,7 @@ root-directory/
 ```
 
 
-## Class Diagram:
+## Class Diagram
 ```mermaid
 classDiagram
 
@@ -122,6 +161,7 @@ classDiagram
 class GameState {
     <<enumeration>>
     START_SCREEN
+    COUNTDOWN
     PLAYING
     GAME_OVER
 }
@@ -171,20 +211,27 @@ class Game {
     + MapSize currentMapSize;
     + bool wrapAround;
 
-    + dy: int %% current movement direction
-    + dx: int %% current movement direction
+    + dy: int %% next movement direction
+    + dx: int %% next movement direction
 
     + randEngine
     + activeFoods
     + spawnRandomFood(forcePositive)
 
     + start()
-    + update()
+    + update(deltaTime)
     + render()
     + handleInput(GLFWwindow* window)
-    + gameOver(message)
 
+    + gameOver(message)
     + scoreCalculator()
+
+    %% multiplayer attributes
+    isMultiplayer: bool
+    Snake snake2
+    Score score2
+    dx2: int  %% next movement direction
+    dy2: int  %% next movement direction
 }
 
 class Map {
@@ -208,7 +255,7 @@ class Snake {
     - speed: int
 
     - scoreMultiplier: int
-    - boostTimer: int
+    - boostTimer: float
 
     - directionX: int
     - directionY: int
@@ -238,7 +285,7 @@ class Snake {
     + applyScoreBoost(multiplier, duration)
     + getBoostTimer() int
     + getScoreMultiplier() int
-    + updateBoost()
+    + updateBoost(float deltaTime)
     
     + setColor(r, g, b)
     + getR() float
