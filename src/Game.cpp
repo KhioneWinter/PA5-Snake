@@ -11,6 +11,16 @@
 #include <stdio.h> // for FILE reading
 
 
+// Pick multiplayer winner by score when a collision happens
+static std::string getMultiplayerWinnerMessage(const Score* score1, const Score* score2) {
+    if (!score1 || !score2) return "Head to Head! It's a Tie!";
+    int s1 = score1->getScore();
+    int s2 = score2->getScore();
+    if (s1 > s2) return "Player 1 Wins! Higher score!";
+    if (s2 > s1) return "Player 2 Wins! Higher score!";
+    return "Head to Head! It's a Tie!";
+}
+
 
     
 Game::Game() : currentState(GameState::START_SCREEN), currentMapSize(MapSize::SMALL), wrapAround(false), dx(1), dy(0) {
@@ -139,6 +149,11 @@ void Game::gameOver(std::string message) {
     deathMessage = message;
 
     scoreCalculator();
+    if (isMultiplayer && score2) {
+        score2->endTime();
+        score2->calculateTime();
+        score2->timeAddedToFinal();
+    }
     std::cout << "\n---------------------------" << std::endl;
     std::cout << message << std::endl;
     std::cout << "Game Over! Score: " << score->getScore();
@@ -195,19 +210,25 @@ void Game::update(float deltaTime) {
 
         // --- Rule 1: Head-to-Head Collision ---
         if (nextX == nextX2 && nextY == nextY2) {
-            gameOver("Head to Head! It's a Tie!");
+            if (score->getScore() > score2->getScore()) {
+                gameOver("Player 1 Wins! Head to Head with higher score.");
+            } else if (score2->getScore() > score->getScore()) {
+                gameOver("Player 2 Wins! Head to Head with higher score.");
+            } else {
+                gameOver("Head to Head! It's a Tie!");
+            }
             return;
         }
 
         // --- Rule 2: P1 Head hits P2 Body ---
         if (snake2->checkCollision(nextX, nextY)) {
-            gameOver("Player 2 Wins! Player 1 crashed.");
+            gameOver(getMultiplayerWinnerMessage(score, score2));
             return;
         }
 
         // --- Rule 3: P2 Head hits P1 Body ---
         if (snake->checkCollision(nextX2, nextY2)) {
-            gameOver("Player 1 Wins! Player 2 crashed.");
+            gameOver(getMultiplayerWinnerMessage(score, score2));
             return;
         }
     }
@@ -231,7 +252,7 @@ void Game::update(float deltaTime) {
         // Solid wall logic: die if we go out of bounds
         if (!map->isInside(nextX, nextY)) {
             if (isMultiplayer) {
-                gameOver("Ouch! Player 1 hit a wall!");
+                gameOver(getMultiplayerWinnerMessage(score, score2));
             } else {
                 gameOver("Ouch! You hit a wall!");
             }
@@ -240,7 +261,7 @@ void Game::update(float deltaTime) {
 
         if (isMultiplayer) {
             if (!map->isInside(nextX2, nextY2)) {
-                gameOver("Ouch! Player 2 hit a wall!");
+                gameOver(getMultiplayerWinnerMessage(score, score2));
                 return;
             }
         }
@@ -249,7 +270,7 @@ void Game::update(float deltaTime) {
     // check Self-Collision
     if (snake->checkCollision(nextX, nextY)) {
         if (isMultiplayer) {
-            gameOver("Oh no! Player 1 ran into themselves!");
+            gameOver(getMultiplayerWinnerMessage(score, score2));
         } else {
             gameOver("Oh no! You ran into yourself!");
         }
@@ -257,7 +278,7 @@ void Game::update(float deltaTime) {
     }
     if (isMultiplayer) {
         if (snake2->checkCollision(nextX2, nextY2)) {
-            gameOver("Oh no! Player 2 ran into themselves!");
+            gameOver(getMultiplayerWinnerMessage(score, score2));
             return;
         }
     }
@@ -499,22 +520,27 @@ void Game::render() {
 
         // DRAW GAME OVER TEXT
                                         // x, y, scale, r, g, b, a
-        textRenderer->render("GAME OVER", 230.0f, 180.0f, 3.0f, 1.0f, 1.0f, 0.0f); // Big Yellow Text
+        textRenderer->render("GAME OVER", 0.0f, 180.0f, 3.0f, 1.0f, 1.0f, 0.0f, 1); // Big Yellow Text
 
         // small death msg
-        textRenderer->render(deathMessage, 300.0f, 220.0f, 0.8f, 1.0f, 1.0f, 1.0f); // White text
+        textRenderer->render(deathMessage, 0.0f, 220.0f, 0.8f, 1.0f, 1.0f, 1.0f, 1); // White text
 
         // game stats
-        textRenderer->render("Final Score: " + std::to_string(score->getScore()), 320.0f, 310.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
-        textRenderer->render("Fruit Eaten: " + std::to_string(score->getFoodAmount()), 320.0f, 340.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
-        
-        // controls
-        textRenderer->render("Press S to Save Score", 280.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
-        textRenderer->render("Press SPACE to Try Again", 200.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
-        textRenderer->render("Press Q to Quit", 320.0f, 550.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
-    }
-}
-
+        if (isMultiplayer && score2) {
+            textRenderer->render("P1 Score: " + std::to_string(score->getScore()),      0.0f, 310.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1);
+            textRenderer->render("P1 Fruit: " + std::to_string(score->getFoodAmount()), 0.0f, 340.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1);
+            textRenderer->render("P2 Score: " + std::to_string(score2->getScore()),      0.0f, 370.0f, 1.0f, 0.0f, 0.5f, 1.0f, 1);
+            textRenderer->render("P2 Fruit: " + std::to_string(score2->getFoodAmount()), 0.0f, 400.0f, 1.0f, 0.0f, 0.5f, 1.0f, 1);
+        } else {
+            textRenderer->render("Final Score: " + std::to_string(score->getScore()),      0.0f, 310.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1);
+            textRenderer->render("Fruit Eaten: " + std::to_string(score->getFoodAmount()), 0.0f, 340.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1);
+        }
+                // controls
+                textRenderer->render("Press S to Save Score", 0.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1); // White
+                textRenderer->render("Press SPACE to Try Again", 0.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f, 1); // White
+                textRenderer->render("Press Q to Quit", 0.0f, 550.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1); // White
+            }
+        }
 
 void Game::spawnRandomFood(bool forcePositive) {
     int fx, fy;
@@ -582,8 +608,6 @@ void Game::startGameplay() {
     }
     else { 
         // --- multiplayer mode ---
-        // clean up old player 2
-        delete snake2; delete score2;
 
         // spawn P1 on the right, moving right (away from P2)
         snake = new Snake((dims.width / 3) * 2, dims.height / 2);

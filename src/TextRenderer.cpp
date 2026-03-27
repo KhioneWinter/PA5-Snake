@@ -100,7 +100,7 @@ void TextRenderer::init(const char* fontPath) {
 }
 
 
-void TextRenderer::render(const std::string& text, float x, float y, float scale, float r, float g, float b) {
+void TextRenderer::render(const std::string& text, float x, float y, float scale, float r, float g, float b, int alignment) {
     glUseProgram(shaderProgram);
     glUniform3f(glGetUniformLocation(shaderProgram, "textColor"), r, g, b);
 
@@ -119,6 +119,26 @@ void TextRenderer::render(const std::string& text, float x, float y, float scale
     x *= scaleX;
     y *= scaleY;
     scale *= std::min(scaleX, scaleY); // multiply font scale
+
+    // Calculate text width for alignment
+    float totalWidth = 0.0f;
+    for (char raw_c : text) {
+        unsigned char c = (unsigned char)raw_c;
+        if (c >= 32 && c < 128) {
+            stbtt_aligned_quad q;
+            float dummyX = 0; float dummyY = 0;
+            stbtt_GetBakedQuad(cdata, 512, 512, c - 32, &dummyX, &dummyY, &q, 1);
+            totalWidth += dummyX * scale;
+        }
+    }
+
+    // Adjust x for alignment
+    if (alignment == 1) { // center
+        x = (screenWidth / 2.0f) - (totalWidth / 2.0f);
+    } else if (alignment == 2) { // right
+        x = screenWidth - totalWidth - x; // assuming x was the margin from right
+    }
+    // alignment 0 is left, no change
 
 
     // bind texture and VAO
