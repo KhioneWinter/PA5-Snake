@@ -30,7 +30,7 @@ Teachers:
   - [File Structure](#file-structure)
   - [Class Diagram](#class-diagram)
 
-
+------------------------------------------
 
 # Setup
 
@@ -45,7 +45,7 @@ brew install glfw
 ```
 <em>Note: macOS supports up to OpenGL 4.1 maximum.</em>
 
-### For Linux/Windows
+### For Linux
 - audio library (miniaudio)
 ```bash
 sudo apt install pulseaudio pulseaudio-utils alsa-utils
@@ -64,6 +64,7 @@ If you are on windows or if you prefer to install GLFW manually, you can follow 
 1. Download GLFW package from https://www.glfw.org/download.html according to your operating system.
 2. Locate the `lib` folder inside it and copy the `libglfw3` file to the root directory of this project (replace the existing one if it exists).
 
+------------------------------------------
 
 # How to play the game
 
