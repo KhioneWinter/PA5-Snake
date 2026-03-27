@@ -45,7 +45,7 @@ brew install glfw
 ```
 <em>Note: macOS supports up to OpenGL 4.1 maximum.</em>
 
-### For Linux
+### For Linux/Windows
 - audio library (miniaudio)
 ```bash
 sudo apt install pulseaudio pulseaudio-utils alsa-utils
