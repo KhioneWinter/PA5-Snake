@@ -102,39 +102,42 @@ void Game::start() {
 }
 
 void Game::handleInput(GLFWwindow* window) {
+    bool isSpacePressed = (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS);
+    bool spaceJustPressed = (isSpacePressed && !spaceKeyWasPressed);
+    spaceKeyWasPressed = isSpacePressed; // save state for next frame
+
+
 
     if (currentState == GameState::ADD_INITIALS) {
         // Connections from initials screen
         // Dont allow input choices until the Initals are filled up
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
-            currentState = GameState::START_SCREEN;
-            }
+        if (spaceJustPressed) currentState = GameState::START_SCREEN;
         return;
     }
 
     if (currentState == GameState::SCORE_BOARD) {
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { 
-            currentState = GameState::START_SCREEN;
-        }
+        if (spaceJustPressed) currentState = GameState::START_SCREEN;
         return;
     }
 
     if (currentState == GameState::GAME_OVER) {
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { // Allows user to restart game
-            start(); 
-        }
-        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { // Allows users to quit the game
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
-        }
+         // Allows user to restart game
+        if (spaceJustPressed) { start(); }
+        // Allows users to quit the game
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { glfwSetWindowShouldClose(window, GLFW_TRUE); }
+
+        // enter initials for score board
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
             playerInitials = "";
             currentState = GameState::ADD_INITIALS;
         }
-        if (glfwGetKey(window, GLFW_KEY_T)) {
-            currentState = GameState::SCORE_BOARD;
-        }
+
+        // view score board
+        if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) { currentState = GameState::SCORE_BOARD; }
         return; // any other input
     }
+
+
     if (currentState == GameState::START_SCREEN) {
          // --- quit game ---
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -160,12 +163,8 @@ void Game::handleInput(GLFWwindow* window) {
         mKeyWasPressed = isMPressed; // save current state for next frame
 
 
-      
         // --- start Game ---
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            startCountdown();
-        }
-
+        if (spaceJustPressed) startCountdown();
 
     }
     else if (currentState == GameState::PLAYING) {

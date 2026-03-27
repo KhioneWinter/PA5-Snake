@@ -79,8 +79,13 @@ public:
     void start();
     void update(float deltaTime);
     void render();
+
+    // input handling
     void handleInput(GLFWwindow* window);
+    bool mKeyWasPressed = false;
+    bool spaceKeyWasPressed = false;
     
+    // game management
     void gameOver(std::string message);
     void scoreCalculator();
     void showCurrTopScores();
@@ -91,7 +96,6 @@ public:
     void startGameplay();
 
     // multiplayr (player 2)
-    bool mKeyWasPressed = false;
     bool isMultiplayer = false;
     Snake* snake2;
     Score* score2;

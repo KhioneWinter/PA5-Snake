@@ -223,13 +223,16 @@ class Game {
     + start()
     + update(deltaTime)
     + render()
+
+    %% input handling
     + handleInput(GLFWwindow* window)
+    + spaceKeyWasPressed: bool
+    + mKeyWasPressed: bool
 
     + gameOver(message)
     + scoreCalculator()
 
     %% multiplayer attributes
-    + mKeyWasPressed: bool
     + isMultiplayer: bool
     + Snake snake2
     + Score score2
