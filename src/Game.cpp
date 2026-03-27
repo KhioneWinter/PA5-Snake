@@ -699,3 +699,58 @@ void Game::startGameplay() {
         std::cout << "Player 1 is Green, Player 2 is Blue. Good luck!\n" << std::endl;
     }
 }
+
+void Game::addInitialsToFile() {
+    std::vector<ScoreEntry> topScores;
+    std::string line;
+    std::ifstream scoreFile("TopScores.txt");
+
+    while (getline(scoreFile, line)) {
+        size_t spacePosition = line.find(" ");
+        if (spacePosition == std::string::npos) continue;
+        std::string initials = line.substr(0, spacePosition);
+        int s = std::stoi(line.substr(spacePosition + 1));
+        topScores.push_back({initials, s});
+    }
+    scoreFile.close();
+
+    // Add current player's score
+    topScores.push_back({playerInitials, score->getScore()});
+
+    std::sort(topScores.begin(), topScores.end(), [](const ScoreEntry& a, const ScoreEntry& b) {
+        return a.score > b.score;
+    });
+
+    std::ofstream scoreFile2("TopScores.txt");
+    for (int i = 0; i < std::min((int)topScores.size(), 10); i++) {
+        scoreFile2 << topScores[i].initials << " " << topScores[i].score << "\n";
+    }
+}
+
+void Game::showCurrTopScores() {
+    std::string line;
+    std::ifstream scoreFile("TopScores.txt");
+
+    for (int i = 1; i < 6; i++) {
+        if (!getline(scoreFile, line)) break; // stop if file has fewer than 5 entries
+        textRenderer->render(std::to_string(i) + " " + line, 270.0f, ((i * 2) * 20) + 100.0f, 1.2f, 1.0f, 1.0f, 1.0f);
+    }
+}
+
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    (void)scancode;
+    (void)mods;
+
+    if (action != GLFW_PRESS) return;
+
+    Game* game = (Game*)glfwGetWindowUserPointer(window);
+    if (game->currentState != GameState::ADD_INITIALS) return;
+    if (game->playerInitials.length() >= 3) return;
+
+    if (key >= GLFW_KEY_A && key <= GLFW_KEY_Z) {
+        game->playerInitials += toupper(key);
+        if (game->playerInitials.length() == 3) {
+            game->addInitialsToFile();
+        }
+    }
+}
