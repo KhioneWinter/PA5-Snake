@@ -110,44 +110,7 @@ void Game::handleInput(GLFWwindow* window) {
 
         // --- start Game ---
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            delete map; delete snake; delete score; // clean up old game if restarting
-            // clean up old food
-            for (Food* f : activeFoods) { delete f; }
-            activeFoods.clear();
-
-            // --- init new game objects ---
-            map = new Map(currentMapSize);            
-            MapDimensions dims = getDimensions(currentMapSize);
-            score = new Score(0);
-            score -> startTime();
-            spawnRandomFood();
-
-            // --- init snake ---
-            if (!isMultiplayer) {
-                // --- single player mode ---
-                snake = new Snake(dims.width / 2, dims.height / 2); // middle of map
-                dx = 1; dy = 0;
-            }
-            else { 
-                // --- multiplayer mode ---
-                // clean up old player 2
-                delete snake2; delete score2;
-
-                // spawn P1 on the right, moving right (away from P2)
-                snake = new Snake((dims.width / 3) * 2, dims.height / 2);
-                snake->setColor(0.0f, 0.8f, 0.0f); // Green
-                dx = 1; dy = 0;
-
-                // Spawn P2 on the right, moving right (away from P1)
-                snake2 = new Snake(dims.width / 3, dims.height / 2);
-                snake2->setColor(0.0f, 0.5f, 0.9f); // Blue
-                dx2 = -1; dy2 = 0;
-
-                score2 = new Score(0);
-                score2 -> startTime();
-            }
-            currentState = GameState::PLAYING;
-            std::cout << "\nGame started! Use Arrow Keys to move." << std::endl;
+            startCountdown();
         }
 
 
@@ -190,6 +153,25 @@ void Game::gameOver(std::string message) {
 }
 
 void Game::update(float deltaTime) {
+    // --- COUNTDOWN LOGIC ---
+    if (currentState == GameState::COUNTDOWN) {
+        countdownTimer -= deltaTime;
+        int currentSecond = (int)countdownTimer;
+        
+        // Play a sound every time the number changes
+        if (currentSecond < lastCountdownSecond && currentSecond > 0) {
+            if (audio) audio->playSound(audio->selectSoundPath.c_str());
+            lastCountdownSecond = currentSecond;
+        }
+        
+        // When timer hits 0, start the real game!
+        if (countdownTimer <= 0.0f) {
+            startGameplay();
+        }
+        return; // Don't run any snake movement logic while counting down!
+    }
+
+
     if (currentState != GameState::PLAYING) return;
 
     // --- speed up slowly over time ---
@@ -545,4 +527,63 @@ void Game::scoreCalculator() {
     score -> endTime();
     score -> calculateTime();
     score -> timeAddedToFinal();
+}
+
+
+
+void Game::startCountdown() {
+    // clean up old objects if restarting
+    delete map; delete snake; delete score; 
+    delete snake2; delete score2;
+    for (Food* f : activeFoods) { delete f; }
+    activeFoods.clear();
+
+    // Create ONLY the map so the user can see it
+    map = new Map(currentMapSize);
+
+    // Set the timer to just under 4 seconds (so it shows 3, then 2, then 1)
+    countdownTimer = 3.99f;
+    lastCountdownSecond = 4; // Used to track when to play the beep sound
+
+    currentState = GameState::COUNTDOWN;
+}
+
+void Game::startGameplay() {
+    MapDimensions dims = getDimensions(currentMapSize);
+    score = new Score(0);
+    score->startTime();
+    spawnRandomFood();
+
+    // --- init snake ---
+    if (!isMultiplayer) {
+        // --- single player mode ---
+        snake = new Snake(dims.width / 2, dims.height / 2); // middle of map
+        dx = 1; dy = 0;
+    }
+    else { 
+        // --- multiplayer mode ---
+        // clean up old player 2
+        delete snake2; delete score2;
+
+        // spawn P1 on the right, moving right (away from P2)
+        snake = new Snake((dims.width / 3) * 2, dims.height / 2);
+        snake->setColor(0.0f, 0.8f, 0.0f); // Green
+        dx = 1; dy = 0;
+
+        // Spawn P2 on the right, moving right (away from P1)
+        snake2 = new Snake(dims.width / 3, dims.height / 2);
+        snake2->setColor(0.0f, 0.5f, 0.9f); // Blue
+        dx2 = -1; dy2 = 0;
+
+        score2 = new Score(0);
+        score2 -> startTime();
+    }
+    
+    // Final sound to say "GO!"
+    if (audio) audio->playSound(audio->powerupSoundPath.c_str()); 
+    currentState = GameState::PLAYING;
+    std::cout << "\nGame started!" << std::endl;
+    if (isMultiplayer) {
+        std::cout << "Player 1 is Green, Player 2 is Blue. Good luck!\n" << std::endl;
+    }
 }

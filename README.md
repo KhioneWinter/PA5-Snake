@@ -161,6 +161,7 @@ classDiagram
 class GameState {
     <<enumeration>>
     START_SCREEN
+    COUNTDOWN
     PLAYING
     GAME_OVER
 }

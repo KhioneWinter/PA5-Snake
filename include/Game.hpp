@@ -23,6 +23,7 @@ class Score;
 // the different states the game can be in
 enum class GameState {
     START_SCREEN,
+    COUNTDOWN,
     PLAYING,
     GAME_OVER
 };
@@ -31,6 +32,10 @@ class Game {
 private:
     // game data
     std::string deathMessage = "";
+
+    // countdown state
+    float countdownTimer;
+    int lastCountdownSecond;
 
 public:
     Game();
@@ -68,6 +73,9 @@ public:
     void gameOver(std::string message);
     void scoreCalculator();
 
+    // countdown management
+    void startCountdown();
+    void startGameplay();
 
     // multiplayr (player 2)
     bool isMultiplayer = false;
