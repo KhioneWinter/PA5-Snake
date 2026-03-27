@@ -30,21 +30,47 @@ cmake -- build
 ## Compilation and Running the Game!!
 
 ### Libraries required:
-- OpenGL (at least ver 4.1)
-- glfw (mac: `brew install glfw`) (TODO brynhildur/SARA ég vtk hvað þið þurftuð að download-a)
+- OpenGL (version 4.1+)
+- A graphics driver that supports OpenGL 4.1+ (usually already installed)
+<br><em>Note: macOS supports up to OpenGL 4.1 maximum.</em>
 
-### Before compiling:
+for mac:
+- glfw (for graphics rendering)
+```bash
+brew install glfw
+```
 
+
+for windows/linux:
+- audio library (miniaudio)
+```bash
+sudo apt install pulseaudio pulseaudio-utils alsa-utils
+sudo apt install libasound2-dev
+```
+- libglfw3 (for graphics rendering)
+```bash
+sudo apt update
+sudo apt install libglfw3 libglfw3-dev
+```
+- GLFW (via vcpkg or manually)
+
+
+### Install GLFW manually
 1. Download GLFW package from https://www.glfw.org/download.html according to your operating system.
 2. Locate the `lib` folder inside it and copy the `libglfw3` file to the root directory of this project (replace the existing one if it exists).
 
-### Compile walk through:
-| mac               | linux / window    |
-| ----------------- | ----------------- |
-| `cmd + shift + B` | `ctr + shift + B` |
 
-or use `make` command in terminal
+### Compile and run
 
+1. Go to the root directory of the project
+```bash
+cd path/to/PA5-Snake
+```
+
+2. Compile the code using the Makefile:
+```bash
+make
+```
 
 Then we have executable file:
 | mac               | linux / window    |
@@ -52,7 +78,7 @@ Then we have executable file:
 | `Snake.out`       | `Snake.exe`       |
 
 
-### Run game:
+3. Run the executable:
 | mac               | linux / window    |
 | ----------------- | ----------------- |
 | `./Snake.out`     | `./Snake.exe`     |
@@ -61,7 +87,7 @@ Then we have executable file:
 <br><em>Note2: on Mac, to have the screen size fit properly, you may need to adjust the window size manually after launching the game</em>
 
 
-### Clean compiled files:
+### Clean compiled files
 ```bash
 make clean
 ```
@@ -73,7 +99,7 @@ make clean
 # Files and Class Diagram
 
 
-## File structure:
+## File structure
 ```bash
 SnakeGame/ 
 │
@@ -118,7 +144,7 @@ root-directory/
 ```
 
 
-## Class Diagram:
+## Class Diagram
 ```mermaid
 classDiagram
 
