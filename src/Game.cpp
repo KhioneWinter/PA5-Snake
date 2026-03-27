@@ -133,12 +133,13 @@ void Game::handleInput(GLFWwindow* window) {
                 // clean up old player 2
                 delete snake2; delete score2;
 
-                snake = new Snake(dims.width / 3, dims.height / 2);
+                // spawn P1 on the right, moving right (away from P2)
+                snake = new Snake((dims.width / 3) * 2, dims.height / 2);
                 snake->setColor(0.0f, 0.8f, 0.0f); // Green
                 dx = 1; dy = 0;
 
-                // Spawn P2 on the right, moving left
-                snake2 = new Snake((dims.width / 3) * 2, dims.height / 2);
+                // Spawn P2 on the right, moving right (away from P1)
+                snake2 = new Snake(dims.width / 3, dims.height / 2);
                 snake2->setColor(0.0f, 0.5f, 0.9f); // Blue
                 dx2 = -1; dy2 = 0;
 
