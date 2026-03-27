@@ -12,13 +12,17 @@
 
 
 // Pick multiplayer winner by score when a collision happens
-static std::string getMultiplayerWinnerMessage(const Score* score1, const Score* score2) {
-    if (!score1 || !score2) return "Head to Head! It's a Tie!";
+static std::string getMultiplayerWinnerMessage(std::string reason, const Score* score1, const Score* score2) {
+    if (!score1 || !score2) return reason + " Head to Head! It's a Tie!";
     int s1 = score1->getScore();
     int s2 = score2->getScore();
-    if (s1 > s2) return "Player 1 Wins! Higher score!";
-    if (s2 > s1) return "Player 2 Wins! Higher score!";
-    return "Head to Head! It's a Tie!";
+
+    std::string winner;
+    if (s1 > s2) winner = "Player 1 Wins on points!";
+    else if (s2 > s1) winner = "Player 2 Wins on points!";
+    else winner = "It's a Tie in points!";
+    
+    return reason + " " + winner;
 }
 
 
@@ -138,12 +142,17 @@ void Game::handleInput(GLFWwindow* window) {
         if (glfwGetKey(window, GLFW_KEY_T)) { currentState = GameState::SCORE_BOARD; }
 
         // --- multiplayer toggle ---
-        if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
+        bool isMPressed = (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS);
+        // only toggle if it is down now, AND it was NOT down last frame
+        if (isMPressed && !mKeyWasPressed) {
             isMultiplayer = !isMultiplayer;
             std::cout << "Multiplayer: " << (isMultiplayer ? "ON" : "OFF") << std::endl;
-            audio->playSound(audio->selectSoundPath.c_str());
+            if (audio) audio->playSound(audio->selectSoundPath.c_str());
         }
+        mKeyWasPressed = isMPressed; // save current state for next frame
 
+
+      
         // --- start Game ---
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
             startCountdown();
@@ -204,7 +213,7 @@ void Game::update(float deltaTime) {
         
         // Play a sound every time the number changes
         if (currentSecond < lastCountdownSecond && currentSecond > 0) {
-            if (audio) audio->playSound(audio->selectSoundPath.c_str());
+            if (audio) audio->playSound(audio->powerupSoundPath.c_str());
             lastCountdownSecond = currentSecond;
         }
         
@@ -273,11 +282,11 @@ void Game::update(float deltaTime) {
     // --- Rule 2: Hitting the other snake's body ---
     if (isMultiplayer) {
         if (p1Moved && snake2->checkCollision(nextX, nextY)) {
-            gameOver(getMultiplayerWinnerMessage(score, score2));
+            gameOver(getMultiplayerWinnerMessage("P1 crashed into P2!", score, score2));
             return;
         }
         if (p2Moved && snake->checkCollision(nextX2, nextY2)) {
-            gameOver(getMultiplayerWinnerMessage(score, score2));
+            gameOver(getMultiplayerWinnerMessage("P2 crashed into P1!", score, score2));
             return;
         }
     }
@@ -292,12 +301,12 @@ void Game::update(float deltaTime) {
             if (nextY < 0) nextY = map->getHeight() - 1;
             else if (nextY >= map->getHeight()) nextY = 0;
         } else if (!map->isInside(nextX, nextY)) {
-            gameOver(isMultiplayer ? getMultiplayerWinnerMessage(score, score2) : "Ouch! You hit a wall!");
+            gameOver(isMultiplayer ? getMultiplayerWinnerMessage("P1 hit a wall!", score, score2) : "Ouch! You hit a wall!");
             return;
         }
         // Self collision
         if (snake->checkCollision(nextX, nextY)) {
-            gameOver(isMultiplayer ? getMultiplayerWinnerMessage(score, score2) : "Oh no! You ran into yourself!");
+            gameOver(isMultiplayer ? getMultiplayerWinnerMessage("P1 ran into themselves!", score, score2) : "Oh no! You ran into yourself!");
             return;
         }
         // move P1
@@ -312,12 +321,12 @@ void Game::update(float deltaTime) {
             if (nextY2 < 0) nextY2 = map->getHeight() - 1;
             else if (nextY2 >= map->getHeight()) nextY2 = 0;
         } else if (!map->isInside(nextX2, nextY2)) {
-            gameOver(getMultiplayerWinnerMessage(score, score2));
+            gameOver(getMultiplayerWinnerMessage("P2 hit a wall!", score, score2));
             return;
         }
         // Self collision
         if (snake2->checkCollision(nextX2, nextY2)) {
-            gameOver(getMultiplayerWinnerMessage(score, score2));
+            gameOver(getMultiplayerWinnerMessage("P2 ran into themselves!", score, score2));
             return;
         }
         // move P2
@@ -385,14 +394,14 @@ void Game::update(float deltaTime) {
     // Check if the snake died from a bomb
     if (snake->isDead()) {
         if (isMultiplayer) {
-            gameOver("KABOOM! Player 1 ate a bomb!");
+            gameOver(getMultiplayerWinnerMessage("KABOOM! P1 ate a bomb!", score, score2));
         } else {
             gameOver("KABOOM! You ate a bomb!");
         }
         return;
     }
     if (isMultiplayer && snake2->isDead()) {
-        gameOver("KABOOM! Player 2 ate a bomb!");
+        gameOver(getMultiplayerWinnerMessage("KABOOM! P2 ate a bomb!", score, score2));
         return;
     }
 
@@ -563,7 +572,7 @@ void Game::render() {
         textRenderer->render("GAME OVER", 0.0f, 180.0f, 3.0f, 1.0f, 1.0f, 0.0f, 1); // Big Yellow Text
 
         // small death msg
-        textRenderer->render(deathMessage, 0.0f, 220.0f, 0.8f, 1.0f, 1.0f, 1.0f, 1); // White text
+        textRenderer->render(deathMessage, 0.0f, 220.0f, 0.6f, 1.0f, 1.0f, 1.0f, 1); // White text
 
         // game stats
         if (isMultiplayer && score2) {

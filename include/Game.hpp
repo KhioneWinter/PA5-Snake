@@ -91,6 +91,7 @@ public:
     void startGameplay();
 
     // multiplayr (player 2)
+    bool mKeyWasPressed = false;
     bool isMultiplayer = false;
     Snake* snake2;
     Score* score2;

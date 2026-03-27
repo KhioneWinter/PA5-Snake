@@ -229,6 +229,7 @@ class Game {
     + scoreCalculator()
 
     %% multiplayer attributes
+    + mKeyWasPressed: bool
     + isMultiplayer: bool
     + Snake snake2
     + Score score2
