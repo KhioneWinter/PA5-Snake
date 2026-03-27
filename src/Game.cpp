@@ -73,6 +73,23 @@ void Game::start() {
 }
 
 void Game::handleInput(GLFWwindow* window) {
+
+    if (currentState == GameState::ADD_INITIALS) {
+        // Connections from initials screen
+        // Dont allow input choices until the Initals are filled up
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS){
+            currentState = GameState::START_SCREEN;
+            }
+        return;
+    }
+
+    if (currentState == GameState::SCORE_BOARD) {
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { 
+            currentState = GameState::START_SCREEN;
+        }
+        return;
+    }
+
     if (currentState == GameState::GAME_OVER) {
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { // Allows user to restart game
             start(); 
@@ -80,8 +97,12 @@ void Game::handleInput(GLFWwindow* window) {
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { // Allows users to quit the game
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
-        if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            playerInitials = "";
             currentState = GameState::ADD_INITIALS;
+        }
+        if (glfwGetKey(window, GLFW_KEY_T)) {
+            currentState = GameState::SCORE_BOARD;
         }
         return; // any other input
     }
@@ -94,6 +115,10 @@ void Game::handleInput(GLFWwindow* window) {
         
         if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && wrapAround == true)  { wrapAround = false; std::cout << "Selected: BOUNDED WALLS\n"; audio->playSound(audio->selectSoundPath.c_str()); }
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && wrapAround == false) { wrapAround = true;  std::cout << "Selected: LOOP WALLS   \n"; audio->playSound(audio->selectSoundPath.c_str()); }
+
+        if (glfwGetKey(window, GLFW_KEY_T)) {
+            currentState = GameState::SCORE_BOARD;
+        }
 
         // start Game
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -126,22 +151,6 @@ void Game::handleInput(GLFWwindow* window) {
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && dy != 1)   { dx = 0; dy = -1; }
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && dx != 1)   { dx = -1; dy = 0; }
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && dx != -1) { dx = 1; dy = 0; }
-    }
-    if (currentState == GameState::ADD_INITIALS) {
-        // Connections from initials screen
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { 
-            currentState = GameState::START_SCREEN;
-        }
-        else if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
-            currentState = GameState::SCORE_BOARD;
-        }
-    }
-
-    if (currentState == GameState::SCORE_BOARD) {
-        // Connections from Leaderboard screen
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            currentState = GameState::START_SCREEN;
-        }
     }
 }
 
@@ -378,13 +387,18 @@ void Game::render() {
         }
 
         // Text Desplayed
-        textRenderer->render("ADD INITIALS", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
-        textRenderer->render("3 letters only", 320.0f, 80.0f, 1.5f, 0.0f, 1.0f, 0.0f); // White
+        textRenderer->render("ADD INITIALS", 250.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
+        textRenderer->render("3 letters only", 300.0f, 80.0f, 1.5f, 0.0f, 1.0f, 0.0f); // White
         // adding inital virkni --------------------- Þá adda í txt skjal eða annað sambærilegt
 
-        textRenderer->render("Press T to see Top Scores", 320.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
-        textRenderer->render("Press SPACE to go to Start Screen", 320.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
-        textRenderer->render("Press Q to Quit", 320.0f, 550.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        std::string display = "";
+        for (int i = 0; i < 3; i++) {
+            display += (i < (int)playerInitials.length())? playerInitials[i] : '_';
+            if (i < 2) display +=" ";
+        }
+        textRenderer->render("Initals: " + display, 270.0f, 300.0f, 2.0f, 1.0f, 1.0f, 1.0f); // White
+
+        textRenderer->render("Press SPACE to Continue", 280.0f, 520.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
     }
 
     else if (currentState == GameState::SCORE_BOARD) {
@@ -396,12 +410,12 @@ void Game::render() {
         }
 
         // Text Desplayed
-        textRenderer->render("TOP SCORES", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
+        textRenderer->render("TOP SCORES", 250.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
         // adding top scores virkni --------------------- Sína alla top x marga stig
+        showCurrTopScores();
 
-        textRenderer->render("Press T to see Top Scores", 320.0f, 450.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
-        textRenderer->render("Press SPACE to go to Start Screen", 320.0f, 500.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
-        textRenderer->render("Press Q to Quit", 320.0f, 550.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+        textRenderer->render("Press SPACE to go to Start Screen", 200.0f, 500.0f, 1.2f, 1.0f, 1.0f, 1.0f); // White
+
     }
 }
 
@@ -439,22 +453,58 @@ void Game::scoreCalculator() {
     score -> timeAddedToFinal();
 }
 
-void Game::addInitials() {
-    // for(int x = mapWidth ; x > 0; x--) {
-    //     for(int y = mapHeight; y > mapHeight; y--) {
-    //         drawQuad(x, y, 0.248f, 0.222f, 0.126f); // Colors blue
-    //     }
-    // }
 
-    // draw text over the background
-    textRenderer->render("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
-    // controls
-    textRenderer->render("Map size:", 10.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow
-    textRenderer->render("Press 1 for Small", 10.0f, 55.0f, 0.8f, 1.0f, 1.0f, 0.0f); 
-    textRenderer->render("Press 2 for Medium", 10.0f, 80.0f, 0.8f, 1.0f, 1.0f, 0.0f);
-    textRenderer->render("Press 3 for Large", 10.0f, 105.0f, 0.8f, 1.0f, 1.0f, 0.0f);
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    (void)scancode;
+    (void)mods;
 
-    // instructions
-    textRenderer->render("Press SPACE to start", 250.0f, 550.0f, 1.5f, 1.0f, 1.0f, 1.0f); // White
-    textRenderer->render("Press Q to quit", 330.0f, 580.0f, 1.0f, 1.0f, 1.0f, 1.0f); // White
+    if (action != GLFW_PRESS) return;
+    Game* game = (Game*)glfwGetWindowUserPointer(window); // getting acces to the game
+    if (game-> currentState != GameState::ADD_INITIALS) return;
+    if (game-> playerInitials.length() >= 3) return;
+    
+    if (key >= GLFW_KEY_A && key <= GLFW_KEY_Z) {
+    // its a letter, then change the key code to ascii letter
+        game -> playerInitials += toupper(key);
+        if (game->playerInitials.length() ==3) {
+            game->addInitialsToFile();
+        }
+    }
+
+}
+
+void Game::addInitialsToFile() {
+    // Adds the initials and score/food eaten to a text file
+    std::vector<ScoreEntry> topScores;
+    std::string line;
+    std::ifstream scoreFile("TopScores.txt");
+
+    while (getline(scoreFile, line)) {
+        size_t spacePossition = line.find(" ");
+        std::string initals = line.substr(0, spacePossition);
+        int score = std::stoi(line.substr(spacePossition +1));
+        topScores.push_back({initals, score});
+    }
+
+    scoreFile.close();
+    topScores.push_back({playerInitials, score -> getScore()});
+    std::sort(topScores.begin(), topScores.end(), [](const ScoreEntry& a, const ScoreEntry& b) {
+        return a.score > b.score;
+    });
+    
+    std::ofstream scoreFile2("TopScores.txt");
+    for (int i = 0; i < std::min((int)topScores.size(), 10); i++) {
+        scoreFile2 << topScores[i].initials << " " << topScores[i].score << "\n"; 
+    }
+}
+
+void Game::showCurrTopScores() {
+    // Shows the top 5 current scores of the Top Scores
+    std::string line;
+    std::ifstream scoreFile("TopScores.txt");
+
+    for (int i = 1; i < 6; i++) {
+        getline(scoreFile, line);
+        textRenderer->render(std::to_string(i) +" "+ line, 340.0f, ((i*2)*20)+100.0f, 1.2f, 1.0f, 1.0f, 1.0f); // White
+    }
 }

@@ -8,6 +8,8 @@
 
 #include <vector>
 #include <random> // for random engine
+#include <fstream>
+#include <algorithm>
 
 #include "Food.hpp"
 #include "Map.hpp"
@@ -30,11 +32,16 @@ enum class GameState {
 };
 
 class Game {
+struct ScoreEntry {
+    std::string initials;
+    int score;
+};
 private:
     // game data
     std::string deathMessage = "";
 
 public:
+    std::string playerInitials = "";
     Game();
     ~Game();
     
@@ -69,8 +76,11 @@ public:
     
     void gameOver(std::string message);
     void scoreCalculator();
-    void addInitials();
+    void showCurrTopScores();
+    void addInitialsToFile();
 };
+
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 
 #endif // GAME_HPP

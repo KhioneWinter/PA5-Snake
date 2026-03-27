@@ -45,6 +45,8 @@ int main()
     // --- INITIALIZE GAME ---
     Game game;
     game.start();
+    glfwSetWindowUserPointer(window, &game);
+    glfwSetKeyCallback(window, keyCallback);
 
     // Timing variables
 
