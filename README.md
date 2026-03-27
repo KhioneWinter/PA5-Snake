@@ -13,22 +13,41 @@ Teachers:
 - Teitur Hrólfur <teitur23@ru.is>
 ------------------------------------------
 
+# Table of Content
 
-## Compilation and Running the Game!!
+- [Setup](#setup)
+  - [Libraries Required](#libraries-required)
+  - [For macOS](#for-macos)
+  - [For Linux/Windows](#for-linuxwindows)
+  - [Install GLFW Manually](#install-glfw-manually)
 
-### Libraries required:
+- [How to Play the Game](#how-to-play-the-game)
+  - [Compiling the Game](#compiling-the-game)
+  - [Running the Game](#running-the-game)
+  - [Clean Compiled Files](#clean-compiled-files)
+
+- [Files and Class Diagram](#files-and-class-diagram)
+  - [File Structure](#file-structure)
+  - [Class Diagram](#class-diagram)
+
+
+# Setup
+
+## Libraries required
 - OpenGL (version 4.1+)
 - A graphics driver that supports OpenGL 4.1+ (usually already installed)
-<br><em>Note: macOS supports up to OpenGL 4.1 maximum.</em>
 
-<span>for mac:</span>
+### For macOS
 - glfw (for graphics rendering)
 ```bash
 brew install glfw
 ```
+<em>Note: macOS supports up to OpenGL 4.1 maximum.</em>
+
+### For Linux/Windows
+- GLFW (via vcpkg or [manually](#install-glfw-manually))
 
 
-<span>for windows/linux:</span>
 - audio library (miniaudio)
 ```bash
 sudo apt install pulseaudio pulseaudio-utils alsa-utils
@@ -39,15 +58,16 @@ sudo apt install libasound2-dev
 sudo apt update
 sudo apt install libglfw3 libglfw3-dev
 ```
-- GLFW (via vcpkg or manually)
 
 
-### Install GLFW manually
+#### Install GLFW manually
 1. Download GLFW package from https://www.glfw.org/download.html according to your operating system.
 2. Locate the `lib` folder inside it and copy the `libglfw3` file to the root directory of this project (replace the existing one if it exists).
 
 
-### Compile and run
+# How to play the game
+
+## Compiling the game
 
 1. Go to the root directory of the project
 ```bash
@@ -64,6 +84,7 @@ Then we have executable file:
 | ----------------- | ----------------- |
 | `Snake.out`       | `Snake.exe`       |
 
+## Running the game
 
 3. Run the executable:
 | mac               | linux / window    |
@@ -74,7 +95,7 @@ Then we have executable file:
 <br><em>Note2: on Mac, to have the screen size fit properly, you may need to adjust the window size manually after launching the game</em>
 
 
-### Clean compiled files
+## Clean compiled files
 ```bash
 make clean
 ```
