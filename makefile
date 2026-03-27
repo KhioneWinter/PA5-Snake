@@ -42,6 +42,10 @@ $(TARGET): $(SRC)
 	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS) -x c++ src/glad.c
 
 clean:
+ifeq ($(OS),Windows_NT)
+	del /Q Snake.exe 2>nul || exit 0
+else
 	rm -f Snake.out Snake.exe
+endif
 
 .PHONY: all clean

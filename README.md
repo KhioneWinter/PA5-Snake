@@ -31,6 +31,7 @@ Teachers:
   - [Class Diagram](#class-diagram)
 
 
+
 # Setup
 
 ## Libraries required
@@ -44,10 +45,7 @@ brew install glfw
 ```
 <em>Note: macOS supports up to OpenGL 4.1 maximum.</em>
 
-### For Linux/Windows
-- GLFW (via vcpkg or [manually](#install-glfw-manually))
-
-
+### For Linux
 - audio library (miniaudio)
 ```bash
 sudo apt install pulseaudio pulseaudio-utils alsa-utils
@@ -61,6 +59,8 @@ sudo apt install libglfw3 libglfw3-dev
 
 
 #### Install GLFW manually
+If you are on windows or if you prefer to install GLFW manually, you can follow these steps:
+
 1. Download GLFW package from https://www.glfw.org/download.html according to your operating system.
 2. Locate the `lib` folder inside it and copy the `libglfw3` file to the root directory of this project (replace the existing one if it exists).
 
@@ -80,18 +80,18 @@ make
 ```
 
 Then we have executable file:
-| mac               | linux / window    |
+| mac /linux        | windows            |
 | ----------------- | ----------------- |
 | `Snake.out`       | `Snake.exe`       |
 
 ## Running the game
 
 3. Run the executable:
-| mac               | linux / window    |
+| mac /linux        | windows            |
 | ----------------- | ----------------- |
 | `./Snake.out`     | `./Snake.exe`     |
 
-<br><em>Note: the program might not detect the correct OS, therefore the executable name might still be `Snake.out` even though you are on Windows.</em>
+
 <br><em>Note2: on Mac, to have the screen size fit properly, you may need to adjust the window size manually after launching the game</em>
 
 
