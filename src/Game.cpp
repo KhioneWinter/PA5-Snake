@@ -577,12 +577,20 @@ void Game::render() {
             textRenderer->render("P2: " + std::to_string(score2->getScore()), 20.0f, 40.0f, 1.0f, 0.0f, 0.5f, 1.0f);
         }
 
-        // if boost acitve, show boost timer (bottom middle)
+        // -- score boost (pink) ---
         if (snake->getBoostTime() > 0.0f) {
             textRenderer->render("P1 SCORE BOOST: " + std::to_string((int)snake->getBoostTime()) + "s", 653.0f, 70.0f, 1.0f, 1.0f, 0.4f, 0.8f);
         }
         if (isMultiplayer && snake2 && snake2->getBoostTime() > 0.0f) {
             textRenderer->render("P2 SCORE BOOST: " + std::to_string((int)snake2->getBoostTime()) + "s", 20.0f, 70.0f, 1.0f, 1.0f, 0.4f, 0.8f);
+        }
+
+        // -- spped boost (yellow) ---
+        if (snake->getSpeedBoostTime() > 0.0f) {
+            textRenderer->render("P1 SPEED BOOST: " + std::to_string((int)snake->getSpeedBoostTime()) + "s", 650.0f, 100.0f, 1.0f, 1.0f, 1.0f, 0.0f);
+        }
+        if (isMultiplayer && snake2 && snake2->getSpeedBoostTime() > 0.0f) {
+            textRenderer->render("P2 SPEED BOOST: " + std::to_string((int)snake2->getSpeedBoostTime()) + "s", 20.0f, 100.0f, 1.0f, 1.0f, 1.0f, 0.0f);
         }
     }
 
