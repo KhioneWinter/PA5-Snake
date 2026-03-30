@@ -38,7 +38,7 @@ void Snake::updateBoost(float deltaTime) {
             boostTimer = 0.0f;
             scoreMultiplier = 1; 
             // reset snake color if needed
-            setColor(0.0f, 0.8f, 0.0f);  // default green
+            setColor(baseR, baseG, baseB);
         }
     }
 
@@ -48,7 +48,7 @@ void Snake::updateBoost(float deltaTime) {
         if (speedBoostTimer <= 0.0f) {
             speedBoostTimer = 0.0f;
             currentSpeedBoost = 0.0f; // turn off speed boost
-            setColor(0.0f, 0.8f, 0.0f);  // default green
+            setColor(baseR, baseG, baseB);
         }
     }
 }

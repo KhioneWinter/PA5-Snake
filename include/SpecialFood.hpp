@@ -17,7 +17,7 @@ public:
 // Speed Food - increase snake speed (Cyan)
 class SpeedFood : public Food {
 public:
-    SpeedFood(int x, int y) : Food(x, y, 0.0f, 1.0f, 1.0f) {}
+    SpeedFood(int x, int y) : Food(x, y, 1.0f, 1.0f, 0.0f) {}
     void applyEffect(Snake& snake) override;
 };
 

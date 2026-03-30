@@ -10,6 +10,8 @@ private:
     int length;
     float speed;
 
+    float baseR = 0.0f, baseG = 0.8f, baseB = 0.0f;
+
     int directionX, directionY; // current movement direction
     std::vector<std::pair<int, int>> body;
 
@@ -65,29 +67,29 @@ public:
         speedBoostTimer = duration;
     }
 
-    int getBoostTime() const { return boostTimer; }
+    float getBoostTime() const { return boostTimer; }
     int getSpeedBoostTime() const { return (int) speedBoostTimer; }
     int getScoreMultiplier() const { return scoreMultiplier; }
     void updateBoost(float deltaTime);
     
     // color management
-    void setColor(float newR, float newG, float newB) { r = newR; g = newG; b = newB; }
+    void setColor(float newR, float newG, float newB) { 
+        r = newR; g = newG; b = newB;
+        baseR = newR; baseG = newG; baseB = newB;
+    }
     float getR() const {
-        if (boostTimer > 0.0f && boostTimer >= speedBoostTimer) return 0.8f;        // Pink
-        if (speedBoostTimer > 0.0f && speedBoostTimer > boostTimer) return 0.0f;    // Cyan
-
-        return r; // default
+        if (speedBoostTimer > 0.0f && speedBoostTimer > boostTimer) return 1.0f; // Yellow
+        if (boostTimer > 0.0f && boostTimer >= speedBoostTimer) return 1.0f; // Pink
+        return r;
     }
     float getG() const {
-        if (boostTimer > 0.0f && boostTimer >= speedBoostTimer) return 0.4f;        // Pink
-        if (speedBoostTimer > 0.0f && speedBoostTimer > boostTimer) return 0.8f;    // Cyan
-
+        if (speedBoostTimer > 0.0f && speedBoostTimer > boostTimer) return 1.0f;
+        if (boostTimer > 0.0f && boostTimer >= speedBoostTimer) return 0.4f;
         return g;
     }
     float getB() const {
-        if (boostTimer > 0.0f && boostTimer >= speedBoostTimer) return 0.8f;        // Pink
-        if (speedBoostTimer > 0.0f && speedBoostTimer > boostTimer) return 0.8f;    // Cyan
-        
+        if (speedBoostTimer > 0.0f && speedBoostTimer > boostTimer) return 0.0f;
+        if (boostTimer > 0.0f && boostTimer >= speedBoostTimer) return 0.8f;
         return b;
     }
 };

@@ -570,16 +570,19 @@ void Game::render() {
     
         // ------------------ draw Score (top left) ------------------
         // P1 score - left side (green)
-        textRenderer->render("P1: " + std::to_string(score->getScore()), 20.0f, 40.0f, 1.0f, 0.0f, 1.0f, 0.0f);
+        textRenderer->render("P1: " + std::to_string(score->getScore()), 740.0f, 40.0f, 1.0f, 0.0f, 1.0f, 0.0f);
 
         // P2 score - right side (blue), only in multiplayer
         if (isMultiplayer && score2) {
-            textRenderer->render("P2: " + std::to_string(score2->getScore()), 620.0f, 40.0f, 1.0f, 0.0f, 0.5f, 1.0f);
+            textRenderer->render("P2: " + std::to_string(score2->getScore()), 20.0f, 40.0f, 1.0f, 0.0f, 0.5f, 1.0f);
         }
 
         // if boost acitve, show boost timer (bottom middle)
-        if (snake->getScoreMultiplier() > 1) {
-            textRenderer->render("SCORE BOOST ACTIVE: " + std::to_string(snake->getBoostTime()), 20.0f, 70.0f, 1.0f, 1.0f, 0.5f, 1.0f); // Pink
+        if (snake->getBoostTime() > 0.0f) {
+            textRenderer->render("P1 SCORE BOOST: " + std::to_string((int)snake->getBoostTime()) + "s", 653.0f, 70.0f, 1.0f, 1.0f, 0.4f, 0.8f);
+        }
+        if (isMultiplayer && snake2 && snake2->getBoostTime() > 0.0f) {
+            textRenderer->render("P2 SCORE BOOST: " + std::to_string((int)snake2->getBoostTime()) + "s", 20.0f, 70.0f, 1.0f, 1.0f, 0.4f, 0.8f);
         }
     }
 
