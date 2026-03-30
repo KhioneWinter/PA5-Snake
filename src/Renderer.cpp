@@ -33,6 +33,8 @@ Renderer::~Renderer() {
 }
 
 void Renderer::init() {
+    if (VAO != 0) return; // Already initialized!
+
     // Compile Vertex Shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);

@@ -50,6 +50,8 @@ TextRenderer::~TextRenderer() {
 
 // Load font file, bake bitmap, and setup texture/VAO
 void TextRenderer::init(const char* fontPath) {
+    if (VAO != 0) return; // Already initialized
+
     // compile Shaders
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &textVertexShaderSource, NULL);
