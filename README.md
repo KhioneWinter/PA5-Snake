@@ -265,18 +265,21 @@ class Snake {
     - length: int
     - speed: float
 
-    - scoreMultiplier: int
-    - boostTimer: float
-
     - directionX: int
     - directionY: int
-
     - body: vector<pair<int, int>>
 
     - dead: bool
     - r: float %% red color component
     - g: float %% green color component
     - b: float %% blue color component
+
+    %% for power-ups
+    - scoreMultiplier: int
+    - boostTimer: float
+
+    - speedBoostTimer: float
+    - currentSpeedBoost: float
 
     + update()
     + render()
@@ -295,7 +298,11 @@ class Snake {
 
     + increaseSpeed(amount)
     + applyScoreBoost(multiplier, duration)
+    + applySpeedBoost(boostAmount, duration)
+    
     + getBoostTimer() int
+    + getSpeedBoostTimer() int
+
     + getScoreMultiplier() int
     + updateBoost(float deltaTime)
     

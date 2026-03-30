@@ -26,7 +26,7 @@ private:
 
 public:
 
-    Snake(int x, int y) : x(x), y(y), length(1), speed(0.25f) {}
+    Snake(int x, int y) : x(x), y(y), length(1), speed(0.28f) {}
     ~Snake() = default;
 
     void update();
