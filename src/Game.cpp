@@ -448,22 +448,21 @@ void Game::render() {
         textRenderer->render("SNAKE", 320.0f, 50.0f, 2.5f, 0.0f, 1.0f, 0.0f); // Big Green Text
 
         // --- MAP SIZE SETTINGS ---
-        textRenderer->render("Map size:", 20.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
-        
-        textRenderer->render("Press 1: Small",  30.0f, 60.0f, 1.0f, 1.0f, (currentMapSize == MapSize::SMALL ? 0.4f : 1.0f), (currentMapSize == MapSize::SMALL ? 0.7f : 1.0f));
-        textRenderer->render("Press 2: Medium", 30.0f, 85.0f, 1.0f, 1.0f, (currentMapSize == MapSize::MEDIUM ? 0.4f : 1.0f), (currentMapSize == MapSize::MEDIUM ? 0.7f : 1.0f));
+        textRenderer->render("Map size:", 20.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow 
+        textRenderer->render("Press 1: Small",  30.0f, 60.0f, 1.0f, 1.0f, (currentMapSize == MapSize::SMALL ? 0.4f : 1.0f), (currentMapSize == MapSize::SMALL ? 0.7f : 1.0f)); // Pink if selected 
+        textRenderer->render("Press 2: Medium", 30.0f, 85.0f, 1.0f, 1.0f, (currentMapSize == MapSize::MEDIUM ? 0.4f : 1.0f), (currentMapSize == MapSize::MEDIUM ? 0.7f : 1.0f)); // White otherwise
         textRenderer->render("Press 3: Large",  30.0f, 110.0f, 1.0f, 1.0f, (currentMapSize == MapSize::LARGE ? 0.4f : 1.0f), (currentMapSize == MapSize::LARGE ? 0.7f : 1.0f));
 
         // --- WALL MODE SETTINGS ---
-        textRenderer->render("Wall Mode:", 530.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); 
-        textRenderer->render("Press B : Bounded Walls", 550.0f, 55.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
+        textRenderer->render("Wall Mode:", 530.0f, 30.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow 
+        textRenderer->render("Press B : Bounded Walls", 550.0f, 55.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f)); // Pink if selected 
         textRenderer->render("(Die on hit)", 610.0f, 75.0f, 1.0f, 1.0f, (!wrapAround ? 0.4f : 1.0f), (!wrapAround ? 0.7f : 1.0f));
-        textRenderer->render("Press L : Loop Walls",   550.0f, 100.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
+        textRenderer->render("Press L : Loop Walls",   550.0f, 100.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f)); // White otherwise
         textRenderer->render("(Wrap around)",   610.0f, 120.0f, 1.0f, 1.0f, (wrapAround ? 0.4f : 1.0f),  (wrapAround ? 0.7f : 1.0f));
 
         // --- MULTIPLAYER SETTINGS ---
-        textRenderer->render("Multiplayer:", 20.0f, 140.0f, 1.0f, 1.0f, 1.0f, 0.0f);
-        textRenderer->render("Press M to Toggle", 30.0f, 160.0f, 1.0f, 1.0f, (isMultiplayer ? 0.4f : 1.0f), (isMultiplayer ? 0.7f : 1.0f));
+        textRenderer->render("Multiplayer:", 20.0f, 140.0f, 1.0f, 1.0f, 1.0f, 0.0f); // Yellow
+        textRenderer->render("Press M to Toggle", 30.0f, 160.0f, 1.0f, 1.0f, (isMultiplayer ? 0.4f : 1.0f), (isMultiplayer ? 0.7f : 1.0f)); // Pink if selected, white otherwise
 
 
         // --- INSTRUCTIONS ---
@@ -733,56 +732,62 @@ void Game::startGameplay() {
 }
 
 void Game::addInitialsToFile() {
-    std::vector<ScoreEntry> topScores;
-    std::string line;
-    std::ifstream scoreFile("TopScores.txt");
+    // Fucntion that adds the initals from the user - 
+    // with their score to the top score file
+    std::vector<ScoreEntry> topScores; // Keeps the scores and initals from 
+    std::string line; // line from file
+    std::ifstream scoreFile("TopScores.txt"); // file
 
     while (getline(scoreFile, line)) {
-        size_t spacePosition = line.find(" ");
-        if (spacePosition == std::string::npos) continue;
-        std::string initials = line.substr(0, spacePosition);
-        int s = std::stoi(line.substr(spacePosition + 1));
-        topScores.push_back({initials, s});
+        size_t spacePosition = line.find(" "); // Finds the space between the initials and score
+        if (spacePosition == std::string::npos) continue; // checks until end of posision
+        std::string initials = line.substr(0, spacePosition); // when found then initals is set as the first to the space of the line
+        int scoreVal = std::stoi(line.substr(spacePosition + 1)); // score set
+        topScores.push_back({initials, scoreVal}); // addes the initials and score to the vector
     }
+    // Close file after 
     scoreFile.close();
 
-    // Add current player's score
+    // Add current player's initals and score to the vector
     topScores.push_back({playerInitials, score->getScore()});
 
+    // Sorts the scores in the vector by checking score size
     std::sort(topScores.begin(), topScores.end(), [](const ScoreEntry& a, const ScoreEntry& b) {
         return a.score > b.score;
     });
 
-    std::ofstream scoreFile2("TopScores.txt");
-    for (int i = 0; i < std::min((int)topScores.size(), 10); i++) {
-        scoreFile2 << topScores[i].initials << " " << topScores[i].score << "\n";
+    std::ofstream scoreFile2("TopScores.txt"); // open
+    for (int i = 0; i < std::min((int)topScores.size(), 10); i++) { // checks each line from the vector
+        scoreFile2 << topScores[i].initials << " " << topScores[i].score << "\n"; // adds the initals and score with space between back to file
     }
 }
 
 void Game::showCurrTopScores() {
+    // Shows the top 5 scores 
     std::string line;
     std::ifstream scoreFile("TopScores.txt");
 
-    for (int i = 1; i < 6; i++) {
+    for (int i = 1; i < 6; i++) { // loops through the first 5 lines in the file as they are already ordered by score amount
         if (!getline(scoreFile, line)) break; // stop if file has fewer than 5 entries
-        textRenderer->render(std::to_string(i) + " " + line, 270.0f, ((i * 2) * 20) + 100.0f, 1.2f, 1.0f, 1.0f, 1.0f);
+        textRenderer->render(std::to_string(i) + " " + line, 270.0f, ((i * 2) * 20) + 100.0f, 1.2f, 1.0f, 1.0f, 1.0f); // White
     }
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    // Gets they key that the user inputs for their initials
     (void)scancode;
     (void)mods;
 
-    if (action != GLFW_PRESS) return;
+    if (action != GLFW_PRESS) return; // only goes farward if the actuan was a button press
 
-    Game* game = (Game*)glfwGetWindowUserPointer(window);
-    if (game->currentState != GameState::ADD_INITIALS) return;
-    if (game->playerInitials.length() >= 3) return;
+    Game* game = (Game*)glfwGetWindowUserPointer(window); 
+    if (game->currentState != GameState::ADD_INITIALS) return; // only goes farward if the game state is add initals
+    if (game->playerInitials.length() >= 3) return; // checks current length, if 3 then return 
 
-    if (key >= GLFW_KEY_A && key <= GLFW_KEY_Z) {
-        game->playerInitials += toupper(key);
+    if (key >= GLFW_KEY_A && key <= GLFW_KEY_Z) { // checks all keys on keyboard from a to z so we dont check icelandic letters
+        game->playerInitials += toupper(key); // adds the letter pressed to the player initals as a upper case letter
         if (game->playerInitials.length() == 3) {
-            game->addInitialsToFile();
+            game->addInitialsToFile(); // sends to add to file since its finished
         }
     }
 }
