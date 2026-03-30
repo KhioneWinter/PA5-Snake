@@ -44,7 +44,7 @@ public:
     
     // booost management
     void increaseSpeed(float amount = 0.01f) {
-        if (amount < 0) return; if (speed < 0.05f) speed = 0.05f;
+        if (amount < 0) return; 
         speed -= amount;
         if (speed < 0.04f) speed = 0.04f; // cap max speed
     }
