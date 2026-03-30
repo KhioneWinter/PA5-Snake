@@ -18,7 +18,7 @@ Teachers:
 - [Setup](#setup)
   - [Libraries Required](#libraries-required)
   - [For macOS](#for-macos)
-  - [For Linux/Windows](#for-linuxwindows)
+  - [For Linux](#for-linux)
   - [Install GLFW Manually](#install-glfw-manually)
 
 - [How to Play the Game](#how-to-play-the-game)
@@ -59,7 +59,7 @@ sudo apt install libglfw3 libglfw3-dev
 
 
 #### Install GLFW manually
-If you are on windows or if you prefer to install GLFW manually, you can follow these steps:
+If you prefer to install GLFW manually, you can follow these steps:
 
 1. Download GLFW package from https://www.glfw.org/download.html according to your operating system.
 2. Locate the `lib` folder inside it and copy the `libglfw3` file to the root directory of this project (replace the existing one if it exists).
@@ -81,16 +81,16 @@ make
 ```
 
 Then we have executable file:
-| mac /linux        | windows            |
-| ----------------- | ----------------- |
-| `Snake.out`       | `Snake.exe`       |
+| mac /linux        | 
+| ----------------- | 
+| `Snake.out`       | 
 
 ## Running the game
 
 3. Run the executable:
-| mac /linux        | windows            |
-| ----------------- | ----------------- |
-| `./Snake.out`     | `./Snake.exe`     |
+| mac /linux        | 
+| ----------------- | 
+| `./Snake.out`     | 
 
 
 <br><em>Note2: on Mac, to have the screen size fit properly, you may need to adjust the window size manually after launching the game</em>
@@ -139,7 +139,7 @@ SnakeGame/
 lib/ 
 │
 ├── libglwf3.dylib  # mac
-├── libglwf3.dll.a  # windows
+├── libglwf3.dll.a  # linux
 
 assets/ 
 │

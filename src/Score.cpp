@@ -46,9 +46,11 @@ void Score::reset() {
 }
 
 int Score::getFoodAmount() {
+    // Returns food amount
     return foodAmount;
 }
 
 void Score::incrementFoodAmount() {
+    // increases food amount after being eaten
     foodAmount++;
 }
