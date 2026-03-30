@@ -187,17 +187,22 @@ void Game::handleInput(GLFWwindow* window) {
 }
 
 
-void Game::gameOver(std::string message) {
-    deathMessage = message;
-
-    scoreCalculator();
+void Game::gameOver(std::string reason) {
+    // calculate scores before building message 
+    score->endTime();
+    score->calculateTime();
+    score->timeAddedToFinal();
+    
     if (isMultiplayer && score2) {
         score2->endTime();
         score2->calculateTime();
         score2->timeAddedToFinal();
     }
+
+    deathMessage = isMultiplayer ? getMultiplayerWinnerMessage(reason, score, score2) : reason;
+
     std::cout << "\n---------------------------" << std::endl;
-    std::cout << message << std::endl;
+    std::cout << deathMessage << std::endl;
     std::cout << "Game Over! Score: " << score->getScore();
     std::cout << "\n---------------------------";
     std::cout << "\n Press SPACE to start again or Q to quit!" << std::endl;
@@ -289,11 +294,11 @@ void Game::update(float deltaTime) {
     // --- Rule 2: Hitting the other snake's body ---
     if (isMultiplayer) {
         if (p1Moved && snake2->checkCollision(nextX, nextY)) {
-            gameOver(getMultiplayerWinnerMessage("P1 crashed into P2!", score, score2));
+            gameOver("P1 crashed into P2!");
             return;
         }
         if (p2Moved && snake->checkCollision(nextX2, nextY2)) {
-            gameOver(getMultiplayerWinnerMessage("P2 crashed into P1!", score, score2));
+            gameOver("P2 crashed into P1!");
             return;
         }
     }
@@ -308,12 +313,12 @@ void Game::update(float deltaTime) {
             if (nextY < 0) nextY = map->getHeight() - 1;
             else if (nextY >= map->getHeight()) nextY = 0;
         } else if (!map->isInside(nextX, nextY)) {
-            gameOver(isMultiplayer ? getMultiplayerWinnerMessage("P1 hit a wall!", score, score2) : "Ouch! You hit a wall!");
+            gameOver(isMultiplayer ? "P1 hit a wall!" : "Ouch! You hit a wall!");
             return;
         }
         // Self collision
         if (snake->checkCollision(nextX, nextY)) {
-            gameOver(isMultiplayer ? getMultiplayerWinnerMessage("P1 ran into themselves!", score, score2) : "Oh no! You ran into yourself!");
+            gameOver(isMultiplayer ? "P1 ran into themselves!" : "Oh no! You ran into yourself!");
             return;
         }
         // move P1
@@ -330,12 +335,12 @@ void Game::update(float deltaTime) {
             if (nextY2 < 0) nextY2 = map->getHeight() - 1;
             else if (nextY2 >= map->getHeight()) nextY2 = 0;
         } else if (!map->isInside(nextX2, nextY2)) {
-            gameOver(getMultiplayerWinnerMessage("P2 hit a wall!", score, score2));
+            gameOver("P2 hit a wall!");
             return;
         }
         // Self collision
         if (snake2->checkCollision(nextX2, nextY2)) {
-            gameOver(getMultiplayerWinnerMessage("P2 ran into themselves!", score, score2));
+            gameOver("P2 ran into themselves!");
             return;
         }
         // move P2
@@ -405,14 +410,14 @@ void Game::update(float deltaTime) {
     // Check if the snake died from a bomb
     if (snake->isDead()) {
         if (isMultiplayer) {
-            gameOver(getMultiplayerWinnerMessage("KABOOM! P1 ate a bomb!", score, score2));
+            gameOver("KABOOM! P1 ate a bomb!");
         } else {
             gameOver("KABOOM! You ate a bomb!");
         }
         return;
     }
     if (isMultiplayer && snake2->isDead()) {
-        gameOver(getMultiplayerWinnerMessage("KABOOM! P2 ate a bomb!", score, score2));
+        gameOver("KABOOM! P2 ate a bomb!");
         return;
     }
 
