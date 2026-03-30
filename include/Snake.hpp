@@ -75,16 +75,19 @@ public:
     float getR() const {
         if (boostTimer > 0.0f && boostTimer >= speedBoostTimer) return 0.8f;        // Pink
         if (speedBoostTimer > 0.0f && speedBoostTimer > boostTimer) return 0.0f;    // Cyan
+
         return r; // default
     }
     float getG() const {
         if (boostTimer > 0.0f && boostTimer >= speedBoostTimer) return 0.4f;        // Pink
         if (speedBoostTimer > 0.0f && speedBoostTimer > boostTimer) return 0.8f;    // Cyan
+
         return g;
     }
     float getB() const {
         if (boostTimer > 0.0f && boostTimer >= speedBoostTimer) return 0.8f;        // Pink
         if (speedBoostTimer > 0.0f && speedBoostTimer > boostTimer) return 0.8f;    // Cyan
+        
         return b;
     }
 };
