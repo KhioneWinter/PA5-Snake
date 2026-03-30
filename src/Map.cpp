@@ -22,6 +22,7 @@ bool Map::spawnFood(int &x, int &y) {
 }
 
 bool Map::removeFood(int x, int y) {
+    // Removes food from map after being eaten
     (void)x;
     (void)y;    
     return true;
