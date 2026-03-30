@@ -5,7 +5,7 @@
 // Normal Food -  all food makes snake grow
 void NormalFood::applyEffect(Snake& snake) {
     snake.grow();
-    snake.increaseSpeed(0.005f); // onlly LITTLE bit
+    snake.increaseSpeed(0.006f); // onlly LITTLE bit
 }
 
 // Bomb - kills you instantly
@@ -16,7 +16,7 @@ void BombFood::applyEffect(Snake& snake) {
 // Speed Food - increases your speed multiplier
 void SpeedFood::applyEffect(Snake& snake) {
     snake.grow();
-    snake.applySpeedBoost(0.04f, 10.0f); // 0.02f boost for 10 seconds
+    snake.applySpeedBoost(0.08f, 10.0f); // 0.06f boost for 10 seconds
 }
 
 // Score increase food - increases score multiplier for Y time
