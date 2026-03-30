@@ -81,14 +81,14 @@ public:
     float getG() const {
         if (scoreMultiplier > 1 && speedBoostTimer > 0.0f) return 1.0f; // White if BOTH active
         if (scoreMultiplier > 1) return 0.4f;                           // Pink for score boost
-        if (speedBoostTimer > 0.0f) return 1.0f;                        // Cyan for speed boost
+        if (speedBoostTimer > 0.0f) return 0.8f;                        // Cyan for speed boost
         return g;
     }
     float getB() const {
         if (scoreMultiplier > 1 && speedBoostTimer > 0.0f) return 1.0f; // White if BOTH active
         if (scoreMultiplier > 1) return 1.0f;                           // Pink for score boost
-        if (speedBoostTimer > 0.0f) return 1.0f;                        // Cyan for speed boost
-        return r;
+        if (speedBoostTimer > 0.0f) return 0.8f;                        // Cyan for speed boost
+        return b;
     }
 };
 
