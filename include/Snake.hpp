@@ -73,19 +73,19 @@ public:
     // color management
     void setColor(float newR, float newG, float newB) { r = newR; g = newG; b = newB; }
     float getR() const {
-        if (scoreMultiplier > 1 && speedBoostTimer > 0.0f) return 0.8f; // White if BOTH active
+        if (scoreMultiplier > 1 && speedBoostTimer > 0.0f) return 1.0f; // White if BOTH active
         if (scoreMultiplier > 1) return 0.8f;                           // Pink for score boost
         if (speedBoostTimer > 0.0f) return 0.0f;                        // Cyan for speed boost
         return r;
     }
     float getG() const {
-        if (scoreMultiplier > 1 && speedBoostTimer > 0.0f) return 0.8f; // White if BOTH active
+        if (scoreMultiplier > 1 && speedBoostTimer > 0.0f) return 1.0f; // White if BOTH active
         if (scoreMultiplier > 1) return 0.4f;                           // Pink for score boost
         if (speedBoostTimer > 0.0f) return 0.8f;                        // Cyan for speed boost
         return g;
     }
     float getB() const {
-        if (scoreMultiplier > 1 && speedBoostTimer > 0.0f) return 0.8f; // White if BOTH active
+        if (scoreMultiplier > 1 && speedBoostTimer > 0.0f) return 1.0f; // White if BOTH active
         if (scoreMultiplier > 1) return 0.8f;                           // Pink for score boost
         if (speedBoostTimer > 0.0f) return 0.8f;                        // Cyan for speed boost
         return b;
