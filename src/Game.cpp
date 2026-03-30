@@ -650,10 +650,40 @@ void Game::spawnRandomFood(bool forcePositive) {
 
     if (!forcePositive && chance < 15) {
         // 15% change
-        activeFoods.push_back(new BombFood(fx, fy)); 
-        spawnRandomFood(true);  // force a good food to spawn alongside it
-    }
 
+        bool foundSafeSpot = false;
+        int maxAttempts = 5; // prevent infinite loop if map is too crowded
+
+        for (int i = 0; i < maxAttempts; i++) {
+            bool tooClose = false;
+
+            //check within 4 blocks of Player 1's head (X and Y distance)
+            if (std::abs(fx - snake->getX()) <= 4 && std::abs(fy - snake->getY()) <= 4) { tooClose = true; }
+
+            // check within 4 blocks of Player 2's head
+            if (isMultiplayer && snake2) {
+                if (std::abs(fx - snake2->getX()) <= 4 && std::abs(fy - snake2->getY()) <= 4) { tooClose = true; }
+            }
+
+            // found spot to spawn bomb
+            if (!tooClose) {
+                foundSafeSpot = true;
+                break;
+            }
+
+            // reroll position
+            map->spawnFood(fx, fy);
+        }
+
+        if (foundSafeSpot) {
+            activeFoods.push_back(new BombFood(fx, fy)); 
+            spawnRandomFood(true);  // force a good food to spawn alongside it
+        } else {
+            // Map is too crowded -> Just spawn a normal food instead
+            activeFoods.push_back(new NormalFood(fx, fy));
+        }
+        return;
+    }
     else if (chance < 35) {
         // 35-15 = 20% chance
         activeFoods.push_back(new SpeedFood(fx, fy)); // cyan color
