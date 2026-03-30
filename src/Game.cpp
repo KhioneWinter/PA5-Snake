@@ -385,8 +385,6 @@ void Game::update(float deltaTime) {
                     pointsGained += 30;
                 }
 
-                eatingSnake->increaseSpeed(0.02f); // every food increases speed a little bit
-
                 activeScore->increase(pointsGained);
                 std::cout << "Score: " << activeScore->getScore() << std::endl;
 
@@ -561,13 +559,15 @@ void Game::render() {
         // ------------------------------------------------------------------
 
     
+
         // ------------------ draw Score (top left) ------------------
         textRenderer->render("SCORE: " + std::to_string(score->getScore()), 20.0f, 40.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         
-        // if boost acitve, show boost timer (bottom middle)
-        if (snake->getScoreMultiplier() > 1) {
-            textRenderer->render("SCORE BOOST ACTIVE: " + std::to_string(snake->getBoostTime()), 20.0f, 70.0f, 1.0f, 1.0f, 0.5f, 1.0f); // Pink
-        }
+
+        // --- score boost coundown display ---
+        if (snake->getScoreMultiplier() > 1) { textRenderer->render("SCORE BOOST ACTIVE: " + std::to_string(snake->getBoostTime()), 20.0f, 70.0f, 1.0f, 1.0f, 0.5f, 1.0f); }    // Pink 
+        // --- speed boost countdown display ---
+        if (snake->getSpeedBoostTime() > 0) { textRenderer->render("SPEED BOOST ACTIVE: " + std::to_string(snake->getSpeedBoostTime()), 20.0f, 100.0f, 1.0f, 0.0f, 1.0f, 1.0f); } // Cyan
     }
 
     else if (currentState == GameState::GAME_OVER) {

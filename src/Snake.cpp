@@ -31,12 +31,23 @@ bool Snake::checkCollision(int newX, int newY) {
 
 
 void Snake::updateBoost(float deltaTime) {
+    // --- for Increase Score boost ---
     if (boostTimer > 0.0f) {
         boostTimer -= deltaTime; // subtract actual seconds passed
         if (boostTimer <= 0.0f) {
             boostTimer = 0.0f;
             scoreMultiplier = 1; 
             // reset snake color if needed
+            setColor(0.0f, 0.8f, 0.0f);  // default green
+        }
+    }
+
+    // --- for Speed boost ---
+    if (speedBoostTimer > 0.0f) {
+        speedBoostTimer -= deltaTime;
+        if (speedBoostTimer <= 0.0f) {
+            speedBoostTimer = 0.0f;
+            currentSpeedBoost = 0.0f; // turn off speed boost
             setColor(0.0f, 0.8f, 0.0f);  // default green
         }
     }
