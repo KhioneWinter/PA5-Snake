@@ -23,5 +23,6 @@ void SpeedFood::applyEffect(Snake& snake) {
 void ScoreIncreaseFood::applyEffect(Snake& snake) {
     snake.grow();
     // Apply a 3x multiplier that lasts for 50 frames!
-    snake.applyScoreBoost(increaseAmount, duration); 
+    snake.applyScoreBoost(increaseAmount, duration);
+    snake.increaseSpeed(0.01f); // onlly LITTLE bit
 }
