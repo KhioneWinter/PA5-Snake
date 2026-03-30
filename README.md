@@ -93,7 +93,7 @@ Then we have executable file:
 | `./Snake.out`     | 
 
 
-<br><em>Note2: on Mac, to have the screen size fit properly, you may need to adjust the window size manually after launching the game</em>
+<br><em>Note2: on Mac, to have the screen size fit properly, you may need to adjust the window size manually after launching the game (try to keep it close to 800x600 - otherwise things might go off screen)</em>
 
 
 ## Clean compiled files
