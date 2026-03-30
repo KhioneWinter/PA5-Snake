@@ -56,6 +56,9 @@ Game::Game() : currentState(GameState::START_SCREEN), currentMapSize(MapSize::SM
     worldRenderer = new Renderer();
     textRenderer = new TextRenderer();
 
+    worldRenderer->init();
+    textRenderer->init("Micro5-Regular.ttf");
+
     // random seed
     randEngine.seed(std::chrono::system_clock::now().time_since_epoch().count());
 }
@@ -80,9 +83,6 @@ Game::~Game() {
 }
 
 void Game::start() {
-    worldRenderer->init();
-    textRenderer->init("Micro5-Regular.ttf");
-
     // play music
     if (audio) audio->playMusic(audio->backgroundMusicPath.c_str(), true);
 
