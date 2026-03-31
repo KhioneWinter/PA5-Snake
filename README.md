@@ -90,8 +90,10 @@ Then we have the executable `Snake.out`.
 ./Snake.out
 ```
 
-
 <br><em>Note: on Mac, to have the screen size fit properly, you may need to adjust the window size manually after launching the game (try to keep it close to 800x600 - otherwise things might go off screen)</em>
+
+
+4. Move the snake using arrow keys (or WASD for player 2 in multiplayer mode).
 
 
 ## Clean compiled files
