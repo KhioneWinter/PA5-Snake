@@ -80,17 +80,15 @@ cd path/to/PA5-Snake
 make
 ```
 
-Then we have executable file:
-| mac /linux        | 
-| ----------------- | 
-| `Snake.out`       | 
+Then we have the executable `Snake.out`.
 
 ## Running the game
 
 3. Run the executable:
-| mac /linux        | 
-| ----------------- | 
-| `./Snake.out`     | 
+
+```bash
+./Snake.out
+```
 
 
 <br><em>Note: on Mac, to have the screen size fit properly, you may need to adjust the window size manually after launching the game (try to keep it close to 800x600 - otherwise things might go off screen)</em>
